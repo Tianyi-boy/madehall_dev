@@ -140,18 +140,18 @@ async page => {
 
   async function receiptPersistence() {
     await page.evaluate(() => window.MADEHALL.switchView('b'));
+    await page.evaluate(() => window.localStorage.removeItem('madehall.demo.receipt.SO-2011'));
     let b = await reset('B');
-    await b.locator('body').evaluate(body => body.ownerDocument.defaultView.localStorage.removeItem('madehall.demo.receipt.SO-2011'));
     await call(b, 'openOrder', ['SO-2011']);
     const before = {
-      button: await b.locator('#odRcvBtn').innerText(),
+      button: (await b.locator('#odRcvBtn').textContent()).trim(),
       disabled: await b.locator('#odRcvBtn').isDisabled(),
       markDisplay: await b.locator('#odRcvMark').evaluate(element => getComputedStyle(element).display),
       stepper: await b.locator('[data-od="delivered"] .step').evaluateAll(elements => elements.map(element => element.className))
     };
     await b.locator('#odRcvBtn').dispatchEvent('click');
     const after = {
-      button: await b.locator('#odRcvBtn').innerText(),
+      button: (await b.locator('#odRcvBtn').textContent()).trim(),
       disabled: await b.locator('#odRcvBtn').isDisabled(),
       markDisplay: await b.locator('#odRcvMark').evaluate(element => getComputedStyle(element).display),
       chipDisplay: await b.locator('#odRcvChip').evaluate(element => getComputedStyle(element).display),
@@ -168,7 +168,7 @@ async page => {
     }
     await call(b, 'openOrder', ['SO-2011']);
     const afterReload = {
-      button: await b.locator('#odRcvBtn').innerText(),
+      button: (await b.locator('#odRcvBtn').textContent()).trim(),
       disabled: await b.locator('#odRcvBtn').isDisabled(),
       markDisplay: await b.locator('#odRcvMark').evaluate(element => getComputedStyle(element).display),
       chipDisplay: await b.locator('#odRcvChip').evaluate(element => getComputedStyle(element).display),
