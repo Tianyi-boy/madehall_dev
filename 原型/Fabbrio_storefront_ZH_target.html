@@ -1,0 +1,2405 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Madehall 商品前端目标态原型（中文）</title>
+<style>
+/* ============ 基线 token（对照 storefront-shared.css .sfShell 照用） ============ */
+.sfShell{
+  --bg:#f7f6f3; --surface:#fff; --ink:#1b1a18; --muted:#6b6862; --faint:#9b978e;
+  --line:#e6e2da; --line2:#d9d4cc;
+  --accent:#2f6f5e; --accent-d:#22513f; --accent-soft:#e7f1ec;
+  --paper:#eeebe4; --wood:#b08a5e; --walnut:#5b4632;
+  --warn:#8a5e12; --warn-soft:#f6eedd;
+  --tone-t-soft:#eae6f3; --tone-t-ink:#5a4b9a;
+  --r:12px; --r-sm:8px;
+  background:var(--bg); color:var(--ink); font-size:15px; line-height:1.65;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif;
+  -webkit-font-smoothing:antialiased; min-height:100vh; display:flex; flex-direction:column;
+}
+.sfShell *{box-sizing:border-box}
+.sfShell a{color:inherit;text-decoration:none}
+.sfShell .serif{font-family:Georgia,"Times New Roman",serif;font-weight:600;letter-spacing:.2px}
+.sfShell .wrap{max-width:1140px;margin:0 auto;padding:0 28px;width:100%}
+.sfShell main{flex:1}
+.icon{width:1em;height:1em;display:inline-block;vertical-align:-.12em;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+/* ============ 原型导航条（非站点组成部分） ============ */
+body{margin:0;padding-top:46px;background:#f7f6f3}
+.protobar{position:fixed;top:0;left:0;right:0;height:46px;z-index:100;background:#241f33;color:#e8e4f4;
+  display:flex;align-items:center;gap:8px;padding:0 14px;font-size:12.5px;overflow-x:auto;white-space:nowrap;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif}
+.protobar .plabel{color:#9d94c4;letter-spacing:1px;margin-right:4px;flex:none}
+.protobar button{flex:none;background:transparent;border:1px solid #4a4266;color:#cfc8e8;border-radius:6px;
+  padding:5px 11px;font-size:12.5px;cursor:pointer;font-family:inherit}
+.protobar button:hover{background:#332c4a}
+.protobar button.on{background:#5a4b9a;border-color:#5a4b9a;color:#fff}
+.protobar .psep{width:1px;height:22px;background:#4a4266;margin:0 4px;flex:none}
+.protobar .pid{color:#9d94c4;flex:none}
+.protobar .idswitch{display:inline-flex;border:1px solid #4a4266;border-radius:6px;overflow:hidden;flex:none}
+.protobar .idswitch button{border:none;border-radius:0}
+.protobar .idswitch button.on{background:#2f6f5e;color:#fff}
+.protobar a.pxlink{flex:none;border:1px solid #4a4266;color:#cfc8e8;border-radius:6px;padding:5px 11px;font-size:12.5px;text-decoration:none;display:inline-flex;align-items:center;gap:5px}
+.protobar a.pxlink:hover{background:#332c4a}
+
+/* ============ 站点 chrome：公告条 / 吸顶导航 / 页脚 ============ */
+.sfShell .announce{background:var(--ink);color:#f2efe8;font-size:12.5px;text-align:center;padding:7px 12px;letter-spacing:.3px}
+.sfShell header{position:sticky;top:46px;z-index:30;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.sfShell .nav{display:flex;align-items:center;justify-content:space-between;height:62px;gap:14px}
+.sfShell .logo{display:flex;align-items:center;gap:9px;font-size:18px;font-weight:600;cursor:pointer}
+.sfShell .logo .m{width:26px;height:26px;border-radius:7px;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px}
+.sfShell .menu{display:flex;gap:22px;font-size:14px;color:var(--muted)}
+.sfShell .menu a{padding:6px 0;border-bottom:2px solid transparent;cursor:pointer}
+.sfShell .menu a:hover{color:var(--ink);border-color:var(--accent)}
+.sfShell .menu a.on{color:var(--ink);border-color:var(--accent)}
+.sfShell .navr{display:flex;align-items:center;gap:12px;color:var(--muted)}
+.sfShell .tool-link{color:var(--accent);font-size:13px;text-decoration:none;white-space:nowrap;padding:8px 2px;border-bottom:1px solid transparent}
+.sfShell .tool-link:hover{color:var(--accent-d);border-bottom-color:var(--accent)}
+.sfShell .btn{display:inline-flex;align-items:center;gap:7px;font-size:13.5px;padding:9px 16px;border-radius:var(--r-sm);
+  border:1px solid var(--line2);background:var(--surface);color:var(--ink);cursor:pointer;white-space:nowrap;font-family:inherit}
+.sfShell .btn:hover{background:var(--bg)}
+.sfShell .btn.pri{background:var(--accent);border-color:var(--accent);color:#fff}
+.sfShell .btn.pri:hover{background:var(--accent-d)}
+.sfShell .btn.lg{padding:12px 22px;font-size:15px}
+.sfShell .btn.gh{background:transparent}
+.sfShell .btn.tone-g{background:var(--accent-soft);border-color:var(--accent-soft);color:var(--accent)}
+.sfShell .btn.tone-a{background:var(--warn-soft);border-color:var(--warn-soft);color:var(--warn)}
+.sfShell .btn.tone-t{background:var(--tone-t-soft);border-color:var(--tone-t-soft);color:var(--tone-t-ink)}
+.sfShell footer{background:var(--ink);color:#cfcabf;margin-top:30px;padding:46px 0 26px}
+.sfShell .fcols{display:grid;grid-template-columns:1.35fr .85fr .9fr .9fr 1.25fr;gap:24px}
+.sfShell footer h5{color:#fff;font-size:14px;margin:0 0 12px}
+.sfShell .footer-heading-link{appearance:none;border:0;background:none;color:inherit;font:inherit;padding:0;cursor:pointer}
+.sfShell .footer-heading-link:hover{text-decoration:underline;text-underline-offset:3px}
+.sfShell .footer-heading-link:focus-visible{outline:2px solid var(--accent);outline-offset:4px;border-radius:2px}
+.sfShell .fcols a{display:block;color:#cfcabf;font-size:13.5px;padding:4px 0;cursor:pointer}
+.sfShell .fcols a:hover{color:#fff}
+.sfShell .flogo{color:#fff;margin-bottom:10px}
+.sfShell .fdesc{font-size:13px;color:#a8a399;max-width:260px;margin:0}
+.sfShell .fpills{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.sfShell .pill{display:inline-flex;align-items:center;gap:6px;background:#2b2925;border:1px solid #3a3833;border-radius:20px;padding:4px 12px;font-size:12px;color:#cfcabf}
+.sfShell .fhours{font-size:12.5px;color:#a8a399;margin-top:10px;line-height:1.7}
+.sfShell .fbot{border-top:1px solid #3a3833;margin-top:28px;padding-top:18px;display:flex;justify-content:space-between;font-size:12.5px;color:#8d897f;flex-wrap:wrap;gap:8px}
+
+/* ============ 通用区块 ============ */
+.sfShell .sect{padding:52px 0}
+.sfShell .center{text-align:center}
+.sfShell .center .lead{margin-left:auto;margin-right:auto}
+.sfShell .eyebrow{font-size:12.5px;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent);margin:0 0 12px}
+.sfShell h1.hero-title{font-size:44px;line-height:1.15;margin:0 0 18px}
+.sfShell h1.t,.sfShell h2.t{font-size:29px;margin:0 0 8px}
+.sfShell p.lead{font-size:17px;color:var(--muted);margin:0 0 24px;max-width:640px}
+.sfShell .crumb{font-size:13px;color:var(--faint);margin:0 0 8px}
+.sfShell .crumb a{color:var(--faint);cursor:pointer}
+.sfShell .crumb a:hover{color:var(--accent)}
+.sfShell .ctas{display:inline-grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:10px}
+.sfShell .ctas .btn{justify-content:center}
+.sfShell .hero-grid{display:grid;grid-template-columns:1.05fr 1fr;gap:40px;align-items:center;padding:56px 0 36px}
+.sfShell .imgblk{background:var(--paper);border-radius:var(--r);display:flex;align-items:center;justify-content:center;color:#c3bcae;position:relative;overflow:hidden}
+.sfShell .imgblk .icon{font-size:60px}
+.sfShell .imgblk .cap{position:absolute;bottom:10px;left:12px;font-size:11px;color:var(--faint);background:rgba(255,255,255,.7);padding:2px 8px;border-radius:6px;z-index:3}
+.sfShell .hero-img{height:370px;background:var(--walnut)}
+.sfShell .hero-img .icon{color:rgba(255,255,255,.35)}
+.sfShell .trust{display:flex;gap:26px;flex-wrap:wrap;margin-top:24px;font-size:13px;color:var(--muted)}
+.sfShell .trust span{display:flex;align-items:center;gap:7px}
+.sfShell .trust .icon{color:var(--accent);font-size:17px}
+.sfShell .entrances{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.sfShell .ent{border:1px solid var(--line);border-radius:var(--r);padding:20px;background:var(--surface);transition:.15s;display:block;cursor:pointer}
+.sfShell .ent:hover{border-color:var(--accent);transform:translateY(-2px)}
+.sfShell .ent .ic{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;font-size:19px}
+.sfShell .ic.g{background:var(--accent-soft);color:var(--accent)}
+.sfShell .ic.a{background:var(--warn-soft);color:var(--warn)}
+.sfShell .ic.t{background:var(--tone-t-soft);color:var(--tone-t-ink)}
+.sfShell .ent h4{margin:0 0 4px;font-size:16px}
+.sfShell .ent p{margin:0 0 10px;font-size:13px;color:var(--muted);line-height:1.55}
+.sfShell .ent .go{font-size:13px;color:var(--accent)}
+.sfShell .cats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.sfShell .catc{display:block;cursor:pointer}
+.sfShell .catc .ph{height:120px;background:var(--paper);border-radius:var(--r);display:flex;align-items:center;justify-content:center;color:#c3bcae;margin-bottom:9px;transition:.15s;position:relative;overflow:hidden}
+.sfShell .catc:hover .ph{background:#e7e2d8}
+.sfShell .catc h4{margin:0;font-size:14px}
+.sfShell .catc p{margin:2px 0 0;font-size:12px;color:var(--faint)}
+.sfShell .dirhead{display:flex;align-items:baseline;gap:10px;margin:6px 0 16px}
+.sfShell .dirhead h2{margin:0}
+.sfShell .dirhead span{font-size:13px;color:var(--faint)}
+.sfShell .ph-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:inherit;z-index:1}
+.sfShell .tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.sfShell .tier{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:22px;transition:.15s}
+.sfShell .tier:hover{border-color:var(--accent);transform:translateY(-2px)}
+.sfShell .tier .n{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;font-size:18px}
+.sfShell .n.g{background:var(--accent-soft);color:var(--accent)}
+.sfShell .n.a{background:var(--warn-soft);color:var(--warn)}
+.sfShell .n.t{background:var(--tone-t-soft);color:var(--tone-t-ink)}
+.sfShell .tier h3{margin:0 0 4px;font-size:17px}
+.sfShell .tier .sub{font-size:13px;color:var(--faint);margin:0 0 12px}
+.sfShell .tier ul{margin:0;padding-left:18px;font-size:13px;color:var(--muted)}
+.sfShell .tier li{margin:5px 0}
+.sfShell .tier .lead-t{font-size:12px;color:var(--accent);margin:12px 0 0}
+.sfShell .band{background:var(--ink);color:#f2efe8;border-radius:16px;padding:36px;display:flex;align-items:center;justify-content:space-between;gap:24px}
+.sfShell .band h2{font-size:25px;margin:0 0 6px;color:#fff}
+.sfShell .band p{margin:0;color:#bdb8ad;font-size:15px}
+.sfShell .ffeband{background:var(--accent-soft);border-radius:16px;padding:36px;display:grid;grid-template-columns:1fr 1fr;gap:30px;align-items:center}
+.sfShell .ffeband p{color:var(--accent-d);margin:0 0 18px}
+.sfShell .note{font-size:13px;color:var(--accent-d);background:var(--accent-soft);border-radius:var(--r-sm);padding:11px 15px;line-height:1.6;margin:0 0 18px}
+.sfShell .note.warn{color:var(--warn);background:var(--warn-soft)}
+.sfShell .note.purple{color:var(--tone-t-ink);background:var(--tone-t-soft)}
+
+/* ============ 购买流程页（对照源码 /how-it-works） ============ */
+.sfShell .how-intro{text-align:center;max-width:720px;margin:0 auto;padding:20px 0 18px}
+.sfShell .how-intro .t{font-size:30px;margin:0 0 12px}
+.sfShell .how-intro .lead{margin:0 auto;max-width:700px}
+.sfShell .how-content{padding:22px 0 76px}
+.sfShell .how-tiers .tier{min-height:218px}
+.sfShell .how-tiers .body{font-size:13px;color:var(--muted);line-height:1.65;margin:0}
+.sfShell .how-cta{margin-top:28px}
+.sfShell .how-cta .ctas{margin:0}
+.sfShell .how-cta .btn.light{background:#fff;border-color:#fff;color:var(--ink)}
+.sfShell .how-cta .btn.light:hover{background:var(--paper)}
+
+/* ============ 商品卡与价格位 ============ */
+.sfShell .pgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.sfShell .pgrid.c3{grid-template-columns:repeat(3,1fr)}
+.sfShell .pcard{display:block;cursor:pointer}
+.sfShell .pcard .ph{height:175px;background:var(--paper);border-radius:var(--r);display:flex;align-items:center;justify-content:center;color:#c3bcae;position:relative;margin-bottom:10px;transition:.15s;overflow:hidden}
+.sfShell .pcard:hover .ph{background:#e7e2d8}
+.sfShell .pcard .ph .icon{font-size:44px}
+.sfShell .pcard .badge{position:absolute;top:9px;left:9px;background:var(--surface);border:1px solid var(--line);font-size:11px;padding:2px 8px;border-radius:6px;color:var(--muted);z-index:2}
+.sfShell .pcard h4{margin:0;font-size:14.5px}
+.sfShell .pcard .brand{font-size:12px;color:var(--faint);margin:2px 0 6px}
+.sfShell .price{display:flex;align-items:baseline;gap:8px;font-size:14px;flex-wrap:wrap}
+.sfShell .price .wp{font-weight:600}
+/* A-07 已裁 v4.10：未登录＝零价格展示（含不显 MSRP）——原 .price .msrp 划线价样式已随全站 MSRP 清零删除 */
+.sfShell .price .moq{color:var(--muted);font-size:12px}
+.sfShell .gate{font-size:12.5px;color:var(--accent);display:inline-flex;align-items:center;gap:5px}
+.sfShell .cert{display:inline-block;font-size:11px;padding:2px 7px;border:1px solid var(--line2);border-radius:5px;color:var(--muted);margin:4px 4px 0 0}
+.sfShell .certrow{display:flex;gap:6px;flex-wrap:wrap}
+.sfShell .cbadge{display:inline-block;font-size:11px;background:var(--accent-soft);color:var(--accent-d);padding:2px 8px;border-radius:5px;margin-bottom:5px}
+.sfShell .cbadge.t{background:var(--tone-t-soft);color:var(--tone-t-ink)}
+/* 登录前后价格可见性（演示开关：body.in=已登录） */
+body.in .po{display:none!important}
+body:not(.in) .pi{display:none!important}
+
+/* ============ 分段条 / chips ============ */
+.sfShell .segbar{display:inline-flex;border:1px solid var(--line2);border-radius:var(--r-sm);overflow:hidden;margin:0 0 14px;background:var(--surface)}
+.sfShell .segbar button{padding:9px 18px;font-size:14px;cursor:pointer;color:var(--muted);background:transparent;border:none;font-family:inherit}
+.sfShell .segbar button.on{background:var(--accent);color:#fff}
+.sfShell .chips{display:flex;gap:8px;flex-wrap:wrap}
+.sfShell .chip{font-size:13px;padding:8px 14px;border:1px solid var(--line2);border-radius:var(--r-sm);cursor:pointer;color:var(--muted);background:var(--surface);font-family:inherit;display:inline-flex;align-items:center;gap:6px}
+.sfShell .chip.on{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+
+/* ============ 独立住宅 / 工程家具目录页 ============ */
+.sfShell .catalog-page .wrap{padding-top:52px;padding-bottom:62px}
+.sfShell .catalog-page .lead{max-width:720px;line-height:1.65}
+.sfShell .catalog-chips{margin:0 0 22px}
+.sfShell .catalog-layout{display:grid;grid-template-columns:220px 1fr;gap:28px;align-items:start}
+.sfShell .catalog-aside{min-width:0}
+.sfShell .filter-group{margin:0 0 20px}
+.sfShell .filter-title{font-size:13px;color:var(--muted);margin:0 0 9px}
+.sfShell .swatches{display:flex;gap:10px;margin-top:6px}
+.sfShell .swatch{width:30px;height:30px;border-radius:50%;outline:1px solid var(--line);border:0;cursor:pointer;padding:0}
+.sfShell .swatch.on{outline:2px solid var(--accent);outline-offset:2px}
+.sfShell .aside-note{font-size:12px;color:var(--faint);margin:20px 0 0}
+.sfShell .filter-stack{display:flex;gap:8px;flex-wrap:wrap}
+.sfShell .catalog-products{min-width:0}
+.sfShell .catalog-products .pgrid{grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.sfShell .catalog-products .pcard .ph{height:168px}
+.sfShell .catalog-products .pcard .fav{position:absolute;top:10px;right:10px;z-index:2;color:#8a9398}
+.sfShell .catalog-products .pcard .fav .icon{font-size:32px}
+.sfShell .catalog-products .pcard .badge{background:rgba(255,255,255,.9)}
+.sfShell .catalog-products .certrow{display:flex;gap:6px;flex-wrap:wrap;margin-top:5px}
+.sfShell .catalog-products .host-note{font-size:12.5px;color:var(--faint);margin:18px 0 0}
+.sfShell .catalog-copy-img{opacity:1}
+.sfShell .segbar .seg-link{padding:9px 18px;font-size:14px;cursor:pointer;color:var(--muted);background:transparent;border:0;font-family:inherit}
+.sfShell .segbar .seg-link.on{background:var(--accent);color:#fff}
+.sfShell .catalog-empty{display:none;border:1px dashed var(--line2);border-radius:var(--r);background:var(--surface);padding:38px 24px;text-align:center;color:var(--muted)}
+.sfShell .catalog-empty.on{display:block}
+
+/* ============ FF&E 业态瓦片 / 套餐卡 ============ */
+.sfShell .vtiles{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.sfShell .vtile{border:1px solid var(--line);border-radius:var(--r);padding:14px;background:var(--surface);transition:.15s;cursor:pointer;font:inherit;color:inherit;text-align:left;width:100%}
+.sfShell .vtile:hover{border-color:var(--line2)}
+.sfShell .vtile.on{border:2px solid var(--accent)}
+.sfShell .vtile .vi{width:32px;height:32px;border-radius:8px;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;margin-bottom:8px;font-size:16px}
+.sfShell .vtile h4{margin:0;font-size:14px}
+.sfShell .vtile p{margin:3px 0 0;font-size:11.5px;color:var(--faint)}
+.sfShell .pkg{border:1px solid var(--line);border-radius:var(--r);overflow:hidden;background:var(--surface);cursor:pointer;transition:.15s}
+.sfShell .pkg:hover{border-color:var(--accent)}
+.sfShell .pkg .ph{height:120px;background:var(--paper);display:flex;align-items:center;justify-content:center;color:#c3bcae;position:relative;overflow:hidden}
+.sfShell .pkg .ph .icon{font-size:34px}
+.sfShell .pkg .bd{padding:13px 15px}
+.sfShell .pkg h4{margin:0 0 4px;font-size:14.5px}
+.sfShell .pkg .it{font-size:12px;color:var(--muted);line-height:1.5;margin:0}
+.sfShell .pkg .certrow{margin-top:2px}
+.sfShell .pkg .price{margin-top:8px}
+.sfShell .ffe-intro{padding-top:22px;padding-bottom:68px}
+.sfShell .ffe-standards{justify-content:center;margin-bottom:8px}
+.sfShell .ffe-vertical-detail{margin-top:18px}
+.sfShell .ffe-vertical-detail .cert{margin-left:4px}
+.sfShell .ffe-package-heading{margin:34px 0 16px;display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.sfShell .pkg-alt-link{background:none;border:none;color:var(--tone-t-ink);font-size:13.5px;cursor:pointer;font-family:inherit;padding:0;white-space:nowrap;text-decoration:underline}
+.sfShell .pkg-alt-link:hover{color:var(--accent-d)}
+.sfShell .ffe-package-heading .eyebrow{margin:0}
+.sfShell .ffe-package-heading h2{font-size:22px;margin-top:6px}
+.sfShell .ffe-registration-note{display:flex;align-items:flex-start;gap:7px;margin-top:22px}
+.sfShell .ffe-registration-note .icon{flex:0 0 auto;margin-top:2px}
+
+/* ============ 表单卡 ============ */
+.sfShell .form{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:26px;max-width:680px}
+.sfShell .frow{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.sfShell .fld label,.sfShell .fld .flabel{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+.sfShell .fld input,.sfShell .fld select,.sfShell .fld textarea{width:100%;border:1px solid var(--line2);border-radius:var(--r-sm);padding:10px 12px;font-size:14px;background:var(--surface);font-family:inherit;color:var(--ink)}
+.sfShell .fld input,.sfShell .fld select{height:42px;padding:0 12px}
+.sfShell .fld textarea{min-height:88px;resize:vertical}
+.sfShell .fld input[readonly]{background:var(--paper);color:var(--muted)}
+.sfShell .fld.full{grid-column:1/3}
+.sfShell .fnote{font-size:12.5px;color:var(--faint);margin:14px 0 0}
+.sfShell .upl{border:1.5px dashed var(--line2);border-radius:var(--r-sm);padding:16px;text-align:center;font-size:13px;color:var(--muted);cursor:pointer;background:var(--bg)}
+.sfShell .upl:hover{border-color:var(--accent);color:var(--accent)}
+
+/* ============ 详情页 / 行项清单 / 水印 ============ */
+.sfShell .pdp-grid{display:grid;grid-template-columns:1fr 1fr;gap:36px;align-items:start;padding:34px 0 10px}
+.sfShell .gallery-main{height:340px;margin-bottom:10px}
+.sfShell .thumbs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.sfShell .thumbs .imgblk{height:84px}
+.sfShell .thumbs .imgblk .icon{font-size:26px}
+.sfShell .spec{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:8px}
+.sfShell .spec th,.sfShell .spec td{border-bottom:1px solid var(--line);padding:9px 10px;text-align:left;vertical-align:top}
+.sfShell .spec th{color:var(--faint);font-weight:400;width:110px}
+.sfShell .kv{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:14px 0 4px}
+.sfShell .kv .cell{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px}
+.sfShell .kv .cell b{display:block;font-size:14.5px;margin-top:2px}
+.sfShell .kv .cell span{font-size:12px;color:var(--faint)}
+.sfShell .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:20px}
+.sfShell .card h3{margin:0 0 10px;font-size:16.5px}
+.sfShell .card p,.sfShell .card li{font-size:13.5px;color:var(--muted);line-height:1.7}
+.sfShell .card ul{margin:0;padding-left:18px}
+.sfShell .wm::after{content:"MADEHALL 样图 · MADEHALL 样图 · MADEHALL 样图 · MADEHALL 样图 · MADEHALL 样图 · MADEHALL 样图 · MADEHALL 样图 · MADEHALL 样图 · MADEHALL 样图";
+  position:absolute;inset:-30%;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;
+  transform:rotate(-22deg);color:rgba(27,26,24,.10);font-size:18px;letter-spacing:5px;line-height:3.2;
+  text-align:center;pointer-events:none;z-index:2}
+.sfShell .li-table{border:1px solid var(--line);border-radius:var(--r);overflow:hidden;background:var(--surface)}
+.sfShell .li-head{display:grid;grid-template-columns:2fr 0.8fr 2.6fr 90px;gap:10px;padding:11px 16px;background:var(--paper);font-size:12.5px;color:var(--muted)}
+.sfShell .li-row{border-top:1px solid var(--line)}
+.sfShell .li-main{display:grid;grid-template-columns:2fr 0.8fr 2.6fr 90px;gap:10px;padding:12px 16px;font-size:13.5px;cursor:pointer;align-items:center}
+.sfShell .li-main:hover{background:var(--bg)}
+.sfShell .li-main .exp{color:var(--accent);font-size:12.5px;text-align:right}
+.sfShell .li-detail{display:none;padding:0 16px 14px;font-size:13px;color:var(--muted);line-height:1.7}
+.sfShell .li-row.open .li-detail{display:block}
+.sfShell .li-row.open .li-main .exp .cl{display:none}
+.sfShell .li-row:not(.open) .li-main .exp .op{display:none}
+.sfShell .srcmark{display:inline-block;font-size:11px;background:var(--paper);border:1px solid var(--line2);color:var(--muted);padding:1px 7px;border-radius:5px;margin-left:6px}
+/* —— v2.7 跨档行项表（套餐=FF&E 项目模板） —— */
+.sfShell .xt{border:1px solid var(--line);border-radius:var(--r);overflow:hidden;background:var(--surface)}
+.sfShell .xt-head,.sfShell .xt-row{display:grid;grid-template-columns:2.1fr 1.6fr .9fr 1.25fr 1.5fr;gap:12px;align-items:center}
+.sfShell .xt-head{padding:11px 16px;background:var(--paper);font-size:12.5px;color:var(--muted)}
+.sfShell .xt-row{padding:14px 16px;border-top:1px solid var(--line);font-size:13.5px}
+.sfShell .xt-row .pname{font-weight:600}
+.sfShell .xt-row .pcat{font-size:12px;color:var(--faint);margin-top:2px}
+.sfShell .cfgline{font-size:12px;color:var(--muted);margin-top:5px;line-height:1.5;background:var(--paper);border-radius:6px;padding:5px 8px}
+.sfShell .cfgtag{color:var(--faint);font-size:11px;margin-left:6px;white-space:nowrap}
+.sfShell .tierpick{display:inline-flex;border:1px solid var(--line2);border-radius:var(--r-sm);overflow:hidden}
+.sfShell .tierpick button{padding:5px 9px;font-size:11.5px;border:none;background:transparent;color:var(--muted);cursor:pointer;font-family:inherit;white-space:nowrap}
+.sfShell .tierpick button:disabled{color:var(--line2);cursor:not-allowed}
+.sfShell .tierpick button.on.t1{background:var(--accent);color:#fff}
+.sfShell .tierpick button.on.t2{background:var(--warn);color:#fff}
+.sfShell .tierpick button.on.t3{background:var(--tone-t-ink);color:#fff}
+.sfShell .moqcell{font-size:12.5px;color:var(--muted)}
+.sfShell .moqcell b{display:block;color:var(--ink);font-size:13.5px}
+.sfShell .qty{display:inline-flex;align-items:center;border:1px solid var(--line2);border-radius:var(--r-sm);overflow:hidden}
+.sfShell .qty button{width:28px;height:32px;border:none;background:var(--surface);color:var(--ink);cursor:pointer;font-size:15px;font-family:inherit;line-height:1}
+.sfShell .qty button:hover{background:var(--bg)}
+.sfShell .qty button.dis{color:var(--line2);cursor:not-allowed}
+.sfShell .qty input{width:52px;height:32px;border:none;border-left:1px solid var(--line2);border-right:1px solid var(--line2);text-align:center;font-size:13.5px;font-family:inherit;color:var(--ink);background:var(--surface)}
+.sfShell .xprice{font-size:13.5px}
+.sfShell .xprice .u{color:var(--faint);font-size:11.5px;display:block}
+.sfShell .xprice .ask{color:var(--tone-t-ink);font-weight:600}
+.sfShell .xprice .ref{color:var(--warn);font-weight:600}
+.sfShell .xprice .wpx{font-weight:600}
+.sfShell .totalbar{display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:16px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px;margin-top:14px}
+.sfShell .totalbar .lab{font-size:12px;color:var(--faint);display:block;margin-bottom:3px}
+.sfShell .totalbar .big{font-size:19px;font-weight:600}
+.sfShell .lowmoq{color:#93372a;font-size:11.5px;margin-top:3px}
+.sfShell .softmoq{color:var(--warn);background:var(--warn-soft);border-radius:6px;padding:3px 7px;font-size:11.5px;margin-top:4px;line-height:1.45}
+.sfShell .moqcell .spm{display:block;color:var(--faint);font-size:11.5px;margin-top:3px}
+@media (max-width:880px){
+  .sfShell .xt-head{display:none}
+  .sfShell .xt-row{grid-template-columns:1fr 1fr;row-gap:10px}
+  .sfShell .totalbar{grid-template-columns:1fr}
+}
+.sfShell .statusline{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:10px 0 18px;font-size:12.5px;color:var(--muted)}
+.sfShell .statusline .st{background:var(--surface);border:1px solid var(--line2);border-radius:14px;padding:3px 12px}
+.sfShell .statusline .arr{color:var(--faint)}
+
+/* ============ 商户注册状态页 ============ */
+.sfShell .stbanner{border-radius:var(--r);padding:16px 20px;font-size:14px;margin:0 0 18px;line-height:1.7}
+.sfShell .stbanner.ok{background:var(--accent-soft);color:var(--accent-d)}
+.sfShell .stbanner.warn{background:var(--warn-soft);color:var(--warn)}
+.sfShell .stbanner.bad{background:#f7e4e0;color:#93372a}
+.sfShell .stbanner.dim{background:var(--paper);color:var(--muted)}
+.sfShell .stbanner b{display:block;font-size:15px;margin-bottom:3px}
+.sfShell .locked{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px 20px;font-size:13.5px;color:var(--muted);max-width:680px;margin-bottom:16px}
+.sfShell .locked .lrow{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px dashed var(--line)}
+.sfShell .locked .lrow:last-child{border-bottom:none}
+.sfShell .locked .okk{color:var(--accent);font-size:12.5px}
+
+/* ============ 联系客服页 ============ */
+.sfShell .contact-layout{display:grid;grid-template-columns:minmax(280px,.78fr) minmax(0,1.35fr);gap:20px;align-items:start}
+.sfShell .contact-methods{display:grid;gap:12px}
+.sfShell .chcard{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:22px}
+.sfShell .chcard.compact{padding:18px;display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:12px;align-items:start}
+.sfShell .chcard .ic{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;font-size:19px}
+.sfShell .chcard.compact .ic{grid-row:1 / span 3;margin:0}
+.sfShell .chcard h3{margin:0 0 6px;font-size:16px}
+.sfShell .chcard p{font-size:13.5px;color:var(--muted);margin:0 0 12px;line-height:1.7}
+.sfShell .chcard code{display:block;background:var(--paper);border-radius:var(--r-sm);padding:9px 12px;font-size:12.5px;color:var(--muted);margin:0 0 12px;word-break:break-all;font-family:Consolas,Menlo,monospace}
+.sfShell .contact-value{display:flex;align-items:center;gap:8px;min-width:0}
+.sfShell .contact-value code{flex:1;margin:0;min-width:0;color:var(--ink)}
+.sfShell .contact-value .btn{flex:0 0 auto}
+.sfShell .contact-form-card{padding:24px}
+.sfShell .contact-form-card>p{max-width:640px}
+.sfShell .hourstrip{display:flex;gap:22px;flex-wrap:wrap;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px 20px;font-size:13.5px;color:var(--muted);margin:0 0 22px}
+.sfShell .hourstrip b{color:var(--ink);display:block;font-size:13px;margin-bottom:2px}
+
+/* ============ 附录表 ============ */
+.sfShell .apx{width:100%;border-collapse:collapse;font-size:13px;background:var(--surface)}
+.sfShell .apx th,.sfShell .apx td{border:1px solid var(--line);padding:9px 12px;text-align:left;vertical-align:top;line-height:1.65}
+.sfShell .apx th{background:var(--paper);color:var(--muted);font-weight:600;white-space:nowrap}
+.sfShell .apx td:first-child{white-space:nowrap;color:var(--accent-d);font-weight:600}
+
+/* ============ NR 徽标 / 提示浮层 ============ */
+.nrbadge{position:fixed;right:16px;bottom:16px;z-index:90;background:#1b1a18;color:#f2efe8;border-radius:10px;
+  padding:9px 15px;font-size:12.5px;letter-spacing:.4px;box-shadow:0 4px 18px rgba(0,0,0,.25);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif}
+.nrbadge b{color:#8fd0bd;font-weight:600}
+.toast{position:fixed;left:50%;bottom:70px;transform:translateX(-50%);z-index:110;background:#1b1a18;color:#f2efe8;
+  border-radius:10px;padding:11px 20px;font-size:13.5px;opacity:0;pointer-events:none;transition:opacity .25s;max-width:80vw;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif}
+.toast.show{opacity:1}
+.page{display:none}
+.page.on{display:block}
+.hidden{display:none!important}
+
+
+/* —— 项目篮（甲案：选品在店面，行编辑/量规在报价工作台） —— */
+.sfShell .basket-chip{display:inline-flex;align-items:center;gap:6px;font-size:13px;padding:7px 13px;border-radius:var(--r-sm);border:1px solid var(--line2);background:var(--surface);color:var(--ink);cursor:pointer;font-family:inherit;white-space:nowrap}
+.sfShell .basket-chip:hover{background:var(--bg)}
+.sfShell .basket-chip.has{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+.sfShell .basket-chip b{font-weight:600}
+.basket-panel{position:fixed;top:0;right:0;bottom:0;width:380px;max-width:92vw;z-index:120;background:#fff;border-left:1px solid #e6e2da;box-shadow:-6px 0 28px rgba(0,0,0,.12);transform:translateX(102%);transition:transform .22s;display:flex;flex-direction:column;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif}
+.basket-panel.on{transform:translateX(0)}
+.basket-panel .bk-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid #e6e2da}
+.basket-panel .bk-head h3{margin:0;font-size:16px;font-family:Georgia,"Times New Roman",serif}
+.basket-panel .bk-close{background:none;border:none;font-size:22px;cursor:pointer;color:#6b6862;line-height:1;padding:0 4px}
+.basket-panel .bk-body{flex:1;overflow-y:auto;padding:14px 20px}
+.basket-panel .bk-foot{border-top:1px solid #e6e2da;padding:16px 20px;background:#f7f6f3}
+.sfShell .basket-row,.basket-panel .basket-row{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;padding:11px 0;border-bottom:1px solid #efece6}
+.basket-panel .bk-n{font-size:13.5px;color:#1b1a18}
+.basket-panel .bk-c{font-size:11.5px;color:#9b978e;margin-top:2px}
+.basket-panel .bk-cfg{font-size:11.5px;color:#6b6862;margin-top:5px;background:#f2efe9;border-radius:6px;padding:4px 7px;line-height:1.5}
+.basket-panel .bk-cfgtag{color:#9b978e;font-size:11px;margin-left:5px}
+.basket-panel .bk-del{background:none;border:none;color:#9b978e;font-size:18px;cursor:pointer;line-height:1;padding:0 2px}
+.basket-panel .bk-del:hover{color:#93372a}
+.basket-panel .qty{display:inline-flex;align-items:center;border:1px solid #d9d4cc;border-radius:8px;overflow:hidden}
+.basket-panel .qty button{width:26px;height:28px;border:none;background:#fff;color:#1b1a18;cursor:pointer;font-size:14px;font-family:inherit;line-height:1}
+.basket-panel .qty input{width:40px;height:28px;border:none;border-left:1px solid #d9d4cc;border-right:1px solid #d9d4cc;text-align:center;font-size:13px;font-family:inherit;color:#1b1a18;background:#fff}
+.basket-panel .basket-empty{font-size:13px;color:#6b6862;line-height:1.7;margin:6px 0}
+.basket-panel .bk-note{font-size:12px;color:#6b6862;line-height:1.6;margin:0 0 12px}
+.basket-panel .bk-cta{display:block;width:100%;text-align:center;font-size:14px;padding:11px 16px;border-radius:8px;border:1px solid #2f6f5e;background:#2f6f5e;color:#fff;cursor:pointer;font-family:inherit}
+.basket-panel .bk-cta:hover{background:#22513f}
+.basket-panel .bk-reg{margin-top:12px;border:1px solid #2f6f5e;border-radius:8px;padding:12px 14px;font-size:12.5px;color:#22513f;line-height:1.6}
+.basket-panel .bk-reg button{margin-top:8px;font-size:13px;padding:7px 13px;border-radius:8px;border:1px solid #2f6f5e;background:#fff;color:#22513f;cursor:pointer;font-family:inherit}
+.sfShell .btn.addproj{font-size:12px;padding:6px 11px;margin-top:8px}
+@media (max-width:520px){.basket-panel{width:100%}}
+
+/* ============ 响应式 ============ */
+@media (max-width:880px){
+  .sfShell .hero-grid,.sfShell .ffeband,.sfShell .pdp-grid,.sfShell .contact-layout{grid-template-columns:1fr}
+  .sfShell h1.hero-title{font-size:32px}
+  .sfShell .entrances,.sfShell .cats,.sfShell .pgrid,.sfShell .pgrid.c3,.sfShell .tiers,.sfShell .fcols,.sfShell .vtiles,.sfShell .kv{grid-template-columns:1fr 1fr}
+  .sfShell .frow{grid-template-columns:1fr}
+  .sfShell .fld.full{grid-column:auto}
+  .sfShell .band{flex-direction:column;text-align:center}
+  .sfShell .sect{padding:38px 0}
+  .sfShell .catalog-layout{grid-template-columns:1fr;gap:18px}
+  .sfShell .catalog-products .pgrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .sfShell .catalog-aside{border:1px solid var(--line);border-radius:var(--r);padding:18px;background:var(--surface)}
+  .sfShell .menu{display:none}
+  .sfShell .li-head{display:none}
+  .sfShell .li-main{grid-template-columns:1fr auto}
+}
+@media (max-width:520px){
+  .sfShell .entrances,.sfShell .cats,.sfShell .pgrid,.sfShell .pgrid.c3,.sfShell .tiers,.sfShell .fcols,.sfShell .vtiles,.sfShell .kv{grid-template-columns:1fr}
+  .sfShell .wrap{padding:0 18px}
+  .sfShell .catalog-products .pgrid{grid-template-columns:1fr}
+  .sfShell .catalog-page .wrap{padding-top:36px;padding-bottom:44px}
+  .sfShell .ctas{display:grid;grid-auto-flow:row;grid-auto-columns:unset;width:100%}
+  .sfShell .tool-link{font-size:12px}
+  .sfShell .contact-value{align-items:stretch;flex-direction:column}
+  .sfShell .contact-value .btn{justify-content:center}
+}
+</style>
+</head>
+<body>
+<div style="background:#241f33;color:#f2efe8;padding:10px 16px;font:600 13px/1.6 -apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei','Segoe UI',Roboto,sans-serif;text-align:center">本文件已于 2026-08-01 冻结存档，内容已并入 Madehall_unified_prototype_ZH.html；历史引用继续有效</div>
+
+<!-- 内联 SVG 图标库（零外链） -->
+<svg style="display:none" aria-hidden="true">
+  <symbol id="i-sofa" viewBox="0 0 24 24"><path d="M5 10V8a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v2"/><path d="M4 10a2 2 0 0 1 2 2v1h12v-1a2 2 0 0 1 4 0v3a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2z"/><path d="M5 17v2M19 17v2"/></symbol>
+  <symbol id="i-bed" viewBox="0 0 24 24"><path d="M3 7v11M3 14h18v4M3 12h18"/><path d="M6 12V9h6v3"/></symbol>
+  <symbol id="i-desk" viewBox="0 0 24 24"><path d="M3 8h18M4 8v9M20 8v9M13 8v6h7"/></symbol>
+  <symbol id="i-chair" viewBox="0 0 24 24"><path d="M8 4h8v7H8zM8 11v4h8v-4M9 15v5M15 15v5"/></symbol>
+  <symbol id="i-cab" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" rx="1"/><path d="M12 5v14M9 11h1M14 11h1"/></symbol>
+  <symbol id="i-recep" viewBox="0 0 24 24"><path d="M4 9h16l-2 10H6zM8 9V6h8v3"/></symbol>
+  <symbol id="i-table" viewBox="0 0 24 24"><ellipse cx="12" cy="8" rx="8" ry="3"/><path d="M6 10v8M18 10v8M12 11v8"/></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M4 11l8-7 8 7"/><path d="M6 10v9h12v-9"/></symbol>
+  <symbol id="i-store" viewBox="0 0 24 24"><path d="M4 8l1-4h14l1 4M4 8v11h16V8M4 8h16M10 19v-6h4v6"/></symbol>
+  <symbol id="i-people" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3 19c0-3 3-5 6-5s6 2 6 5"/><circle cx="17" cy="9" r="2.4"/><path d="M16 14c3 0 5 2 5 4.5"/></symbol>
+  <symbol id="i-grid" viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="1"/><rect x="13" y="4" width="7" height="7" rx="1"/><rect x="4" y="13" width="7" height="7" rx="1"/><rect x="13" y="13" width="7" height="7" rx="1"/></symbol>
+  <symbol id="i-adjust" viewBox="0 0 24 24"><path d="M5 4v6M5 14v6M12 4v10M12 18v2M19 4v2M19 10v10"/><circle cx="5" cy="12" r="2"/><circle cx="12" cy="16" r="2"/><circle cx="19" cy="8" r="2"/></symbol>
+  <symbol id="i-cube" viewBox="0 0 24 24"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M12 12l8-4.5M12 12v9M12 12L4 7.5"/></symbol>
+  <symbol id="i-cad" viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4M9 12l2 2-2 2M13 16h3"/></symbol>
+  <symbol id="i-img" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="M4 17l5-4 3 2 4-3 4 3"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></symbol>
+  <symbol id="i-heart" viewBox="0 0 24 24"><path d="M19.5 12.57 12 20l-7.5-7.43A5 5 0 1 1 12 6.01a5 5 0 1 1 7.5 6.56z"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></symbol>
+  <symbol id="i-cert" viewBox="0 0 24 24"><circle cx="12" cy="9" r="5"/><path d="M9 13l-1.5 7L12 17l4.5 3L15 13"/></symbol>
+  <symbol id="i-factory" viewBox="0 0 24 24"><path d="M3 20V9l6 4V9l6 4V9l6 4v7z"/><path d="M7 16h2M12 16h2M17 16h2"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s-7-6-7-11a7 7 0 0 1 14 0c0 5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a12 12 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></symbol>
+  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 21l1.9-5.4A8 8 0 1 1 21 12z"/><path d="M8.5 12h.01M12 12h.01M15.5 12h.01"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></symbol>
+  <symbol id="i-form" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></symbol>
+  <symbol id="i-cart" viewBox="0 0 24 24"><circle cx="9" cy="20" r="1.6"/><circle cx="17" cy="20" r="1.6"/><path d="M3 4h2l2.5 11h10L20 8H6"/></symbol>
+</svg>
+
+<!-- 原型页面导航条（悬浮工具，非站点组成部分） -->
+<div class="protobar">
+  <span class="plabel">原型导航</span>
+  <button data-goto="page-home" class="pnav on">1 首页</button>
+  <button data-goto="page-how" class="pnav">1A 购买流程</button>
+  <button data-goto="page-residential" class="pnav">2A 住宅家具</button>
+  <button data-goto="page-contract" class="pnav">2B 工程家具</button>
+  <button data-goto="page-pdp" class="pnav">3 产品详情</button>
+  <button data-goto="page-ffe" class="pnav">4 FF&amp;E 套餐列表</button>
+  <button data-goto="page-package" class="pnav">5 套餐详情</button>
+  <button data-goto="page-merchant" class="pnav">6 商户注册与状态</button>
+  <button data-goto="page-contact" class="pnav">7 联系客服</button>
+  <button data-goto="page-appendix" class="pnav">附录：对照与缺陷表</button>
+  <span class="psep"></span>
+  <span class="pid">演示身份：</span>
+  <span class="idswitch">
+    <button id="idOut" class="on" onclick="setLogin(false)">未登录</button>
+    <button id="idIn" onclick="setLogin(true)">已登录经销商</button>
+  </span>
+  <span class="psep"></span>
+  <a class="pxlink" href="Fabbrio_quote_workspace_ZH_target.html#pg-home">⇄ 报价工作台原型</a>
+</div>
+
+<div class="sfShell">
+  <!-- 公告条 -->
+  <div class="announce">仅面向企业买家（B2B）· 批发价经商户审核后开通 · 全美交付 · 全站 USD 计价</div>
+
+  <!-- 吸顶导航 -->
+  <header>
+    <div class="wrap nav">
+      <div class="logo" data-goto="page-home"><span class="m">M</span>Madehall</div>
+      <nav class="menu">
+        <a data-goto="page-home" data-menu="page-home" class="on">首页</a>
+        <a data-goto="page-residential" data-menu="page-residential">住宅家具</a>
+        <a data-goto="page-contract" data-menu="page-contract">工程家具</a>
+        <a data-goto="page-ffe" data-menu="page-ffe">FF&amp;E 套餐</a>
+        <a data-goto="page-how" data-menu="page-how">购买流程</a>
+        <a data-goto="page-merchant" data-menu="page-merchant">商户注册</a>
+        <a data-goto="page-contact" data-menu="page-contact">联系客服</a>
+      </nav>
+      <div class="navr">
+        <a class="tool-link" href="Fabbrio_quote_workspace_ZH_target.html#pg-home">报价工作台</a>
+        <button class="basket-chip" id="basketChip" type="button" onclick="openBasket()"><svg class="icon"><use href="#i-grid"/></svg>当前项目（<b id="basketCount">0</b> 项）</button>
+        <button class="btn po" onclick="setLogin(true)">登录（演示）</button>
+        <button class="btn pi" onclick="setLogin(false)">退出登录（演示）</button>
+        <button class="btn pri" data-goto="page-merchant">注册申请</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+
+  <!-- ================================================================
+       页 1 · 首页
+  ================================================================= -->
+  <section class="page on" id="page-home" data-nr="NR-13" data-ptitle="首页">
+    <div class="wrap hero-grid">
+      <div>
+        <p class="eyebrow">设计导向 · 中国制造 · 美国交付</p>
+        <h1 class="hero-title serif">全品线家具，<br>为美国空间而造</h1>
+        <p class="lead">一个全品线目录，三种采购深度——现货、半定制、全定制；三类企业买家——家居零售、工程经销、FF&amp;E 项目。仅面向企业买家，不做零售直销。全定制项目 CAD 图纸归您所有。</p>
+        <div class="ctas">
+          <button class="btn lg tone-g" data-goto="page-residential">家居零售选品</button>
+          <button class="btn lg tone-a" data-goto="page-contract">工程商用选品</button>
+          <button class="btn lg tone-t" data-goto="page-ffe">FF&amp;E 整案</button>
+        </div>
+        <div class="trust">
+          <span><svg class="icon"><use href="#i-cert"/></svg>对标 BIFMA / CAL117 标准</span>
+          <span><svg class="icon"><use href="#i-factory"/></svg>500+ 甄选工厂</span>
+          <span><svg class="icon"><use href="#i-pin"/></svg>美国本土支持团队</span>
+          <span><svg class="icon"><use href="#i-cad"/></svg>全定制项目 CAD 归属客户</span>
+        </div>
+      </div>
+      <div class="imgblk hero-img"><svg class="icon"><use href="#i-sofa"/></svg><span class="cap">亚麻沙发 · 图片占位</span></div>
+    </div>
+
+    <!-- 业态 / 角色表达 -->
+    <section class="sect" style="padding-top:0">
+      <div class="wrap">
+        <p class="eyebrow">一个目录 · 三类买家</p>
+        <h2 class="t serif">您是哪一类买家？</h2>
+        <div class="entrances" style="margin-top:22px">
+          <div class="ent" data-goto="page-residential">
+            <div class="ic g"><svg class="icon"><use href="#i-home"/></svg></div>
+            <h4>家居零售商</h4>
+            <p>面向家居场景的精选设计目录，审核通过后享批发价。</p>
+            <span class="go">进入家居目录 →</span>
+          </div>
+          <div class="ent" data-goto="page-contract">
+            <div class="ic a"><svg class="icon"><use href="#i-store"/></svg></div>
+            <h4>工程经销商</h4>
+            <p>工程级产品，对标 BIFMA / CAL117 标准，面向商用空间的批量供货。</p>
+            <span class="go">进入商用目录 →</span>
+          </div>
+          <div class="ent" data-goto="page-ffe">
+            <div class="ic t"><svg class="icon"><use href="#i-people"/></svg></div>
+            <h4>FF&amp;E 项目方</h4>
+            <p>酒店、长租公寓、养老社区、办公空间的整案配套——套餐选型、整单询价、整单一次报价。</p>
+            <span class="go">进入 FF&amp;E 套餐 →</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 品类目录：完整复现源码 Home 页 Whole-Home / Contract Furniture 双分组 -->
+    <section class="sect" style="padding-top:0" data-state="category-directory">
+      <div class="wrap">
+        <p class="eyebrow">按品类选购 · 两大分组</p>
+        <div class="dirhead">
+          <h2 class="t serif">全屋家居</h2>
+          <span>家居零售 / 设计师 / 软装陈列 / 短租空间</span>
+        </div>
+        <div class="cats">
+          <div class="catc" data-goto="page-residential"><div class="ph"><img class="ph-img" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA4MDAgNjAwIiByb2xlPSJpbWciIGFyaWEtbGFiZWw9IlNvZmFzIHBsYWNlaG9sZGVyIj4NCiAgPHJlY3Qgd2lkdGg9IjgwMCIgaGVpZ2h0PSI2MDAiIGZpbGw9IiNlZmVjZTUiLz4NCiAgPGcgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNmI2MTU2IiBzdHJva2Utd2lkdGg9IjciIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+DQogICAgPHJlY3QgeD0iMjM1IiB5PSIxODUiIHdpZHRoPSIzMzAiIGhlaWdodD0iMTAwIiByeD0iMjIiLz4NCiAgICA8cmVjdCB4PSIxODUiIHk9IjI2NSIgd2lkdGg9IjQzMCIgaGVpZ2h0PSI5NSIgcng9IjIyIi8+DQogICAgPHJlY3QgeD0iMTY1IiB5PSIyMTUiIHdpZHRoPSI1OCIgaGVpZ2h0PSIxNDUiIHJ4PSIyMCIvPg0KICAgIDxyZWN0IHg9IjU3NyIgeT0iMjE1IiB3aWR0aD0iNTgiIGhlaWdodD0iMTQ1IiByeD0iMjAiLz4NCiAgICA8bGluZSB4MT0iNDAwIiB5MT0iMjgyIiB4Mj0iNDAwIiB5Mj0iMzQzIi8+DQogICAgPGxpbmUgeDE9IjIzOCIgeTE9IjM2MCIgeDI9IjIzOCIgeTI9IjM5OCIvPg0KICAgIDxsaW5lIHgxPSI1NjIiIHkxPSIzNjAiIHgyPSI1NjIiIHkyPSIzOTgiLz4NCiAgPC9nPg0KICA8bGluZSB4MT0iMjU1IiB5MT0iMjMyIiB4Mj0iMzM1IiB5Mj0iMjMyIiBzdHJva2U9IiNiMDhhNWUiIHN0cm9rZS13aWR0aD0iNiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+DQogIDx0ZXh0IHg9IjYwIiB5PSI1NTYiIGZvbnQtZmFtaWx5PSJHZW9yZ2lhLCAnVGltZXMgTmV3IFJvbWFuJywgc2VyaWYiIGZvbnQtc2l6ZT0iMjQiIGZpbGw9IiM4YTgzNzciPlNvZmFzIMK3IHBsYWNlaG9sZGVyPC90ZXh0Pg0KPC9zdmc+DQo=" alt="沙发" loading="lazy"></div><h4>沙发</h4><p>查看系列 →</p></div>
+          <div class="catc" data-goto="page-residential"><div class="ph"><img class="ph-img" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA4MDAgNjAwIiByb2xlPSJpbWciIGFyaWEtbGFiZWw9IkJlZCBGcmFtZXMgcGxhY2Vob2xkZXIiPg0KICA8cmVjdCB3aWR0aD0iODAwIiBoZWlnaHQ9IjYwMCIgZmlsbD0iI2VmZWNlNSIvPg0KICA8ZyBmaWxsPSJub25lIiBzdHJva2U9IiM2YjYxNTYiIHN0cm9rZS13aWR0aD0iNyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj4NCiAgICA8cmVjdCB4PSIyMzAiIHk9IjE1MCIgd2lkdGg9IjM0MCIgaGVpZ2h0PSIxMTgiIHJ4PSIxOCIvPg0KICAgIDxsaW5lIHgxPSIzMTUiIHkxPSIxNjgiIHgyPSIzMTUiIHkyPSIyNTAiLz4NCiAgICA8bGluZSB4MT0iNDAwIiB5MT0iMTY4IiB4Mj0iNDAwIiB5Mj0iMjUwIi8+DQogICAgPGxpbmUgeDE9IjQ4NSIgeTE9IjE2OCIgeDI9IjQ4NSIgeTI9IjI1MCIvPg0KICAgIDxyZWN0IHg9IjE5NiIgeT0iMjY4IiB3aWR0aD0iNDA4IiBoZWlnaHQ9Ijg0IiByeD0iMTQiLz4NCiAgICA8bGluZSB4MT0iMjIyIiB5MT0iMzUyIiB4Mj0iMjIyIiB5Mj0iMzk2Ii8+DQogICAgPGxpbmUgeDE9IjU3OCIgeTE9IjM1MiIgeDI9IjU3OCIgeTI9IjM5NiIvPg0KICA8L2c+DQogIDxyZWN0IHg9IjI1MiIgeT0iMjg4IiB3aWR0aD0iMTEyIiBoZWlnaHQ9IjM4IiByeD0iMTIiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2IwOGE1ZSIgc3Ryb2tlLXdpZHRoPSI2Ii8+DQogIDx0ZXh0IHg9IjYwIiB5PSI1NTYiIGZvbnQtZmFtaWx5PSJHZW9yZ2lhLCAnVGltZXMgTmV3IFJvbWFuJywgc2VyaWYiIGZvbnQtc2l6ZT0iMjQiIGZpbGw9IiM4YTgzNzciPkJlZCBGcmFtZXMgwrcgcGxhY2Vob2xkZXI8L3RleHQ+DQo8L3N2Zz4NCg==" alt="床架" loading="lazy"></div><h4>床架</h4><p>查看系列 →</p></div>
+          <div class="catc" data-goto="page-residential"><div class="ph"><img class="ph-img" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA4MDAgNjAwIiByb2xlPSJpbWciIGFyaWEtbGFiZWw9IkRpbmluZyBUYWJsZXMgcGxhY2Vob2xkZXIiPg0KICA8cmVjdCB3aWR0aD0iODAwIiBoZWlnaHQ9IjYwMCIgZmlsbD0iI2VmZWNlNSIvPg0KICA8ZyBmaWxsPSJub25lIiBzdHJva2U9IiM2YjYxNTYiIHN0cm9rZS13aWR0aD0iNyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj4NCiAgICA8cmVjdCB4PSIxOTUiIHk9IjI1MiIgd2lkdGg9IjQxMCIgaGVpZ2h0PSIyNCIgcng9IjEwIi8+DQogICAgPGxpbmUgeDE9IjI0NSIgeTE9IjI3NiIgeDI9IjIzMiIgeTI9IjQwMiIvPg0KICAgIDxsaW5lIHgxPSI1NTUiIHkxPSIyNzYiIHgyPSI1NjgiIHkyPSI0MDIiLz4NCiAgICA8bGluZSB4MT0iMjYyIiB5MT0iMzQyIiB4Mj0iNTM4IiB5Mj0iMzQyIi8+DQogIDwvZz4NCiAgPGNpcmNsZSBjeD0iNDAwIiBjeT0iMjE4IiByPSIyNiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjYjA4YTVlIiBzdHJva2Utd2lkdGg9IjYiLz4NCiAgPHRleHQgeD0iNjAiIHk9IjU1NiIgZm9udC1mYW1pbHk9Ikdlb3JnaWEsICdUaW1lcyBOZXcgUm9tYW4nLCBzZXJpZiIgZm9udC1zaXplPSIyNCIgZmlsbD0iIzhhODM3NyI+RGluaW5nIFRhYmxlcyDCtyBwbGFjZWhvbGRlcjwvdGV4dD4NCjwvc3ZnPg0K" alt="餐桌" loading="lazy"></div><h4>餐桌</h4><p>查看系列 →</p></div>
+          <div class="catc" data-goto="page-residential"><div class="ph"><img class="ph-img" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA4MDAgNjAwIiByb2xlPSJpbWciIGFyaWEtbGFiZWw9IkRpbmluZyBDaGFpcnMgcGxhY2Vob2xkZXIiPg0KICA8cmVjdCB3aWR0aD0iODAwIiBoZWlnaHQ9IjYwMCIgZmlsbD0iI2VmZWNlNSIvPg0KICA8ZyBmaWxsPSJub25lIiBzdHJva2U9IiM2YjYxNTYiIHN0cm9rZS13aWR0aD0iNyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj4NCiAgICA8cmVjdCB4PSIzMTIiIHk9IjE0OCIgd2lkdGg9IjE3NiIgaGVpZ2h0PSIxMzIiIHJ4PSIyMiIvPg0KICAgIDxsaW5lIHgxPSIzNTYiIHkxPSIxNzAiIHgyPSIzNTYiIHkyPSIyNTgiLz4NCiAgICA8bGluZSB4MT0iNDAwIiB5MT0iMTcwIiB4Mj0iNDAwIiB5Mj0iMjU4Ii8+DQogICAgPGxpbmUgeDE9IjQ0NCIgeTE9IjE3MCIgeDI9IjQ0NCIgeTI9IjI1OCIvPg0KICAgIDxyZWN0IHg9IjI5NCIgeT0iMjgwIiB3aWR0aD0iMjEyIiBoZWlnaHQ9IjI2IiByeD0iMTAiLz4NCiAgICA8bGluZSB4MT0iMzE2IiB5MT0iMzA2IiB4Mj0iMzAzIiB5Mj0iNDA0Ii8+DQogICAgPGxpbmUgeDE9IjQ4NCIgeTE9IjMwNiIgeDI9IjQ5NyIgeTI9IjQwNCIvPg0KICA8L2c+DQogIDxsaW5lIHgxPSIzMzYiIHkxPSIzMzAiIHgyPSI0NjQiIHkyPSIzMzAiIHN0cm9rZT0iI2IwOGE1ZSIgc3Ryb2tlLXdpZHRoPSI2IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4NCiAgPHRleHQgeD0iNjAiIHk9IjU1NiIgZm9udC1mYW1pbHk9Ikdlb3JnaWEsICdUaW1lcyBOZXcgUm9tYW4nLCBzZXJpZiIgZm9udC1zaXplPSIyNCIgZmlsbD0iIzhhODM3NyI+RGluaW5nIENoYWlycyDCtyBwbGFjZWhvbGRlcjwvdGV4dD4NCjwvc3ZnPg0K" alt="餐椅" loading="lazy"></div><h4>餐椅</h4><p>查看系列 →</p></div>
+          <div class="catc" data-goto="page-residential"><div class="ph"><img class="ph-img" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA4MDAgNjAwIiByb2xlPSJpbWciIGFyaWEtbGFiZWw9IkxvdW5nZSBDaGFpcnMgcGxhY2Vob2xkZXIiPg0KICA8cmVjdCB3aWR0aD0iODAwIiBoZWlnaHQ9IjYwMCIgZmlsbD0iI2VmZWNlNSIvPg0KICA8ZyBmaWxsPSJub25lIiBzdHJva2U9IiM2YjYxNTYiIHN0cm9rZS13aWR0aD0iNyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj4NCiAgICA8cmVjdCB4PSIyNDUiIHk9IjI5MCIgd2lkdGg9IjMwMCIgaGVpZ2h0PSI1OCIgcng9IjI0Ii8+DQogICAgPHJlY3QgeD0iMjI4IiB5PSIxNTAiIHdpZHRoPSI2MCIgaGVpZ2h0PSIxNjIiIHJ4PSIyMiIvPg0KICAgIDxsaW5lIHgxPSI1NDUiIHkxPSIzMDAiIHgyPSI1ODAiIHkyPSIyMjIiLz4NCiAgICA8bGluZSB4MT0iMjYyIiB5MT0iMzQ4IiB4Mj0iMjUyIiB5Mj0iNDA4Ii8+DQogICAgPGxpbmUgeDE9IjUyOCIgeTE9IjM0OCIgeDI9IjUzOCIgeTI9IjQwOCIvPg0KICA8L2c+DQogIDxsaW5lIHgxPSIyNjIiIHkxPSIxODAiIHgyPSIyNjIiIHkyPSIyODYiIHN0cm9rZT0iI2IwOGE1ZSIgc3Ryb2tlLXdpZHRoPSI2IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4NCiAgPHRleHQgeD0iNjAiIHk9IjU1NiIgZm9udC1mYW1pbHk9Ikdlb3JnaWEsICdUaW1lcyBOZXcgUm9tYW4nLCBzZXJpZiIgZm9udC1zaXplPSIyNCIgZmlsbD0iIzhhODM3NyI+TG91bmdlIENoYWlycyDCtyBwbGFjZWhvbGRlcjwvdGV4dD4NCjwvc3ZnPg0K" alt="休闲椅" loading="lazy"></div><h4>休闲椅</h4><p>查看系列 →</p></div>
+          <div class="catc" data-goto="page-residential"><div class="ph"><img class="ph-img" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA4MDAgNjAwIiByb2xlPSJpbWciIGFyaWEtbGFiZWw9IkJhcnN0b29scyBwbGFjZWhvbGRlciI+DQogIDxyZWN0IHdpZHRoPSI4MDAiIGhlaWdodD0iNjAwIiBmaWxsPSIjZWZlY2U1Ii8+DQogIDxnIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzZiNjE1NiIgc3Ryb2tlLXdpZHRoPSI3IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPg0KICAgIDxyZWN0IHg9IjMxOCIgeT0iMTk2IiB3aWR0aD0iMTY0IiBoZWlnaHQ9IjQ2IiByeD0iMjIiLz4NCiAgICA8bGluZSB4MT0iMzQ2IiB5MT0iMjQyIiB4Mj0iMzM0IiB5Mj0iNDEyIi8+DQogICAgPGxpbmUgeDE9IjQ1NCIgeTE9IjI0MiIgeDI9IjQ2NiIgeTI9IjQxMiIvPg0KICAgIDxsaW5lIHgxPSIzMzgiIHkxPSIzNDIiIHgyPSI0NjIiIHkyPSIzNDIiLz4NCiAgPC9nPg0KICA8bGluZSB4MT0iMzQ2IiB5MT0iMjIwIiB4Mj0iNDU0IiB5Mj0iMjIwIiBzdHJva2U9IiNiMDhhNWUiIHN0cm9rZS13aWR0aD0iNiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+DQogIDx0ZXh0IHg9IjYwIiB5PSI1NTYiIGZvbnQtZmFtaWx5PSJHZW9yZ2lhLCAnVGltZXMgTmV3IFJvbWFuJywgc2VyaWYiIGZvbnQtc2l6ZT0iMjQiIGZpbGw9IiM4YTgzNzciPkJhcnN0b29scyDCtyBwbGFjZWhvbGRlcjwvdGV4dD4NCjwvc3ZnPg0K" alt="吧椅" loading="lazy"></div><h4>吧椅</h4><p>查看系列 →</p></div>
+          <div class="catc" data-goto="page-residential"><div class="ph"><img class="ph-img" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA4MDAgNjAwIiByb2xlPSJpbWciIGFyaWEtbGFiZWw9IkNvZmZlZSBhbmQgU2lkZSBUYWJsZXMgcGxhY2Vob2xkZXIiPg0KICA8cmVjdCB3aWR0aD0iODAwIiBoZWlnaHQ9IjYwMCIgZmlsbD0iI2VmZWNlNSIvPg0KICA8ZyBmaWxsPSJub25lIiBzdHJva2U9IiM2YjYxNTYiIHN0cm9rZS13aWR0aD0iNyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj4NCiAgICA8cmVjdCB4PSIxODUiIHk9IjI5OCIgd2lkdGg9IjI5MCIgaGVpZ2h0PSIzMCIgcng9IjEyIi8+DQogICAgPGxpbmUgeDE9IjIxMiIgeTE9IjMyOCIgeDI9IjIxMiIgeTI9IjQwNCIvPg0KICAgIDxsaW5lIHgxPSI0NDgiIHkxPSIzMjgiIHgyPSI0NDgiIHkyPSI0MDQiLz4NCiAgICA8cmVjdCB4PSI1MTIiIHk9IjI0OCIgd2lkdGg9IjEzMiIgaGVpZ2h0PSIyNiIgcng9IjEyIi8+DQogICAgPGxpbmUgeDE9IjUzNCIgeTE9IjI3NCIgeDI9IjUzNCIgeTI9IjQwNCIvPg0KICAgIDxsaW5lIHgxPSI2MjIiIHkxPSIyNzQiIHgyPSI2MjIiIHkyPSI0MDQiLz4NCiAgPC9nPg0KICA8bGluZSB4MT0iMjEwIiB5MT0iMzEzIiB4Mj0iNDUwIiB5Mj0iMzEzIiBzdHJva2U9IiNiMDhhNWUiIHN0cm9rZS13aWR0aD0iNiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+DQogIDx0ZXh0IHg9IjYwIiB5PSI1NTYiIGZvbnQtZmFtaWx5PSJHZW9yZ2lhLCAnVGltZXMgTmV3IFJvbWFuJywgc2VyaWYiIGZvbnQtc2l6ZT0iMjQiIGZpbGw9IiM4YTgzNzciPkNvZmZlZSAmYW1wOyBTaWRlIFRhYmxlcyDCtyBwbGFjZWhvbGRlcjwvdGV4dD4NCjwvc3ZnPg0K" alt="茶几与边几" loading="lazy"></div><h4>茶几与边几</h4><p>查看系列 →</p></div>
+          <div class="catc" data-goto="page-residential"><div class="ph"><img class="ph-img" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA4MDAgNjAwIiByb2xlPSJpbWciIGFyaWEtbGFiZWw9IlN0b3JhZ2UgQ2FiaW5ldHMgcGxhY2Vob2xkZXIiPg0KICA8cmVjdCB3aWR0aD0iODAwIiBoZWlnaHQ9IjYwMCIgZmlsbD0iI2VmZWNlNSIvPg0KICA8ZyBmaWxsPSJub25lIiBzdHJva2U9IiM2YjYxNTYiIHN0cm9rZS13aWR0aD0iNyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj4NCiAgICA8cmVjdCB4PSIyMDgiIHk9IjE3OCIgd2lkdGg9IjM4NCIgaGVpZ2h0PSIxODIiIHJ4PSIxMiIvPg0KICAgIDxsaW5lIHgxPSIzMzYiIHkxPSIxNzgiIHgyPSIzMzYiIHkyPSIzNjAiLz4NCiAgICA8bGluZSB4MT0iNDY0IiB5MT0iMTc4IiB4Mj0iNDY0IiB5Mj0iMzYwIi8+DQogICAgPGxpbmUgeDE9IjI0MCIgeTE9IjM2MCIgeDI9IjI0MCIgeTI9IjM5OCIvPg0KICAgIDxsaW5lIHgxPSI1NjAiIHkxPSIzNjAiIHgyPSI1NjAiIHkyPSIzOTgiLz4NCiAgPC9nPg0KICA8bGluZSB4MT0iMjUyIiB5MT0iMjY4IiB4Mj0iMjkyIiB5Mj0iMjY4IiBzdHJva2U9IiNiMDhhNWUiIHN0cm9rZS13aWR0aD0iNiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+DQogIDxsaW5lIHgxPSIzODAiIHkxPSIyNjgiIHgyPSI0MjAiIHkyPSIyNjgiIHN0cm9rZT0iI2IwOGE1ZSIgc3Ryb2tlLXdpZHRoPSI2IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4NCiAgPGxpbmUgeDE9IjUwOCIgeTE9IjI2OCIgeDI9IjU0OCIgeTI9IjI2OCIgc3Ryb2tlPSIjYjA4YTVlIiBzdHJva2Utd2lkdGg9IjYiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPg0KICA8dGV4dCB4PSI2MCIgeT0iNTU2IiBmb250LWZhbWlseT0iR2VvcmdpYSwgJ1RpbWVzIE5ldyBSb21hbicsIHNlcmlmIiBmb250LXNpemU9IjI0IiBmaWxsPSIjOGE4Mzc3Ij5TdG9yYWdlIENhYmluZXRzIMK3IHBsYWNlaG9sZGVyPC90ZXh0Pg0KPC9zdmc+DQo=" alt="储物柜" loading="lazy"></div><h4>储物柜</h4><p>查看系列 →</p></div>
+          <div class="catc" data-goto="page-residential"><div class="ph"><img class="ph-img" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA4MDAgNjAwIiByb2xlPSJpbWciIGFyaWEtbGFiZWw9IldhcmRyb2JlcyBwbGFjZWhvbGRlciI+DQogIDxyZWN0IHdpZHRoPSI4MDAiIGhlaWdodD0iNjAwIiBmaWxsPSIjZWZlY2U1Ii8+DQogIDxnIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzZiNjE1NiIgc3Ryb2tlLXdpZHRoPSI3IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPg0KICAgIDxyZWN0IHg9IjI3MiIgeT0iMTE4IiB3aWR0aD0iMjU2IiBoZWlnaHQ9IjI4NCIgcng9IjEyIi8+DQogICAgPGxpbmUgeDE9IjQwMCIgeTE9IjExOCIgeDI9IjQwMCIgeTI9IjQwMiIvPg0KICAgIDxsaW5lIHgxPSIzMDQiIHkxPSIxNDgiIHgyPSIzMDQiIHkyPSIzNzIiLz4NCiAgICA8bGluZSB4MT0iNDk2IiB5MT0iMTQ4IiB4Mj0iNDk2IiB5Mj0iMzcyIi8+DQogIDwvZz4NCiAgPGxpbmUgeDE9IjM4MiIgeTE9IjIzOCIgeDI9IjM4MiIgeTI9IjI5MiIgc3Ryb2tlPSIjYjA4YTVlIiBzdHJva2Utd2lkdGg9IjYiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPg0KICA8bGluZSB4MT0iNDE4IiB5MT0iMjM4IiB4Mj0iNDE4IiB5Mj0iMjkyIiBzdHJva2U9IiNiMDhhNWUiIHN0cm9rZS13aWR0aD0iNiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+DQogIDx0ZXh0IHg9IjYwIiB5PSI1NTYiIGZvbnQtZmFtaWx5PSJHZW9yZ2lhLCAnVGltZXMgTmV3IFJvbWFuJywgc2VyaWYiIGZvbnQtc2l6ZT0iMjQiIGZpbGw9IiM4YTgzNzciPldhcmRyb2JlcyDCtyBwbGFjZWhvbGRlcjwvdGV4dD4NCjwvc3ZnPg0K" alt="衣柜" loading="lazy"></div><h4>衣柜</h4><p>查看系列 →</p></div>
+          <div class="catc" data-goto="page-residential"><div class="ph"><img class="ph-img" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA4MDAgNjAwIiByb2xlPSJpbWciIGFyaWEtbGFiZWw9Ik91dGRvb3IgRnVybml0dXJlIHBsYWNlaG9sZGVyIj4NCiAgPHJlY3Qgd2lkdGg9IjgwMCIgaGVpZ2h0PSI2MDAiIGZpbGw9IiNlZmVjZTUiLz4NCiAgPGcgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjYjA4YTVlIiBzdHJva2Utd2lkdGg9IjYiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCI+DQogICAgPGNpcmNsZSBjeD0iMjg2IiBjeT0iMTcwIiByPSIzOCIvPg0KICAgIDxsaW5lIHgxPSIyODYiIHkxPSIxMDYiIHgyPSIyODYiIHkyPSI4OCIvPg0KICAgIDxsaW5lIHgxPSIyODYiIHkxPSIyMzQiIHgyPSIyODYiIHkyPSIyNTIiLz4NCiAgICA8bGluZSB4MT0iMjIyIiB5MT0iMTcwIiB4Mj0iMjA0IiB5Mj0iMTcwIi8+DQogICAgPGxpbmUgeDE9IjM1MCIgeTE9IjE3MCIgeDI9IjM2OCIgeTI9IjE3MCIvPg0KICA8L2c+DQogIDxnIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzZiNjE1NiIgc3Ryb2tlLXdpZHRoPSI3IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPg0KICAgIDxsaW5lIHgxPSIyMjgiIHkxPSIzMzYiIHgyPSI1NDgiIHkyPSIzMzYiLz4NCiAgICA8bGluZSB4MT0iMjI4IiB5MT0iMzM2IiB4Mj0iMjk4IiB5Mj0iMjQ4Ii8+DQogICAgPGxpbmUgeDE9IjI5OCIgeTE9IjI0OCIgeDI9IjMyMiIgeTI9IjI2MiIvPg0KICAgIDxsaW5lIHgxPSIyNjgiIHkxPSIzMzYiIHgyPSIyNjgiIHkyPSIzODgiLz4NCiAgICA8bGluZSB4MT0iNTAwIiB5MT0iMzM2IiB4Mj0iNTAwIiB5Mj0iMzg4Ii8+DQogICAgPGxpbmUgeDE9IjU0OCIgeTE9IjMzNiIgeDI9IjU3NiIgeTI9IjM4OCIvPg0KICA8L2c+DQogIDx0ZXh0IHg9IjYwIiB5PSI1NTYiIGZvbnQtZmFtaWx5PSJHZW9yZ2lhLCAnVGltZXMgTmV3IFJvbWFuJywgc2VyaWYiIGZvbnQtc2l6ZT0iMjQiIGZpbGw9IiM4YTgzNzciPk91dGRvb3IgRnVybml0dXJlIMK3IHBsYWNlaG9sZGVyPC90ZXh0Pg0KPC9zdmc+DQo=" alt="户外家具" loading="lazy"></div><h4>户外家具</h4><p>查看系列 →</p></div>
+        </div>
+
+        <div class="dirhead" style="margin-top:36px">
+          <h2 class="t serif">商用家具</h2>
+          <span>办公 / 酒店 / 餐饮 / 养老 / 多户住宅 · 工程级</span>
+        </div>
+        <div class="cats">
+          <div class="catc" data-goto="page-contract"><div class="ph"><img class="ph-img" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA4MDAgNjAwIiByb2xlPSJpbWciIGFyaWEtbGFiZWw9IlNvZmFzIHBsYWNlaG9sZGVyIj4NCiAgPHJlY3Qgd2lkdGg9IjgwMCIgaGVpZ2h0PSI2MDAiIGZpbGw9IiNlZmVjZTUiLz4NCiAgPGcgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNmI2MTU2IiBzdHJva2Utd2lkdGg9IjciIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+DQogICAgPHJlY3QgeD0iMjM1IiB5PSIxODUiIHdpZHRoPSIzMzAiIGhlaWdodD0iMTAwIiByeD0iMjIiLz4NCiAgICA8cmVjdCB4PSIxODUiIHk9IjI2NSIgd2lkdGg9IjQzMCIgaGVpZ2h0PSI5NSIgcng9IjIyIi8+DQogICAgPHJlY3QgeD0iMTY1IiB5PSIyMTUiIHdpZHRoPSI1OCIgaGVpZ2h0PSIxNDUiIHJ4PSIyMCIvPg0KICAgIDxyZWN0IHg9IjU3NyIgeT0iMjE1IiB3aWR0aD0iNTgiIGhlaWdodD0iMTQ1IiByeD0iMjAiLz4NCiAgICA8bGluZSB4MT0iNDAwIiB5MT0iMjgyIiB4Mj0iNDAwIiB5Mj0iMzQzIi8+DQogICAgPGxpbmUgeDE9IjIzOCIgeTE9IjM2MCIgeDI9IjIzOCIgeTI9IjM5OCIvPg0KICAgIDxsaW5lIHgxPSI1NjIiIHkxPSIzNjAiIHgyPSI1NjIiIHkyPSIzOTgiLz4NCiAgPC9nPg0KICA8bGluZSB4MT0iMjU1IiB5MT0iMjMyIiB4Mj0iMzM1IiB5Mj0iMjMyIiBzdHJva2U9IiNiMDhhNWUiIHN0cm9rZS13aWR0aD0iNiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+DQogIDx0ZXh0IHg9IjYwIiB5PSI1NTYiIGZvbnQtZmFtaWx5PSJHZW9yZ2lhLCAnVGltZXMgTmV3IFJvbWFuJywgc2VyaWYiIGZvbnQtc2l6ZT0iMjQiIGZpbGw9IiM4YTgzNzciPlNvZmFzIMK3IHBsYWNlaG9sZGVyPC90ZXh0Pg0KPC9zdmc+DQo=" alt="商用沙发" loading="lazy"></div><h4>沙发</h4><p>查看系列 →</p></div>
+          <div class="catc" data-goto="page-contract"><div class="ph"><img class="ph-img" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA4MDAgNjAwIiByb2xlPSJpbWciIGFyaWEtbGFiZWw9IkRpbmluZyBDaGFpcnMgcGxhY2Vob2xkZXIiPg0KICA8cmVjdCB3aWR0aD0iODAwIiBoZWlnaHQ9IjYwMCIgZmlsbD0iI2VmZWNlNSIvPg0KICA8ZyBmaWxsPSJub25lIiBzdHJva2U9IiM2YjYxNTYiIHN0cm9rZS13aWR0aD0iNyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj4NCiAgICA8cmVjdCB4PSIzMTIiIHk9IjE0OCIgd2lkdGg9IjE3NiIgaGVpZ2h0PSIxMzIiIHJ4PSIyMiIvPg0KICAgIDxsaW5lIHgxPSIzNTYiIHkxPSIxNzAiIHgyPSIzNTYiIHkyPSIyNTgiLz4NCiAgICA8bGluZSB4MT0iNDAwIiB5MT0iMTcwIiB4Mj0iNDAwIiB5Mj0iMjU4Ii8+DQogICAgPGxpbmUgeDE9IjQ0NCIgeTE9IjE3MCIgeDI9IjQ0NCIgeTI9IjI1OCIvPg0KICAgIDxyZWN0IHg9IjI5NCIgeT0iMjgwIiB3aWR0aD0iMjEyIiBoZWlnaHQ9IjI2IiByeD0iMTAiLz4NCiAgICA8bGluZSB4MT0iMzE2IiB5MT0iMzA2IiB4Mj0iMzAzIiB5Mj0iNDA0Ii8+DQogICAgPGxpbmUgeDE9IjQ4NCIgeTE9IjMwNiIgeDI9IjQ5NyIgeTI9IjQwNCIvPg0KICA8L2c+DQogIDxsaW5lIHgxPSIzMzYiIHkxPSIzMzAiIHgyPSI0NjQiIHkyPSIzMzAiIHN0cm9rZT0iI2IwOGE1ZSIgc3Ryb2tlLXdpZHRoPSI2IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4NCiAgPHRleHQgeD0iNjAiIHk9IjU1NiIgZm9udC1mYW1pbHk9Ikdlb3JnaWEsICdUaW1lcyBOZXcgUm9tYW4nLCBzZXJpZiIgZm9udC1zaXplPSIyNCIgZmlsbD0iIzhhODM3NyI+RGluaW5nIENoYWlycyDCtyBwbGFjZWhvbGRlcjwvdGV4dD4NCjwvc3ZnPg0K" alt="商用餐椅" loading="lazy"></div><h4>餐椅</h4><p>查看系列 →</p></div>
+          <div class="catc" data-goto="page-contract"><div class="ph"><img class="ph-img" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA4MDAgNjAwIiByb2xlPSJpbWciIGFyaWEtbGFiZWw9IkxvdW5nZSBDaGFpcnMgcGxhY2Vob2xkZXIiPg0KICA8cmVjdCB3aWR0aD0iODAwIiBoZWlnaHQ9IjYwMCIgZmlsbD0iI2VmZWNlNSIvPg0KICA8ZyBmaWxsPSJub25lIiBzdHJva2U9IiM2YjYxNTYiIHN0cm9rZS13aWR0aD0iNyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj4NCiAgICA8cmVjdCB4PSIyNDUiIHk9IjI5MCIgd2lkdGg9IjMwMCIgaGVpZ2h0PSI1OCIgcng9IjI0Ii8+DQogICAgPHJlY3QgeD0iMjI4IiB5PSIxNTAiIHdpZHRoPSI2MCIgaGVpZ2h0PSIxNjIiIHJ4PSIyMiIvPg0KICAgIDxsaW5lIHgxPSI1NDUiIHkxPSIzMDAiIHgyPSI1ODAiIHkyPSIyMjIiLz4NCiAgICA8bGluZSB4MT0iMjYyIiB5MT0iMzQ4IiB4Mj0iMjUyIiB5Mj0iNDA4Ii8+DQogICAgPGxpbmUgeDE9IjUyOCIgeTE9IjM0OCIgeDI9IjUzOCIgeTI9IjQwOCIvPg0KICA8L2c+DQogIDxsaW5lIHgxPSIyNjIiIHkxPSIxODAiIHgyPSIyNjIiIHkyPSIyODYiIHN0cm9rZT0iI2IwOGE1ZSIgc3Ryb2tlLXdpZHRoPSI2IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4NCiAgPHRleHQgeD0iNjAiIHk9IjU1NiIgZm9udC1mYW1pbHk9Ikdlb3JnaWEsICdUaW1lcyBOZXcgUm9tYW4nLCBzZXJpZiIgZm9udC1zaXplPSIyNCIgZmlsbD0iIzhhODM3NyI+TG91bmdlIENoYWlycyDCtyBwbGFjZWhvbGRlcjwvdGV4dD4NCjwvc3ZnPg0K" alt="商用休闲椅" loading="lazy"></div><h4>休闲椅</h4><p>查看系列 →</p></div>
+          <div class="catc" data-goto="page-contract"><div class="ph"><img class="ph-img" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA4MDAgNjAwIiByb2xlPSJpbWciIGFyaWEtbGFiZWw9IkJhcnN0b29scyBwbGFjZWhvbGRlciI+DQogIDxyZWN0IHdpZHRoPSI4MDAiIGhlaWdodD0iNjAwIiBmaWxsPSIjZWZlY2U1Ii8+DQogIDxnIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzZiNjE1NiIgc3Ryb2tlLXdpZHRoPSI3IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPg0KICAgIDxyZWN0IHg9IjMxOCIgeT0iMTk2IiB3aWR0aD0iMTY0IiBoZWlnaHQ9IjQ2IiByeD0iMjIiLz4NCiAgICA8bGluZSB4MT0iMzQ2IiB5MT0iMjQyIiB4Mj0iMzM0IiB5Mj0iNDEyIi8+DQogICAgPGxpbmUgeDE9IjQ1NCIgeTE9IjI0MiIgeDI9IjQ2NiIgeTI9IjQxMiIvPg0KICAgIDxsaW5lIHgxPSIzMzgiIHkxPSIzNDIiIHgyPSI0NjIiIHkyPSIzNDIiLz4NCiAgPC9nPg0KICA8bGluZSB4MT0iMzQ2IiB5MT0iMjIwIiB4Mj0iNDU0IiB5Mj0iMjIwIiBzdHJva2U9IiNiMDhhNWUiIHN0cm9rZS13aWR0aD0iNiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+DQogIDx0ZXh0IHg9IjYwIiB5PSI1NTYiIGZvbnQtZmFtaWx5PSJHZW9yZ2lhLCAnVGltZXMgTmV3IFJvbWFuJywgc2VyaWYiIGZvbnQtc2l6ZT0iMjQiIGZpbGw9IiM4YTgzNzciPkJhcnN0b29scyDCtyBwbGFjZWhvbGRlcjwvdGV4dD4NCjwvc3ZnPg0K" alt="商用吧椅" loading="lazy"></div><h4>吧椅</h4><p>查看系列 →</p></div>
+          <div class="catc" data-goto="page-contract"><div class="ph"><img class="ph-img" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA4MDAgNjAwIiByb2xlPSJpbWciIGFyaWEtbGFiZWw9IkNvZmZlZSBhbmQgU2lkZSBUYWJsZXMgcGxhY2Vob2xkZXIiPg0KICA8cmVjdCB3aWR0aD0iODAwIiBoZWlnaHQ9IjYwMCIgZmlsbD0iI2VmZWNlNSIvPg0KICA8ZyBmaWxsPSJub25lIiBzdHJva2U9IiM2YjYxNTYiIHN0cm9rZS13aWR0aD0iNyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj4NCiAgICA8cmVjdCB4PSIxODUiIHk9IjI5OCIgd2lkdGg9IjI5MCIgaGVpZ2h0PSIzMCIgcng9IjEyIi8+DQogICAgPGxpbmUgeDE9IjIxMiIgeTE9IjMyOCIgeDI9IjIxMiIgeTI9IjQwNCIvPg0KICAgIDxsaW5lIHgxPSI0NDgiIHkxPSIzMjgiIHgyPSI0NDgiIHkyPSI0MDQiLz4NCiAgICA8cmVjdCB4PSI1MTIiIHk9IjI0OCIgd2lkdGg9IjEzMiIgaGVpZ2h0PSIyNiIgcng9IjEyIi8+DQogICAgPGxpbmUgeDE9IjUzNCIgeTE9IjI3NCIgeDI9IjUzNCIgeTI9IjQwNCIvPg0KICAgIDxsaW5lIHgxPSI2MjIiIHkxPSIyNzQiIHgyPSI2MjIiIHkyPSI0MDQiLz4NCiAgPC9nPg0KICA8bGluZSB4MT0iMjEwIiB5MT0iMzEzIiB4Mj0iNDUwIiB5Mj0iMzEzIiBzdHJva2U9IiNiMDhhNWUiIHN0cm9rZS13aWR0aD0iNiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+DQogIDx0ZXh0IHg9IjYwIiB5PSI1NTYiIGZvbnQtZmFtaWx5PSJHZW9yZ2lhLCAnVGltZXMgTmV3IFJvbWFuJywgc2VyaWYiIGZvbnQtc2l6ZT0iMjQiIGZpbGw9IiM4YTgzNzciPkNvZmZlZSAmYW1wOyBTaWRlIFRhYmxlcyDCtyBwbGFjZWhvbGRlcjwvdGV4dD4NCjwvc3ZnPg0K" alt="商用茶几与边几" loading="lazy"></div><h4>茶几与边几</h4><p>查看系列 →</p></div>
+          <div class="catc" data-goto="page-contract"><div class="ph"><img class="ph-img" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA4MDAgNjAwIiByb2xlPSJpbWciIGFyaWEtbGFiZWw9IlN0b3JhZ2UgQ2FiaW5ldHMgcGxhY2Vob2xkZXIiPg0KICA8cmVjdCB3aWR0aD0iODAwIiBoZWlnaHQ9IjYwMCIgZmlsbD0iI2VmZWNlNSIvPg0KICA8ZyBmaWxsPSJub25lIiBzdHJva2U9IiM2YjYxNTYiIHN0cm9rZS13aWR0aD0iNyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj4NCiAgICA8cmVjdCB4PSIyMDgiIHk9IjE3OCIgd2lkdGg9IjM4NCIgaGVpZ2h0PSIxODIiIHJ4PSIxMiIvPg0KICAgIDxsaW5lIHgxPSIzMzYiIHkxPSIxNzgiIHgyPSIzMzYiIHkyPSIzNjAiLz4NCiAgICA8bGluZSB4MT0iNDY0IiB5MT0iMTc4IiB4Mj0iNDY0IiB5Mj0iMzYwIi8+DQogICAgPGxpbmUgeDE9IjI0MCIgeTE9IjM2MCIgeDI9IjI0MCIgeTI9IjM5OCIvPg0KICAgIDxsaW5lIHgxPSI1NjAiIHkxPSIzNjAiIHgyPSI1NjAiIHkyPSIzOTgiLz4NCiAgPC9nPg0KICA8bGluZSB4MT0iMjUyIiB5MT0iMjY4IiB4Mj0iMjkyIiB5Mj0iMjY4IiBzdHJva2U9IiNiMDhhNWUiIHN0cm9rZS13aWR0aD0iNiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+DQogIDxsaW5lIHgxPSIzODAiIHkxPSIyNjgiIHgyPSI0MjAiIHkyPSIyNjgiIHN0cm9rZT0iI2IwOGE1ZSIgc3Ryb2tlLXdpZHRoPSI2IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4NCiAgPGxpbmUgeDE9IjUwOCIgeTE9IjI2OCIgeDI9IjU0OCIgeTI9IjI2OCIgc3Ryb2tlPSIjYjA4YTVlIiBzdHJva2Utd2lkdGg9IjYiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPg0KICA8dGV4dCB4PSI2MCIgeT0iNTU2IiBmb250LWZhbWlseT0iR2VvcmdpYSwgJ1RpbWVzIE5ldyBSb21hbicsIHNlcmlmIiBmb250LXNpemU9IjI0IiBmaWxsPSIjOGE4Mzc3Ij5TdG9yYWdlIENhYmluZXRzIMK3IHBsYWNlaG9sZGVyPC90ZXh0Pg0KPC9zdmc+DQo=" alt="商用储物柜" loading="lazy"></div><h4>储物柜</h4><p>查看系列 →</p></div>
+          <div class="catc" data-goto="page-contract"><div class="ph"><img class="ph-img" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA4MDAgNjAwIiByb2xlPSJpbWciIGFyaWEtbGFiZWw9Ik91dGRvb3IgRnVybml0dXJlIHBsYWNlaG9sZGVyIj4NCiAgPHJlY3Qgd2lkdGg9IjgwMCIgaGVpZ2h0PSI2MDAiIGZpbGw9IiNlZmVjZTUiLz4NCiAgPGcgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjYjA4YTVlIiBzdHJva2Utd2lkdGg9IjYiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCI+DQogICAgPGNpcmNsZSBjeD0iMjg2IiBjeT0iMTcwIiByPSIzOCIvPg0KICAgIDxsaW5lIHgxPSIyODYiIHkxPSIxMDYiIHgyPSIyODYiIHkyPSI4OCIvPg0KICAgIDxsaW5lIHgxPSIyODYiIHkxPSIyMzQiIHgyPSIyODYiIHkyPSIyNTIiLz4NCiAgICA8bGluZSB4MT0iMjIyIiB5MT0iMTcwIiB4Mj0iMjA0IiB5Mj0iMTcwIi8+DQogICAgPGxpbmUgeDE9IjM1MCIgeTE9IjE3MCIgeDI9IjM2OCIgeTI9IjE3MCIvPg0KICA8L2c+DQogIDxnIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzZiNjE1NiIgc3Ryb2tlLXdpZHRoPSI3IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPg0KICAgIDxsaW5lIHgxPSIyMjgiIHkxPSIzMzYiIHgyPSI1NDgiIHkyPSIzMzYiLz4NCiAgICA8bGluZSB4MT0iMjI4IiB5MT0iMzM2IiB4Mj0iMjk4IiB5Mj0iMjQ4Ii8+DQogICAgPGxpbmUgeDE9IjI5OCIgeTE9IjI0OCIgeDI9IjMyMiIgeTI9IjI2MiIvPg0KICAgIDxsaW5lIHgxPSIyNjgiIHkxPSIzMzYiIHgyPSIyNjgiIHkyPSIzODgiLz4NCiAgICA8bGluZSB4MT0iNTAwIiB5MT0iMzM2IiB4Mj0iNTAwIiB5Mj0iMzg4Ii8+DQogICAgPGxpbmUgeDE9IjU0OCIgeTE9IjMzNiIgeDI9IjU3NiIgeTI9IjM4OCIvPg0KICA8L2c+DQogIDx0ZXh0IHg9IjYwIiB5PSI1NTYiIGZvbnQtZmFtaWx5PSJHZW9yZ2lhLCAnVGltZXMgTmV3IFJvbWFuJywgc2VyaWYiIGZvbnQtc2l6ZT0iMjQiIGZpbGw9IiM4YTgzNzciPk91dGRvb3IgRnVybml0dXJlIMK3IHBsYWNlaG9sZGVyPC90ZXh0Pg0KPC9zdmc+DQo=" alt="商用户外家具" loading="lazy"></div><h4>户外家具</h4><p>查看系列 →</p></div>
+          <div class="catc" data-goto="page-contract"><div class="ph"><img class="ph-img" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA4MDAgNjAwIiByb2xlPSJpbWciIGFyaWEtbGFiZWw9IlJlY2VwdGlvbiBEZXNrIHBsYWNlaG9sZGVyIj4NCiAgPHJlY3Qgd2lkdGg9IjgwMCIgaGVpZ2h0PSI2MDAiIGZpbGw9IiNlZmVjZTUiLz4NCiAgPGcgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNmI2MTU2IiBzdHJva2Utd2lkdGg9IjciIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+DQogICAgPHJlY3QgeD0iMTc4IiB5PSIxOTgiIHdpZHRoPSI0NDQiIGhlaWdodD0iMjIiIHJ4PSI4Ii8+DQogICAgPHJlY3QgeD0iMjA0IiB5PSIyMjAiIHdpZHRoPSIzOTIiIGhlaWdodD0iMTQyIiByeD0iMTIiLz4NCiAgICA8bGluZSB4MT0iMjY4IiB5MT0iMjM4IiB4Mj0iMjY4IiB5Mj0iMzQ0Ii8+DQogICAgPGxpbmUgeDE9IjMzNCIgeTE9IjIzOCIgeDI9IjMzNCIgeTI9IjM0NCIvPg0KICAgIDxsaW5lIHgxPSI0MDAiIHkxPSIyMzgiIHgyPSI0MDAiIHkyPSIzNDQiLz4NCiAgICA8bGluZSB4MT0iNDY2IiB5MT0iMjM4IiB4Mj0iNDY2IiB5Mj0iMzQ0Ii8+DQogICAgPGxpbmUgeDE9IjUzMiIgeTE9IjIzOCIgeDI9IjUzMiIgeTI9IjM0NCIvPg0KICAgIDxsaW5lIHgxPSIyMzIiIHkxPSIzNjIiIHgyPSIyMzIiIHkyPSI0MDAiLz4NCiAgICA8bGluZSB4MT0iNTY4IiB5MT0iMzYyIiB4Mj0iNTY4IiB5Mj0iNDAwIi8+DQogIDwvZz4NCiAgPGxpbmUgeDE9IjIxNCIgeTE9IjM3OCIgeDI9IjU4NiIgeTI9IjM3OCIgc3Ryb2tlPSIjYjA4YTVlIiBzdHJva2Utd2lkdGg9IjYiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPg0KICA8dGV4dCB4PSI2MCIgeT0iNTU2IiBmb250LWZhbWlseT0iR2VvcmdpYSwgJ1RpbWVzIE5ldyBSb21hbicsIHNlcmlmIiBmb250LXNpemU9IjI0IiBmaWxsPSIjOGE4Mzc3Ij5SZWNlcHRpb24gRGVzayDCtyBwbGFjZWhvbGRlcjwvdGV4dD4NCjwvc3ZnPg0K" alt="接待台" loading="lazy"></div><h4>接待台</h4><p>查看系列 →</p></div>
+          <div class="catc" data-goto="page-contract"><div class="ph"><img class="ph-img" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA4MDAgNjAwIiByb2xlPSJpbWciIGFyaWEtbGFiZWw9IkV4ZWN1dGl2ZSBEZXNrcyBwbGFjZWhvbGRlciI+DQogIDxyZWN0IHdpZHRoPSI4MDAiIGhlaWdodD0iNjAwIiBmaWxsPSIjZWZlY2U1Ii8+DQogIDxnIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzZiNjE1NiIgc3Ryb2tlLXdpZHRoPSI3IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPg0KICAgIDxyZWN0IHg9IjE3OCIgeT0iMjY2IiB3aWR0aD0iMzcyIiBoZWlnaHQ9IjM0IiByeD0iMTAiLz4NCiAgICA8bGluZSB4MT0iMjA2IiB5MT0iMzAwIiB4Mj0iMjA2IiB5Mj0iNDEyIi8+DQogICAgPHJlY3QgeD0iNDI0IiB5PSIzMDAiIHdpZHRoPSIxMjYiIGhlaWdodD0iMTEyIiByeD0iOCIvPg0KICAgIDxsaW5lIHgxPSI0NTIiIHkxPSIzMzYiIHgyPSI1MjIiIHkyPSIzMzYiLz4NCiAgICA8bGluZSB4MT0iNDUyIiB5MT0iMzc2IiB4Mj0iNTIyIiB5Mj0iMzc2Ii8+DQogIDwvZz4NCiAgPGxpbmUgeDE9IjIwNSIgeTE9IjI4MyIgeDI9IjU0OCIgeTI9IjI4MyIgc3Ryb2tlPSIjYjA4YTVlIiBzdHJva2Utd2lkdGg9IjYiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPg0KICA8dGV4dCB4PSI2MCIgeT0iNTU2IiBmb250LWZhbWlseT0iR2VvcmdpYSwgJ1RpbWVzIE5ldyBSb21hbicsIHNlcmlmIiBmb250LXNpemU9IjI0IiBmaWxsPSIjOGE4Mzc3Ij5FeGVjdXRpdmUgRGVza3MgwrcgcGxhY2Vob2xkZXI8L3RleHQ+DQo8L3N2Zz4NCg==" alt="行政办公桌" loading="lazy"></div><h4>行政办公桌</h4><p>查看系列 →</p></div>
+          <div class="catc" data-goto="page-contract"><div class="ph"><img class="ph-img" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA4MDAgNjAwIiByb2xlPSJpbWciIGFyaWEtbGFiZWw9IkNvbmZlcmVuY2UgVGFibGVzIHBsYWNlaG9sZGVyIj4NCiAgPHJlY3Qgd2lkdGg9IjgwMCIgaGVpZ2h0PSI2MDAiIGZpbGw9IiNlZmVjZTUiLz4NCiAgPGcgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNmI2MTU2IiBzdHJva2Utd2lkdGg9IjciIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+DQogICAgPHJlY3QgeD0iMTUwIiB5PSIyNzYiIHdpZHRoPSI1MDAiIGhlaWdodD0iNDQiIHJ4PSIyMiIvPg0KICAgIDxsaW5lIHgxPSIyMzIiIHkxPSIzMjAiIHgyPSIyMzIiIHkyPSI0MTAiLz4NCiAgICA8bGluZSB4MT0iNDAwIiB5MT0iMzIwIiB4Mj0iNDAwIiB5Mj0iNDEwIi8+DQogICAgPGxpbmUgeDE9IjU2OCIgeTE9IjMyMCIgeDI9IjU2OCIgeTI9IjQxMCIvPg0KICA8L2c+DQogIDxsaW5lIHgxPSIxODAiIHkxPSIyOTgiIHgyPSI2MjAiIHkyPSIyOTgiIHN0cm9rZT0iI2IwOGE1ZSIgc3Ryb2tlLXdpZHRoPSI2IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4NCiAgPHRleHQgeD0iNjAiIHk9IjU1NiIgZm9udC1mYW1pbHk9Ikdlb3JnaWEsICdUaW1lcyBOZXcgUm9tYW4nLCBzZXJpZiIgZm9udC1zaXplPSIyNCIgZmlsbD0iIzhhODM3NyI+Q29uZmVyZW5jZSBUYWJsZXMgwrcgcGxhY2Vob2xkZXI8L3RleHQ+DQo8L3N2Zz4NCg==" alt="会议桌" loading="lazy"></div><h4>会议桌</h4><p>查看系列 →</p></div>
+          <div class="catc" data-goto="page-contract"><div class="ph"><img class="ph-img" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA4MDAgNjAwIiByb2xlPSJpbWciIGFyaWEtbGFiZWw9IldvcmtzdGF0aW9ucyBEZXNraW5nIHBsYWNlaG9sZGVyIj4NCiAgPHJlY3Qgd2lkdGg9IjgwMCIgaGVpZ2h0PSI2MDAiIGZpbGw9IiNlZmVjZTUiLz4NCiAgPGcgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNmI2MTU2IiBzdHJva2Utd2lkdGg9IjciIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+DQogICAgPHJlY3QgeD0iMjAwIiB5PSIyMTgiIHdpZHRoPSI0MDAiIGhlaWdodD0iNzIiIHJ4PSI2Ii8+DQogICAgPHJlY3QgeD0iMTk2IiB5PSIyOTAiIHdpZHRoPSI0MDgiIGhlaWdodD0iMzAiIHJ4PSIxMCIvPg0KICAgIDxsaW5lIHgxPSIyMjgiIHkxPSIzMjAiIHgyPSIyMjgiIHkyPSI0MTAiLz4NCiAgICA8bGluZSB4MT0iNTcyIiB5MT0iMzIwIiB4Mj0iNTcyIiB5Mj0iNDEwIi8+DQogICAgPGxpbmUgeDE9IjQwMCIgeTE9IjIxOCIgeDI9IjQwMCIgeTI9IjQxMCIvPg0KICA8L2c+DQogIDxsaW5lIHgxPSIyMjAiIHkxPSIyNTQiIHgyPSIzODAiIHkyPSIyNTQiIHN0cm9rZT0iI2IwOGE1ZSIgc3Ryb2tlLXdpZHRoPSI2IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4NCiAgPHRleHQgeD0iNjAiIHk9IjU1NiIgZm9udC1mYW1pbHk9Ikdlb3JnaWEsICdUaW1lcyBOZXcgUm9tYW4nLCBzZXJpZiIgZm9udC1zaXplPSIyNCIgZmlsbD0iIzhhODM3NyI+V29ya3N0YXRpb25zIC8gRGVza2luZyDCtyBwbGFjZWhvbGRlcjwvdGV4dD4NCjwvc3ZnPg0K" alt="工位与办公桌系统" loading="lazy"></div><h4>工位 / 办公桌系统</h4><p>查看系列 →</p></div>
+          <div class="catc" data-goto="page-contract"><div class="ph"><img class="ph-img" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA4MDAgNjAwIiByb2xlPSJpbWciIGFyaWEtbGFiZWw9IlN0YW5kaW5nIERlc2sgcGxhY2Vob2xkZXIiPg0KICA8cmVjdCB3aWR0aD0iODAwIiBoZWlnaHQ9IjYwMCIgZmlsbD0iI2VmZWNlNSIvPg0KICA8ZyBmaWxsPSJub25lIiBzdHJva2U9IiM2YjYxNTYiIHN0cm9rZS13aWR0aD0iNyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj4NCiAgICA8cmVjdCB4PSIyMjgiIHk9IjI1MiIgd2lkdGg9IjM0NCIgaGVpZ2h0PSIzMCIgcng9IjEwIi8+DQogICAgPGxpbmUgeDE9IjI3MiIgeTE9IjI4MiIgeDI9IjI3MiIgeTI9IjQxMCIvPg0KICAgIDxsaW5lIHgxPSI1MjgiIHkxPSIyODIiIHgyPSI1MjgiIHkyPSI0MTAiLz4NCiAgICA8bGluZSB4MT0iMjU2IiB5MT0iMzMyIiB4Mj0iMjg4IiB5Mj0iMzMyIi8+DQogICAgPGxpbmUgeDE9IjUxMiIgeTE9IjMzMiIgeDI9IjU0NCIgeTI9IjMzMiIvPg0KICA8L2c+DQogIDxwYXRoIGQ9Ik00MDAgMjMyIEw0MDAgMTc2IE0zODIgMTk4IEw0MDAgMTc2IEw0MTggMTk4IiBmaWxsPSJub25lIiBzdHJva2U9IiNiMDhhNWUiIHN0cm9rZS13aWR0aD0iNiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+DQogIDx0ZXh0IHg9IjYwIiB5PSI1NTYiIGZvbnQtZmFtaWx5PSJHZW9yZ2lhLCAnVGltZXMgTmV3IFJvbWFuJywgc2VyaWYiIGZvbnQtc2l6ZT0iMjQiIGZpbGw9IiM4YTgzNzciPlN0YW5kaW5nIERlc2sgwrcgcGxhY2Vob2xkZXI8L3RleHQ+DQo8L3N2Zz4NCg==" alt="升降桌" loading="lazy"></div><h4>升降桌</h4><p>查看系列 →</p></div>
+          <div class="catc" data-goto="page-contract"><div class="ph"><img class="ph-img" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA4MDAgNjAwIiByb2xlPSJpbWciIGFyaWEtbGFiZWw9IkZpbGUgQ2FiaW5ldHMgcGxhY2Vob2xkZXIiPg0KICA8cmVjdCB3aWR0aD0iODAwIiBoZWlnaHQ9IjYwMCIgZmlsbD0iI2VmZWNlNSIvPg0KICA8ZyBmaWxsPSJub25lIiBzdHJva2U9IiM2YjYxNTYiIHN0cm9rZS13aWR0aD0iNyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj4NCiAgICA8cmVjdCB4PSIyOTgiIHk9IjE5OCIgd2lkdGg9IjIwNCIgaGVpZ2h0PSIyMTQiIHJ4PSIxMCIvPg0KICAgIDxsaW5lIHgxPSIyOTgiIHkxPSIyNjkiIHgyPSI1MDIiIHkyPSIyNjkiLz4NCiAgICA8bGluZSB4MT0iMjk4IiB5MT0iMzQwIiB4Mj0iNTAyIiB5Mj0iMzQwIi8+DQogICAgPGxpbmUgeDE9IjM3MiIgeTE9IjIzNCIgeDI9IjQyOCIgeTI9IjIzNCIvPg0KICAgIDxsaW5lIHgxPSIzNzIiIHkxPSIzNzYiIHgyPSI0MjgiIHkyPSIzNzYiLz4NCiAgPC9nPg0KICA8bGluZSB4MT0iMzcyIiB5MT0iMzA1IiB4Mj0iNDI4IiB5Mj0iMzA1IiBzdHJva2U9IiNiMDhhNWUiIHN0cm9rZS13aWR0aD0iNiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+DQogIDx0ZXh0IHg9IjYwIiB5PSI1NTYiIGZvbnQtZmFtaWx5PSJHZW9yZ2lhLCAnVGltZXMgTmV3IFJvbWFuJywgc2VyaWYiIGZvbnQtc2l6ZT0iMjQiIGZpbGw9IiM4YTgzNzciPkZpbGUgQ2FiaW5ldHMgwrcgcGxhY2Vob2xkZXI8L3RleHQ+DQo8L3N2Zz4NCg==" alt="文件柜" loading="lazy"></div><h4>文件柜</h4><p>查看系列 →</p></div>
+          <div class="catc" data-goto="page-contract"><div class="ph"><img class="ph-img" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA4MDAgNjAwIiByb2xlPSJpbWciIGFyaWEtbGFiZWw9IlRhc2sgQ2hhaXJzIHBsYWNlaG9sZGVyIj4NCiAgPHJlY3Qgd2lkdGg9IjgwMCIgaGVpZ2h0PSI2MDAiIGZpbGw9IiNlZmVjZTUiLz4NCiAgPGcgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNmI2MTU2IiBzdHJva2Utd2lkdGg9IjciIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+DQogICAgPHJlY3QgeD0iMzMwIiB5PSIxNzYiIHdpZHRoPSIxNDQiIGhlaWdodD0iMTE2IiByeD0iMjYiLz4NCiAgICA8cmVjdCB4PSIzMTgiIHk9IjI5MiIgd2lkdGg9IjE2OCIgaGVpZ2h0PSI0MCIgcng9IjE2Ii8+DQogICAgPGxpbmUgeDE9IjQwMiIgeTE9IjMzMiIgeDI9IjQwMiIgeTI9IjM4MCIvPg0KICAgIDxsaW5lIHgxPSIzMzgiIHkxPSI0MTAiIHgyPSI0NjYiIHkyPSI0MTAiLz4NCiAgICA8bGluZSB4MT0iNDAyIiB5MT0iMzgwIiB4Mj0iMzQ0IiB5Mj0iNDEwIi8+DQogICAgPGxpbmUgeDE9IjQwMiIgeTE9IjM4MCIgeDI9IjQ2MCIgeTI9IjQxMCIvPg0KICA8L2c+DQogIDxsaW5lIHgxPSIzNTgiIHkxPSIyMzgiIHgyPSI0NDYiIHkyPSIyMzgiIHN0cm9rZT0iI2IwOGE1ZSIgc3Ryb2tlLXdpZHRoPSI2IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4NCiAgPHRleHQgeD0iNjAiIHk9IjU1NiIgZm9udC1mYW1pbHk9Ikdlb3JnaWEsICdUaW1lcyBOZXcgUm9tYW4nLCBzZXJpZiIgZm9udC1zaXplPSIyNCIgZmlsbD0iIzhhODM3NyI+VGFzayBDaGFpcnMgwrcgcGxhY2Vob2xkZXI8L3RleHQ+DQo8L3N2Zz4NCg==" alt="办公任务椅" loading="lazy"></div><h4>办公任务椅</h4><p>查看系列 →</p></div>
+          <div class="catc" data-goto="page-contract"><div class="ph"><img class="ph-img" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA4MDAgNjAwIiByb2xlPSJpbWciIGFyaWEtbGFiZWw9IkV4ZWN1dGl2ZSBDaGFpcnMgcGxhY2Vob2xkZXIiPg0KICA8cmVjdCB3aWR0aD0iODAwIiBoZWlnaHQ9IjYwMCIgZmlsbD0iI2VmZWNlNSIvPg0KICA8ZyBmaWxsPSJub25lIiBzdHJva2U9IiM2YjYxNTYiIHN0cm9rZS13aWR0aD0iNyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj4NCiAgICA8cmVjdCB4PSIzMzIiIHk9IjE1MCIgd2lkdGg9IjE1MCIgaGVpZ2h0PSIxNTYiIHJ4PSIzMCIvPg0KICAgIDxyZWN0IHg9IjMyMCIgeT0iMzA2IiB3aWR0aD0iMTc2IiBoZWlnaHQ9IjQ0IiByeD0iMTgiLz4NCiAgICA8bGluZSB4MT0iMzEyIiB5MT0iMzEyIiB4Mj0iMzAwIiB5Mj0iMzUyIi8+DQogICAgPGxpbmUgeDE9IjUwNCIgeTE9IjMxMiIgeDI9IjUxNiIgeTI9IjM1MiIvPg0KICAgIDxsaW5lIHgxPSI0MDgiIHkxPSIzNTAiIHgyPSI0MDgiIHkyPSIzOTIiLz4NCiAgICA8bGluZSB4MT0iMzQyIiB5MT0iNDE2IiB4Mj0iNDc0IiB5Mj0iNDE2Ii8+DQogIDwvZz4NCiAgPGxpbmUgeDE9IjM1OCIgeTE9IjE5NiIgeDI9IjM1OCIgeTI9IjI4OCIgc3Ryb2tlPSIjYjA4YTVlIiBzdHJva2Utd2lkdGg9IjYiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPg0KICA8dGV4dCB4PSI2MCIgeT0iNTU2IiBmb250LWZhbWlseT0iR2VvcmdpYSwgJ1RpbWVzIE5ldyBSb21hbicsIHNlcmlmIiBmb250LXNpemU9IjI0IiBmaWxsPSIjOGE4Mzc3Ij5FeGVjdXRpdmUgQ2hhaXJzIMK3IHBsYWNlaG9sZGVyPC90ZXh0Pg0KPC9zdmc+DQo=" alt="行政办公椅" loading="lazy"></div><h4>行政办公椅</h4><p>查看系列 →</p></div>
+          <div class="catc" data-goto="page-contract"><div class="ph"><img class="ph-img" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA4MDAgNjAwIiByb2xlPSJpbWciIGFyaWEtbGFiZWw9IkNvbmZlcmVuY2UgQ2hhaXJzIHBsYWNlaG9sZGVyIj4NCiAgPHJlY3Qgd2lkdGg9IjgwMCIgaGVpZ2h0PSI2MDAiIGZpbGw9IiNlZmVjZTUiLz4NCiAgPGcgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNmI2MTU2IiBzdHJva2Utd2lkdGg9IjciIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+DQogICAgPHJlY3QgeD0iMzMyIiB5PSIxOTgiIHdpZHRoPSIxMzIiIGhlaWdodD0iMTEyIiByeD0iMTYiLz4NCiAgICA8cmVjdCB4PSIzMjAiIHk9IjMxMCIgd2lkdGg9IjE1NiIgaGVpZ2h0PSIzNiIgcng9IjEyIi8+DQogICAgPGxpbmUgeDE9IjMzNiIgeTE9IjM0NiIgeDI9IjMyNCIgeTI9IjQxNiIvPg0KICAgIDxsaW5lIHgxPSIzMjQiIHkxPSI0MTYiIHgyPSI0NzIiIHkyPSI0MTYiLz4NCiAgICA8bGluZSB4MT0iNDcyIiB5MT0iNDE2IiB4Mj0iNDYwIiB5Mj0iMzQ2Ii8+DQogIDwvZz4NCiAgPGxpbmUgeDE9IjM1OCIgeTE9IjIyOCIgeDI9IjQzOCIgeTI9IjIyOCIgc3Ryb2tlPSIjYjA4YTVlIiBzdHJva2Utd2lkdGg9IjYiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPg0KICA8dGV4dCB4PSI2MCIgeT0iNTU2IiBmb250LWZhbWlseT0iR2VvcmdpYSwgJ1RpbWVzIE5ldyBSb21hbicsIHNlcmlmIiBmb250LXNpemU9IjI0IiBmaWxsPSIjOGE4Mzc3Ij5Db25mZXJlbmNlIENoYWlycyDCtyBwbGFjZWhvbGRlcjwvdGV4dD4NCjwvc3ZnPg0K" alt="会议椅" loading="lazy"></div><h4>会议椅</h4><p>查看系列 →</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 三档产品线 -->
+    <section class="sect" id="home-how-it-works" style="padding-top:0;scroll-margin-top:120px">
+      <div class="wrap">
+        <p class="eyebrow">三种采购深度</p>
+        <h2 class="t serif">现货 · 半定制 · 全定制</h2>
+        <div class="tiers" style="margin-top:22px">
+          <div class="tier">
+            <div class="n g"><svg class="icon"><use href="#i-grid"/></svg></div>
+            <h3>现货</h3>
+            <p class="sub">标准款直接下单</p>
+            <ul>
+              <li>精选现货目录，登录即见批发价</li>
+              <li>标准购物车与结账流程</li>
+              <li>家居与商用两个市场均有备货</li>
+            </ul>
+            <p class="lead-t">参考交期（示意）：2–7 天</p>
+          </div>
+          <div class="tier">
+            <div class="n a"><svg class="icon"><use href="#i-adjust"/></svg></div>
+            <h3>半定制</h3>
+            <p class="sub">尺寸 / 颜色 / 造型 / 附加配置</p>
+            <ul>
+              <li>在线配置器选配，支持多品类</li>
+              <li>配置完成后提交询价</li>
+              <li>正式报价由人工核定后发出</li>
+            </ul>
+            <p class="lead-t">参考交期（示意）：30–45 天</p>
+            <p class="lead-t"><a href="Fabbrio_quote_workspace_ZH_target.html#pg-cfg" style="color:var(--accent)">体验配置器（联动原型）→</a></p>
+          </div>
+          <div class="tier">
+            <div class="n t"><svg class="icon"><use href="#i-cube"/></svg></div>
+            <h3>全定制</h3>
+            <p class="sub">从需求出发的整案定制</p>
+            <ul>
+              <li>CAD 图纸＋场景渲染图＋3D 模型交付</li>
+              <li>设计确认后出具人工报价</li>
+              <li>CAD 归您所有，专属不共享</li>
+            </ul>
+            <p class="lead-t">参考交期（示意）：60–90 天</p>
+            <p class="lead-t"><a href="Fabbrio_quote_workspace_ZH_target.html#pg-rfq" style="color:var(--tone-t-ink)">体验 RFQ 提交（联动原型）→</a></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FF&E band -->
+    <section class="sect" style="padding-top:0">
+      <div class="wrap">
+        <div class="ffeband">
+          <div>
+            <p class="eyebrow" style="color:var(--accent-d)">FF&amp;E 整案配套</p>
+            <h2 class="t serif" style="color:var(--accent-d)">按业态成套选型，整单询价</h2>
+            <p>酒店客房、长租公寓、养老社区、办公空间——按房型/空间打包的套餐方案，行项可增删改，一键立项即进入整单报价流程。</p>
+            <button class="btn pri" data-goto="page-ffe">浏览套餐方案</button>
+          </div>
+          <div class="imgblk" style="height:220px"><svg class="icon"><use href="#i-bed"/></svg><span class="cap">客房场景 · 图片占位</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 注册 band -->
+    <section class="sect" style="padding-top:0">
+      <div class="wrap">
+        <div class="band">
+          <div>
+            <h2 class="serif">注册商户账号，解锁批发价</h2>
+            <p>提交企业资质，客服审核通过后自动开通账号并发送激活邮件，登录即见贵司批发价。</p>
+          </div>
+          <button class="btn light lg" data-goto="page-merchant" style="background:#fff;border-color:#fff;color:var(--ink)">立即注册申请</button>
+        </div>
+      </div>
+    </section>
+  </section>
+
+  <!-- ================================================================
+       页 1A · 购买流程（对照源码 /how-it-works）
+  ================================================================= -->
+  <section class="page how-page" id="page-how" data-nr="源码页面复现" data-ptitle="购买流程">
+    <section class="wrap sect">
+      <div class="how-intro">
+        <p class="eyebrow">购买流程</p>
+        <h1 class="t serif">三种方式，把需求变成家具</h1>
+        <p class="lead">补充现货、微调标准款，或从零设计专属套系——全程在线完成，并提供效果图与报价；全定制项目交付 CAD。住宅与工程项目均适用。</p>
+      </div>
+    </section>
+
+    <div class="wrap how-content">
+      <section aria-label="三种采购方式">
+        <div class="tiers how-tiers">
+          <article class="tier">
+            <div class="n g"><svg class="icon"><use href="#i-grid"/></svg></div>
+            <h3>现货</h3>
+            <p class="sub">快速补货 · 低起订量</p>
+            <p class="body">浏览精选现货目录，登录后可见批发价并直接下单——美国沿海仓约 2–7 天发货。</p>
+          </article>
+          <article class="tier">
+            <div class="n a"><svg class="icon"><use href="#i-adjust"/></svg></div>
+            <h3>半定制</h3>
+            <p class="sub">调整参数 · 即时重算</p>
+            <p class="body">修改尺寸、颜色、五金或面料；配置器更新效果图与参考价，提交后由人工核定正式报价。</p>
+          </article>
+          <article class="tier">
+            <div class="n t"><svg class="icon"><use href="#i-cube"/></svg></div>
+            <h3>全定制 OEM</h3>
+            <p class="sub">专属设计 · CAD 归您所有</p>
+            <p class="body">提交全定制需求（CAD 图纸或参考图/平面图＋品类清单）；我们交付 CAD 与效果图，并提供人工确认的报价，CAD 图纸归客户长期留存。</p>
+          </article>
+        </div>
+      </section>
+
+      <section aria-label="开始配置或提交需求">
+        <div class="band how-cta">
+          <div>
+            <h2 class="serif">已经明确需求？</h2>
+            <p>打开配置器或提交全定制需求，获取效果图与报价。</p>
+          </div>
+          <div class="ctas">
+            <a class="btn lg light" href="Fabbrio_quote_workspace_ZH_target.html#pg-cfg">在线配置 ↗</a>
+            <a class="btn lg pri" href="Fabbrio_quote_workspace_ZH_target.html#pg-rfq">提交全定制需求</a>
+          </div>
+        </div>
+      </section>
+    </div>
+  </section>
+
+  <!-- ================================================================
+       页 2A · 住宅家具目录
+  ================================================================= -->
+  <section class="page catalog-page" id="page-residential" data-nr="源码目录页复现" data-ptitle="住宅家具">
+    <div class="wrap">
+      <p class="crumb"><a data-goto="page-home">首页</a> / 家具目录 / <span data-crumb-label>沙发</span></p>
+      <div class="segbar" aria-label="住宅与工程家具切换">
+        <button class="seg-link on" type="button" data-goto="page-residential">住宅家具</button>
+        <button class="seg-link" type="button" data-goto="page-contract">工程家具</button>
+      </div>
+      <h1 class="t serif">住宅家具 · <span data-title-label>沙发</span></h1>
+      <p class="lead">为家庭空间精选的设计型家具——以批发价供应给住宅零售商、设计师、样板房与短租项目。</p>
+
+      <div class="chips catalog-chips" data-category-chips>
+        <button class="chip on" type="button" data-category-label="沙发">沙发</button>
+        <button class="chip" type="button" data-category-label="床架">床架</button>
+        <button class="chip" type="button" data-category-label="餐桌">餐桌</button>
+        <button class="chip" type="button" data-category-label="餐椅">餐椅</button>
+        <button class="chip" type="button" data-category-label="休闲椅">休闲椅</button>
+        <button class="chip" type="button" data-category-label="吧椅">吧椅</button>
+        <button class="chip" type="button" data-category-label="茶几与边几">茶几与边几</button>
+        <button class="chip" type="button" data-category-label="储物柜">储物柜</button>
+        <button class="chip" type="button" data-category-label="衣柜">衣柜</button>
+        <button class="chip" type="button" data-category-label="户外家具">户外家具</button>
+      </div>
+
+      <div class="catalog-layout" data-catalog-layout="residential">
+        <aside class="catalog-aside" aria-label="住宅家具筛选器">
+          <div class="filter-group">
+            <p class="filter-title">颜色</p>
+            <div class="swatches" data-multi-filter>
+              <button class="swatch" style="background:#ecebe6" type="button" aria-label="浅灰" data-filter-value="light"></button>
+              <button class="swatch" style="background:#a89178" type="button" aria-label="暖棕" data-filter-value="warm"></button>
+              <button class="swatch" style="background:#53555a" type="button" aria-label="石墨灰" data-filter-value="grey"></button>
+              <button class="swatch" style="background:#213349" type="button" aria-label="深蓝" data-filter-value="navy"></button>
+            </div>
+          </div>
+          <div class="filter-group">
+            <p class="filter-title">供货状态</p>
+            <div class="filter-stack" data-single-filter="supply">
+              <button class="chip on" type="button" data-filter-value="all">全部</button>
+              <button class="chip" type="button" data-filter-value="instock">现货</button>
+              <button class="chip" type="button" data-filter-value="made">按单生产</button>
+            </div>
+          </div>
+          <p class="aside-note">登录后可见批发价<br><span style="color:var(--faint)">独立散买：最小起订 4 件、按 2 件递增（演示占位值，由商城数量规则承载）；不设金额门槛。</span></p>
+        </aside>
+
+        <div class="catalog-products">
+          <div class="pgrid" data-product-grid>
+            <div class="pcard" data-supply="made" data-colors="light warm grey" data-goto="page-pdp" data-cfg="3 座 · 浅灰绒布 · 金属直脚">
+              <div class="ph"><img class="ph-img catalog-copy-img" data-copy-img="沙发" alt="玛伦模块组合沙发"><span class="badge">按单生产</span><span class="fav" aria-hidden="true"><svg class="icon"><use href="#i-heart"/></svg></span></div>
+              <h4>玛伦 模块组合沙发</h4><p class="brand">沙发</p>
+              <div class="price po"><span class="gate"><svg class="icon"><use href="#i-lock"/></svg>登录后可见批发价</span></div>
+              <div class="price pi"><span class="wp">$1,180 起</span><span class="moq">· 6 个规格</span></div>
+            <button class="btn addproj" type="button" onclick="event.stopPropagation();projAddFromCard(this)">＋ 加入项目</button></div>
+            <div class="pcard" data-supply="instock" data-colors="light warm navy" data-goto="page-pdp" data-cfg="3 座 · 亚麻棉本色 · 实木锥形脚">
+              <div class="ph"><img class="ph-img catalog-copy-img" data-copy-img="沙发" alt="海登三人位亚麻沙发"><span class="badge">现货</span><span class="fav" aria-hidden="true"><svg class="icon"><use href="#i-heart"/></svg></span></div>
+              <h4>海登 三人位亚麻沙发</h4><p class="brand">沙发</p>
+              <div class="price po"><span class="gate"><svg class="icon"><use href="#i-lock"/></svg>登录后可见批发价</span></div>
+              <div class="price pi"><span class="wp">$429 起</span><span class="moq">· 4 个规格</span></div>
+            <button class="btn addproj" type="button" onclick="event.stopPropagation();projAddFromCard(this)">＋ 加入项目</button></div>
+            <div class="pcard" data-supply="instock" data-colors="warm grey navy" data-goto="page-pdp" data-cfg="单座 · 雾灰皮革 · 哑黑金属脚">
+              <div class="ph"><img class="ph-img catalog-copy-img" data-copy-img="沙发" alt="索伦全粒面皮革扶手椅"><span class="badge">现货</span><span class="fav" aria-hidden="true"><svg class="icon"><use href="#i-heart"/></svg></span></div>
+              <h4>索伦 全粒面皮革扶手椅</h4><p class="brand">沙发</p>
+              <div class="price po"><span class="gate"><svg class="icon"><use href="#i-lock"/></svg>登录后可见批发价</span></div>
+              <div class="price pi"><span class="wp">$540 起</span><span class="moq">· 3 个规格</span></div>
+            <button class="btn addproj" type="button" onclick="event.stopPropagation();projAddFromCard(this)">＋ 加入项目</button></div>
+            <div class="pcard" data-supply="instock" data-colors="light grey" data-goto="page-pdp" data-cfg="1.4m · 浅灰面料 · 直脚">
+              <div class="ph"><img class="ph-img catalog-copy-img" data-copy-img="沙发" alt="林德霍尔姆沙发床"><span class="badge">现货</span><span class="fav" aria-hidden="true"><svg class="icon"><use href="#i-heart"/></svg></span></div>
+              <h4>林德霍尔姆 可转换沙发床</h4><p class="brand">沙发</p>
+              <div class="price po"><span class="gate"><svg class="icon"><use href="#i-lock"/></svg>登录后可见批发价</span></div>
+              <div class="price pi"><span class="wp">$760 起</span><span class="moq">· 2 个规格</span></div>
+            <button class="btn addproj" type="button" onclick="event.stopPropagation();projAddFromCard(this)">＋ 加入项目</button></div>
+          </div>
+          <div class="catalog-empty">没有符合当前筛选条件的商品，请调整筛选项。</div>
+          <p class="host-note">商品详情、订购和结账由 Shopify 托管——点击商品卡进入产品详情页 ↗</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================================
+       页 2B · 工程家具目录（筛选器采用旧版 Certifications / Vertical / Features）
+  ================================================================= -->
+  <section class="page catalog-page" id="page-contract" data-nr="源码目录页复现 · 筛选器采用 element4" data-ptitle="工程家具">
+    <div class="wrap">
+      <p class="crumb"><a data-goto="page-home">首页</a> / 家具目录 / <span data-crumb-label>接待台</span></p>
+      <div class="segbar" aria-label="住宅与工程家具切换">
+        <button class="seg-link" type="button" data-goto="page-residential">住宅家具</button>
+        <button class="seg-link on" type="button" data-goto="page-contract">工程家具</button>
+      </div>
+      <h1 class="t serif">工程家具 · <span data-title-label>接待台</span></h1>
+      <p class="lead">面向商业空间的工程级家具——兼顾耐用性、认证与客供面料，服务工程经销商和项目团队。</p>
+
+      <div class="chips catalog-chips" data-category-chips>
+        <button class="chip on" type="button" data-category-label="沙发">沙发</button>
+        <button class="chip" type="button" data-category-label="餐椅">餐椅</button>
+        <button class="chip" type="button" data-category-label="休闲椅">休闲椅</button>
+        <button class="chip" type="button" data-category-label="吧椅">吧椅</button>
+        <button class="chip" type="button" data-category-label="茶几与边几">茶几与边几</button>
+        <button class="chip" type="button" data-category-label="储物柜">储物柜</button>
+        <button class="chip" type="button" data-category-label="户外家具">户外家具</button>
+        <button class="chip" type="button" data-category-label="接待台">接待台</button>
+        <button class="chip" type="button" data-category-label="行政办公桌">行政办公桌</button>
+        <button class="chip" type="button" data-category-label="会议桌">会议桌</button>
+        <button class="chip" type="button" data-category-label="工位 / 办公桌系统">工位 / 办公桌系统</button>
+        <button class="chip" type="button" data-category-label="升降桌">升降桌</button>
+        <button class="chip" type="button" data-category-label="文件柜">文件柜</button>
+        <button class="chip" type="button" data-category-label="办公任务椅">办公任务椅</button>
+        <button class="chip" type="button" data-category-label="行政办公椅">行政办公椅</button>
+        <button class="chip" type="button" data-category-label="会议椅">会议椅</button>
+      </div>
+
+      <div class="catalog-layout" data-catalog-layout="contract">
+        <aside class="catalog-aside" aria-label="工程家具筛选器">
+          <div class="filter-group" data-contract-filter="cert">
+            <p class="filter-title">Certifications</p>
+            <div class="filter-stack"><button class="chip" type="button" data-filter-value="bifma">BIFMA</button><button class="chip" type="button" data-filter-value="cal117">CAL117</button><button class="chip" type="button" data-filter-value="carb-p2">CARB-P2</button></div>
+          </div>
+          <div class="filter-group" data-contract-filter="vertical">
+            <p class="filter-title">Vertical</p>
+            <div class="filter-stack"><button class="chip" type="button" data-filter-value="hotel">Hotel</button><button class="chip" type="button" data-filter-value="multifamily">Multifamily</button><button class="chip" type="button" data-filter-value="senior">Senior</button><button class="chip" type="button" data-filter-value="office">Office</button></div>
+          </div>
+          <div class="filter-group" data-contract-filter="feature">
+            <p class="filter-title">Features</p>
+            <div class="filter-stack"><button class="chip" type="button" data-filter-value="heavy-duty">Heavy-duty</button><button class="chip" type="button" data-filter-value="com-ready">COM-ready</button><button class="chip" type="button" data-filter-value="wipeable">Wipeable</button></div>
+          </div>
+          <p class="aside-note">登录后可见批发价<br><span style="color:var(--faint)">独立散买：最小起订 4 件、按 2 件递增（演示占位值，由商城数量规则承载）；不设金额门槛。</span></p>
+        </aside>
+
+        <div class="catalog-products">
+          <div class="pgrid" data-product-grid>
+            <div class="pcard" data-cert="bifma cal117" data-vertical="hotel office" data-feature="heavy-duty com-ready wipeable" data-goto="page-pdp" data-cfg="2.0m 直台 · 白橡饰面 · 金属踢脚线">
+              <div class="ph"><img class="ph-img catalog-copy-img" data-copy-img="接待台" alt="接待台"><span class="badge">按单生产</span><span class="fav" aria-hidden="true"><svg class="icon"><use href="#i-heart"/></svg></span></div>
+              <span class="cbadge">工程级</span><h4>接待台</h4><p class="brand">接待台</p>
+              <div class="price po"><span class="gate"><svg class="icon"><use href="#i-lock"/></svg>登录后可见批发价</span></div>
+              <div class="price pi"><span class="wp">$980 起</span><span class="moq">· 5 个规格</span></div>
+              <div class="certrow"><span class="cert">BIFMA</span><span class="cert">CAL117</span><span class="cert">CARB-P2</span></div>
+            <button class="btn addproj" type="button" onclick="event.stopPropagation();projAddFromCard(this)">＋ 加入项目</button></div>
+            <div class="pcard" data-cert="bifma carb-p2" data-vertical="hotel multifamily office" data-feature="heavy-duty com-ready" data-goto="page-pdp" data-cfg="1.2m 三层 · 暖白 · 平开门 · 含锁">
+              <div class="ph"><img class="ph-img catalog-copy-img" data-copy-img="接待台" alt="阿特拉斯槽板接待台"><span class="badge">按单生产</span><span class="fav" aria-hidden="true"><svg class="icon"><use href="#i-heart"/></svg></span></div>
+              <span class="cbadge">工程级</span><h4>阿特拉斯 槽板接待台</h4><p class="brand">接待台</p>
+              <div class="price po"><span class="gate"><svg class="icon"><use href="#i-lock"/></svg>登录后可见批发价</span></div>
+              <div class="price pi"><span class="wp">$1,180 起</span><span class="moq">· 4 个规格</span></div>
+              <div class="certrow"><span class="cert">BIFMA</span><span class="cert">CAL117</span><span class="cert">CARB-P2</span></div>
+            <button class="btn addproj" type="button" onclick="event.stopPropagation();projAddFromCard(this)">＋ 加入项目</button></div>
+            <div class="pcard" data-cert="cal117 carb-p2" data-vertical="senior office" data-feature="heavy-duty wipeable" data-goto="page-pdp" data-cfg="标准款 · 黑色网背 · 铝合金五星脚">
+              <div class="ph"><img class="ph-img catalog-copy-img" data-copy-img="接待台" alt="利尼亚LED接待台"><span class="badge">按单生产</span><span class="fav" aria-hidden="true"><svg class="icon"><use href="#i-heart"/></svg></span></div>
+              <span class="cbadge">工程级</span><h4>利尼亚 LED 接待台</h4><p class="brand">接待台</p>
+              <div class="price po"><span class="gate"><svg class="icon"><use href="#i-lock"/></svg>登录后可见批发价</span></div>
+              <div class="price pi"><span class="wp">$1,480 起</span><span class="moq">· 3 个规格</span></div>
+              <div class="certrow"><span class="cert">BIFMA</span><span class="cert">CAL117</span><span class="cert">CARB-P2</span></div>
+            <button class="btn addproj" type="button" onclick="event.stopPropagation();projAddFromCard(this)">＋ 加入项目</button></div>
+            <!-- v4.7 演示：可售档位集合含 T3 的产品（驱动 PDP CTA 显隐） -->
+            <div class="pcard" data-sku="MT-320" data-cert="bifma carb-p2" data-vertical="office hotel" data-feature="heavy-duty com-ready" data-goto="page-pdp" data-cfg="3.2m 长桌 · 白橡饰面 · 含线盒预留">
+              <div class="ph"><img class="ph-img catalog-copy-img" data-copy-img="接待台" alt="会议桌 MT-320"><span class="badge">按单生产</span><span class="fav" aria-hidden="true"><svg class="icon"><use href="#i-heart"/></svg></span></div>
+              <span class="cbadge">工程级</span><h4>会议桌 MT-320</h4><p class="brand">会议桌</p>
+              <div class="price po"><span class="gate"><svg class="icon"><use href="#i-lock"/></svg>登录后可见批发价</span></div>
+              <div class="price pi"><span class="wp">$1,650 起</span><span class="moq">· 4 个规格</span></div>
+              <div class="certrow"><span class="cert">BIFMA</span><span class="cert">CARB-P2</span></div>
+            <button class="btn addproj" type="button" onclick="event.stopPropagation();projAddFromCard(this)">＋ 加入项目</button></div>
+            <div class="pcard" data-sku="RC-900" data-cert="cal117 carb-p2" data-vertical="hotel" data-feature="heavy-duty" data-goto="page-pdp" data-cfg="弧形台面 · 定制灯槽 · 尺寸按现场">
+              <div class="ph"><img class="ph-img catalog-copy-img" data-copy-img="接待台" alt="大堂接待台 弧形"><span class="badge">全定制</span><span class="fav" aria-hidden="true"><svg class="icon"><use href="#i-heart"/></svg></span></div>
+              <span class="cbadge">工程级</span><h4>大堂接待台 · 弧形</h4><p class="brand">接待台</p>
+              <div class="price po"><span class="gate"><svg class="icon"><use href="#i-lock"/></svg>登录后可见批发价</span></div>
+              <div class="price pi"><span class="ask">询价</span><span class="moq">· 非标结构</span></div>
+              <div class="certrow"><span class="cert">CAL117</span><span class="cert">CARB-P2</span></div>
+            <button class="btn addproj" type="button" onclick="event.stopPropagation();projAddFromCard(this)">＋ 加入项目</button></div>
+          </div>
+          <div class="catalog-empty">没有符合当前筛选条件的商品，请调整筛选项。</div>
+          <p class="host-note">商品详情、订购和结账由 Shopify 托管——点击商品卡进入产品详情页 ↗</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================================
+       页 3 · 产品详情页 PDP
+  ================================================================= -->
+  <section class="page" id="page-pdp" data-nr="NR-02 · NR-03" data-ptitle="产品详情页">
+    <div class="wrap">
+      <div class="pdp-grid">
+        <div>
+          <div class="imgblk gallery-main"><svg class="icon"><use id="pdpMainIconUse" href="#i-recep"/></svg><span class="cap">产品主图 · 图片占位</span></div>
+          <div class="thumbs">
+            <div class="imgblk"><svg class="icon"><use href="#i-recep"/></svg></div>
+            <div class="imgblk"><svg class="icon"><use href="#i-img"/></svg></div>
+            <div class="imgblk"><svg class="icon"><use href="#i-img"/></svg></div>
+          </div>
+        </div>
+        <div>
+          <p class="crumb"><a data-goto="page-home">首页</a> / <a data-goto="page-contract">工程家具</a> / <span id="pdpCategory">接待台</span></p>
+          <span class="cbadge" id="pdpBadgeT1">现货标准款</span> <span class="cbadge" id="pdpBadgeT2" style="background:var(--warn-soft);color:var(--warn)">支持在线配置</span> <span class="cbadge hidden" id="pdpBadgeT3" style="background:var(--tone-t-soft);color:var(--tone-t-ink)">全定制专属</span>
+          <h1 class="t serif" id="pdpTitle" style="margin-top:4px">现代接待台 RC-200</h1>
+          <p id="pdpSubtitle" style="font-size:13.5px;color:var(--muted);margin:0 0 14px">RC 系列 · 木饰面＋金属收边 · 适配前台/接待区场景</p>
+
+          <!-- A-07 已裁 v4.10：未登录＝零价格展示（含不显 MSRP），占位文案统一「登录后可见批发价」 -->
+          <div class="price po" id="pdpMsrp" style="font-size:16px;margin-bottom:6px"><span class="gate"><svg class="icon"><use href="#i-lock"/></svg>登录后可见批发价</span></div>
+          <p class="gate po" style="margin:0 0 14px"><svg class="icon"><use href="#i-check"/></svg>需<b>登录并通过商户审核</b>后开通，届时同时显示起订量与参考交期。</p>
+          <div class="price pi" id="pdpSignedPrice" style="font-size:18px;margin-bottom:6px"><span class="wp">$1,180 起</span></div>
+          <p class="pi" id="pdpSignedTerms" style="font-size:13px;color:var(--muted);margin:0 0 14px">MOQ 5 件 · 现货标准款参考交期（示意）2–7 天 · USD 计价</p>
+
+          <div class="certrow" id="pdpCerts" style="margin-bottom:16px">
+            <span class="cert">对标 BIFMA 标准（声明）</span><span class="cert">对标 CAL117 标准（声明）</span>
+          </div>
+
+          <!-- CTA：两个交易档位入口为一组（v4.0 NR-02 改述）；「加入项目」＝FF&E 容器操作、与档位选择正交，次级分层呈现 -->
+          <div style="display:grid;gap:10px;max-width:420px">
+            <button class="btn pri lg" id="pdpCartBtn" onclick="toast('已加入购物车（原型演示，现货标准款走标准结账）')"><svg class="icon"><use href="#i-cart"/></svg>加入购物车（现货标准款）</button>
+            <p class="fnote" id="pdpCartQtyNote" style="margin:-2px 0 0">独立散买：最小起订 4 件，按 2 件递增（演示占位值）；不设金额门槛。<span style="color:var(--faint)">该数量规则由商城数量规则承载。</span></p>
+            <button class="btn lg tone-a" id="pdpConfigureBtn" onclick="openConfiguratorForPdp()"><svg class="icon"><use href="#i-adjust"/></svg>进入配置器（预填本品）</button>
+            <div style="border-top:1px solid var(--line);margin-top:8px;padding-top:14px;display:grid;gap:6px;justify-items:start">
+              <button class="btn gh" type="button" data-cfg="2.4m 直台 · 白橡饰面 · 金属收边" onclick="projAddFromPdp(this)"><svg class="icon"><use href="#i-grid"/></svg>加入项目（FF&amp;E 组合）</button>
+              <p class="fnote" style="margin:0">加入项目后可在报价工作台统一立项。这不是第三种采购方式——采购方案（现货／半定制）在立项预览中逐行选择。</p>
+            </div>
+          </div>
+
+          <!-- 仅全定制产品（可售档位不含 t1/t2）时的说明；仍不设 Tier3 入口（v3.8/v4.0） -->
+          <div class="note warn hidden" id="pdpNoTradeNote" style="margin-top:16px">本产品为<b>全定制专属</b>（可售档位仅 Tier3），因此不提供加购与在线配置入口。<b>按您的图纸或需求全新生产，不在本款基础上修改</b>；起订量与周期以正式报价为准。如需全定制，请由导航进入 RFQ 提交或联系客服。</div>
+
+          <!-- v4.8⑥ 白名单缺项＝显式故障（A14-③ 修复 D-19）：有 SKU 但未登记可售档位时显示，不静默回落 -->
+          <div class="note hidden" id="pdpUnlistedNote" style="margin-top:16px;background:#f7e4e0;color:#93372a"><b>⚠ 该产品未登记可售档位</b>（SKU <b id="pdpUnlistedSku">—</b>）——按 <b>v4.8⑥「白名单缺项＝显式故障」</b>，两个交易入口（加入购物车／进入配置器）一律<b>不显示</b>，且<b>不得套用其他产品的档位默认放行</b>。正式实现须在上架校验时拒绝该产品上架；请联系客服，或由运营补登记后再行展示。</div>
+
+          <!-- S 域入口语义（v4.1 三域划分：A 只承载入口按钮，下单段在商城完成） -->
+          <div class="note" id="pdpCartNote" style="margin-top:16px">「加入购物车」＝<b>独立散买</b>路径：购物车、结账与支付在<b>商城（Shopify 托管）</b>完成，与半定制配置询价、FF&amp;E 项目立项<b>不是同一条链路</b>。下单后<b>可在订单列表中查看状态，详情在商城侧</b>——订单列表在<b>「报价工作台原型」的「订单」</b>中，实时反查商城状态。<br><span style="color:var(--faint)">注：FF&amp;E 项目容器内的现货行<b>不走这条路</b>——按批发价并入整单，随项目整单一次报价与结算。</span></div>
+
+          <div class="note warn" id="pdpCfgNote" style="margin-top:16px">「进入配置器」已与「报价工作台原型」联动：点击跳转其配置器入口A，<b>产品类型与产品SKU 已按本品预填（接待台 · RC-200）、可改选</b>（改选等同直入，报价篮已加入行不受影响）。</div>
+        </div>
+      </div>
+
+      <div class="pgrid c3" style="margin:26px 0 40px;grid-template-columns:1.2fr 1fr 1fr;gap:18px">
+        <div class="card">
+          <h3>标准款参数</h3>
+          <table class="spec">
+            <tr><th>整体尺寸</th><td id="pdpSpecSize">2400 × 700 × 1050 mm（标准档）</td></tr>
+            <tr><th>主要材质</th><td id="pdpSpecMaterial">白橡木饰面（标准款）</td></tr>
+            <tr><th>结构</th><td id="pdpSpecStructure">板木结合 · 金属收边</td></tr>
+            <tr><th>颜色</th><td id="pdpSpecColor">白橡 / 胡桃 / 暖白（标准档位）</td></tr>
+            <tr><th>包装</th><td id="pdpSpecPackage">分件平板包装，含安装说明</td></tr>
+          </table>
+        </div>
+        <div class="card">
+          <h3>三种购买方式</h3>
+          <ul>
+            <li id="pdpBuyT1"><b>现货</b>：标准款直接加购、标准结账；</li>
+            <li id="pdpBuyT2"><b>半定制</b>：进入配置器改尺寸/颜色/造型/附加配置，配置完成后提交询价；</li>
+            <li><b>全定制</b>：按您的图纸或需求全新生产，<b>不在本款基础上修改</b>；起订量与周期以正式报价为准。如需全定制，请由导航进入 RFQ 提交或联系客服。</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>批发与交付</h3>
+          <ul>
+            <li>批发价经商户审核后开通；<b>不提供信用账期</b>，付款按档位分阶段——见付款计划；</li>
+            <li>全站 USD 计价；</li>
+            <li>现货标准款参考交期（示意）2–7 天，配置与定制款交期以报价单为准。</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================================
+       页 4 · FF&E 套餐列表
+  ================================================================= -->
+  <section class="page" id="page-ffe" data-nr="NR-12" data-ptitle="FF&amp;E 套餐列表">
+    <section class="wrap sect center ffe-intro">
+      <p class="eyebrow">面向项目 · FF&amp;E</p>
+      <h1 class="t serif">一处配齐整套空间</h1>
+      <p class="lead">FF&amp;E 是同一住宅＋商用目录的<strong>工程级版本</strong>，按<strong>业态＋房间套餐</strong>重新组织——一个目录、项目制采购、整单一次报价。<br><span style="font-size:13px;color:var(--muted)">项目容器承载<b>现货与半定制</b>两档；全定制需求走<b>独立的全定制 RFQ</b>（另开一单，交付 CAD 图纸与效果图）。</span></p>
+    </section>
+
+    <div class="wrap" style="padding-bottom:50px">
+      <div class="certrow ffe-standards" data-state="standards">
+        <span class="cert">对标 BIFMA 标准</span><span class="cert">对标 CAL117 标准</span><span class="cert">对标 NFPA260·261 标准</span><span class="cert">对标 CAL133 标准</span><span class="cert">CARB-P2 低排放</span><span class="cert">抗菌 / 可擦洗（适老）</span>
+      </div>
+
+      <section data-state="verticals">
+        <p class="eyebrow" style="margin-top:30px">按业态</p>
+        <div class="vtiles" id="vtiles" style="margin-top:14px">
+          <button class="vtile on" type="button" data-v="hotel" data-name="酒店与短租" data-note="对标 CAL117 · NFPA260 防火标准 · 耐用 · 控制同色异谱" data-buys="床架 / 床头柜 / 休闲椅 / 写字台 / 沙发" data-certs="CAL117|NFPA260·261|BIFMA"><div class="vi"><svg class="icon"><use href="#i-bed"/></svg></div><h4>酒店与短租</h4><p>床架 / 床头柜…</p></button>
+          <button class="vtile" type="button" data-v="multifamily" data-name="多户住宅" data-note="高性价比 · 耐用 · 批次一致 · 交期快" data-buys="沙发 / 餐桌椅套组 / 床架 / 电视柜" data-certs="CARB-P2|BIFMA"><div class="vi"><svg class="icon"><use href="#i-cab"/></svg></div><h4>多户住宅</h4><p>沙发 / 餐桌椅套组…</p></button>
+          <button class="vtile" type="button" data-v="student" data-name="学生公寓" data-note="重载耐用 · 抗刮抗污 · 对标防火标准" data-buys="床架（含双层床） / 书桌椅 / 储物柜" data-certs="CAL117|CARB-P2"><div class="vi"><svg class="icon"><use href="#i-grid"/></svg></div><h4>学生公寓</h4><p>床架（含双层床）/ 书桌椅…</p></button>
+          <button class="vtile" type="button" data-v="senior" data-name="养老社区" data-note="封边可擦洗 · 抗菌 · 额定承重 · 防倾倒 · 辅助扶手" data-buys="休闲椅 / 床架 / 餐椅（医疗级）" data-certs="CAL117|抗菌|可擦洗"><div class="vi"><svg class="icon"><use href="#i-heart"/></svg></div><h4>养老社区</h4><p>休闲椅 / 床架…</p></button>
+          <button class="vtile" type="button" data-v="office" data-name="办公空间" data-note="对标 BIFMA 标准 · 耐用 · 线缆管理" data-buys="工位 / 办公椅 / 休闲沙发" data-certs="BIFMA|CARB-P2"><div class="vi"><svg class="icon"><use href="#i-desk"/></svg></div><h4>办公空间</h4><p>工位 / 办公椅…</p></button>
+          <button class="vtile" type="button" data-v="restaurant" data-name="餐饮空间" data-note="对标 CAL133 公共座椅标准 · 耐磨耐污" data-buys="餐椅 / 卡座 / 餐桌" data-certs="CAL133|BIFMA"><div class="vi"><svg class="icon"><use href="#i-store"/></svg></div><h4>餐饮空间</h4><p>餐椅 / 卡座…</p></button>
+          <button class="vtile" type="button" data-v="model" data-name="样板房与软装陈列" data-note="交期快 · 整套配齐 · 适合拍摄" data-buys="全屋住宅家具" data-certs="CARB-P2"><div class="vi"><svg class="icon"><use href="#i-home"/></svg></div><h4>样板房与软装陈列</h4><p>全屋住宅家具…</p></button>
+        </div>
+        <div class="note ffe-vertical-detail" id="ffeVerticalDetail" data-state="vertical-detail"><strong id="ffeVerticalName">酒店与短租</strong> · <span id="ffeVerticalNote">对标 CAL117 · NFPA260 防火标准 · 耐用 · 控制同色异谱</span><br>常采购：<span id="ffeVerticalBuys">床架 / 床头柜 / 休闲椅 / 写字台 / 沙发</span> <span id="ffeVerticalCerts"><span class="cert">CAL117</span><span class="cert">NFPA260·261</span><span class="cert">BIFMA</span></span></div>
+      </section>
+
+      <section data-state="room-packages">
+        <div class="ffe-package-heading"><div><p class="eyebrow">销售单位 = 房间套餐</p><h2 class="t serif">房间套餐</h2></div><button type="button" class="pkg-alt-link" onclick="openBasket()">或自行组合建项目 →</button></div>
+        <div class="pgrid c3" id="pkggrid">
+          <div class="pkg" data-v="hotel" data-order="0" data-goto="page-package"><div class="ph"><svg class="icon"><use href="#i-bed"/></svg></div><div class="bd"><h4>酒店大床房套餐</h4><p class="it">床架＋2 个床头柜＋休闲椅＋写字台＋电视柜</p><div class="certrow"><span class="cert">对标 CAL117 标准</span></div><div class="price"><span class="gate">登录后查看项目报价</span></div></div></div>
+          <div class="pkg" data-v="multifamily" data-order="1" data-goto="page-package"><div class="ph"><svg class="icon"><use href="#i-cab"/></svg></div><div class="bd"><h4>单间公寓套餐</h4><p class="it">沙发＋双人餐桌椅＋床架＋电视柜</p><div class="certrow"><span class="cert">CARB-P2 低排放</span></div><div class="price"><span class="gate">登录后查看项目报价</span></div></div></div>
+          <div class="pkg" data-v="student" data-order="2" data-goto="page-package"><div class="ph"><svg class="icon"><use href="#i-grid"/></svg></div><div class="bd"><h4>学生宿舍套餐</h4><p class="it">床架＋书桌＋座椅＋储物柜</p><div class="certrow"><span class="cert">对标 CAL117 标准</span></div><div class="price"><span class="gate">登录后查看项目报价</span></div></div></div>
+          <div class="pkg" data-v="senior" data-order="3" data-goto="page-package"><div class="ph"><svg class="icon"><use href="#i-heart"/></svg></div><div class="bd"><h4>适老起居室套餐</h4><p class="it">医疗级休闲椅＋床架＋边几（可擦洗 / 抗菌）</p><div class="certrow"><span class="cert">抗菌</span></div><div class="price"><span class="gate">登录后查看项目报价</span></div></div></div>
+          <div class="pkg" data-v="restaurant" data-order="4" data-goto="page-package"><div class="ph"><svg class="icon"><use href="#i-store"/></svg></div><div class="bd"><h4>餐厅卡座套餐</h4><p class="it">卡座＋餐桌＋4 把餐椅</p><div class="certrow"><span class="cert">对标 CAL133 标准</span></div><div class="price"><span class="gate">登录后查看项目报价</span></div></div></div>
+          <div class="pkg" data-v="office" data-order="5" data-goto="page-package"><div class="ph"><svg class="icon"><use href="#i-desk"/></svg></div><div class="bd"><h4>开放办公区套餐</h4><p class="it">4 个工位＋4 把办公椅</p><div class="certrow"><span class="cert">对标 BIFMA 标准</span></div><div class="price"><span class="gate">登录后查看项目报价</span></div></div></div>
+        </div>
+      </section>
+
+      <div class="note warn ffe-registration-note" data-state="registration-note"><svg class="icon"><use href="#i-cert"/></svg><span><strong>项目登记。</strong>登记命名项目后，我们的团队会人工审核并跟进，帮助维护项目报价的稳定性与保护性。（自动独家保护属后 MVP；当前为登记入口＋人工跟进。）</span></div>
+
+      <p class="fnote" style="margin:22px 0 0;text-align:center">不确定从哪开始？<a data-goto="page-contact" style="color:var(--accent);cursor:pointer;text-decoration:underline">联系顾问</a></p>
+    </div>
+  </section>
+
+  <!-- ================================================================
+       页 5 · 套餐详情页（NR-12 核心页）
+  ================================================================= -->
+  <section class="page" id="page-package" data-nr="NR-12 核心 · NR-05" data-ptitle="套餐详情页">
+    <div class="wrap" style="padding-top:34px">
+      <p class="crumb"><a data-goto="page-home">首页</a> / <a data-goto="page-ffe">FF&amp;E 套餐</a> / 酒店 / 标准客房套餐</p>
+      <span class="cbadge">FF&amp;E 项目模板 · 跨档打包容器</span> <span class="cbadge" style="background:var(--paper);color:var(--muted)">每产品设最低购买量</span>
+      <h1 class="t serif" style="margin-top:4px">酒店标准客房套餐 · 现代简约</h1>
+
+      <div class="pdp-grid" style="padding-top:18px">
+        <!-- 场景图集（轻品牌水印示意） -->
+        <div>
+          <div class="imgblk gallery-main wm"><svg class="icon"><use href="#i-bed"/></svg><span class="cap">客房场景图 · 占位（轻品牌水印示意）</span></div>
+          <div class="thumbs">
+            <div class="imgblk wm"><svg class="icon"><use href="#i-bed"/></svg></div>
+            <div class="imgblk wm"><svg class="icon"><use href="#i-desk"/></svg></div>
+            <div class="imgblk wm"><svg class="icon"><use href="#i-chair"/></svg></div>
+          </div>
+          <p class="fnote">场景图为营销素材，带轻品牌水印展示。</p>
+        </div>
+
+        <!-- 概述 + CTA -->
+        <div>
+          <div class="kv" style="grid-template-columns:1fr 1fr;margin-top:0">
+            <div class="cell"><span>适用业态</span><b>酒店</b></div>
+            <div class="cell"><span>适配房型</span><b>标准双床 / 大床房</b></div>
+            <div class="cell"><span>风格</span><b>现代简约</b></div>
+            <div class="cell"><span>适配规模</span><b>80–200 间项目</b></div>
+          </div>
+
+          <div class="note" style="margin-top:14px">本套餐是一个<b>打包采购模板</b>：每个产品可分别按<b>现货／半定制</b>两种方案采购，各自有起订量。全部行项最终<b>汇总为一张整单报价</b>（USD 计价）。<br><b>付款计划</b>（v4.9 口径，<span style="color:var(--faint)">措辞随契约定稿</span>）：<b>现货行全额</b>＋<b>半定制行 30%</b> 合为<b>首期</b>；<b>半定制行余下 70%</b> 为<b>尾期，发货前付清</b>。<b>不提供信用账期</b>。</div>
+
+          <div style="display:grid;gap:10px;max-width:420px">
+            <button class="btn pri lg" onclick="startProject()">以此套餐立项</button>
+            <button class="btn lg" data-goto="page-contact">联系顾问</button>
+            <button class="btn lg gh" type="button" onclick="openBasket()">或：自行组合产品建项目 →</button>
+          </div>
+
+          <!-- 半定制行未达起订量时的立项阻断提示（v3.3／v3.6 全硬拦截） -->
+          <div class="note warn hidden" id="pkgBlockNote" style="margin-top:14px"></div>
+
+          <div class="note warn po" style="margin-top:14px">您当前<b>未登录</b>：可浏览全部套餐详情与最低购买量；批发价与参考价需登录后可见，「以此套餐立项」需登录并通过商户审核，点按后将引导注册。</div>
+
+          <!-- 未登录点立项 → 引导注册卡片 -->
+          <div class="card hidden" id="regGuide" style="margin-top:14px;border-color:var(--accent)">
+            <h3>立项前，请先完成商户注册</h3>
+            <p>套餐立项需要商户账号并通过审核。注册后审核通过即自动开通账号，届时可一键以本套餐发起 FF&amp;E 立项。</p>
+            <button class="btn pri" data-goto="page-merchant">前往注册申请</button>
+          </div>
+
+          <div class="card" style="margin-top:14px">
+            <h3>「以此套餐立项」会发生什么</h3>
+            <ul>
+              <li>生成一个 <b>FF&amp;E 项目容器</b>，套餐各行按您所选方案分别展开；</li>
+              <li><b>现货行</b>=项目行记录，按批发价并入整单，不单独走购物车结账；</li>
+              <li><b>半定制行</b>=已按常用配置预设，立项后可在项目中调整配置；正式价由我们人工核定；</li>
+              <li>项目容器<b>仅含以上两档</b>（现货／半定制）；<b>如需全定制</b>，请另行提交<b>独立的全定制 RFQ</b>——全定制不进项目单，两者各自成单、各自报价；</li>
+              <li>项目视图聚合各行进度；<b>整单一次报价</b>，立项后即进入报价环节，不设设计确认等待；</li>
+              <li>演示联动：已登录点击后跳转「报价工作台原型」RFQ 提交页（携带套餐预填说明条）。</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- 行项清单（v2.7 跨档模板形态） -->
+      <section class="sect" style="padding-top:12px">
+        <h2 class="t serif" style="font-size:22px">行项清单（按 48 间客房规模预设）</h2>
+        <p style="font-size:13px;color:var(--muted);margin:0 0 14px">每个产品一行，<b>逐行选择采购方案</b>（套餐行仅限<b>现货／半定制</b>，默认方案按本套餐定义）。价格随方案变化——现货显批发价、半定制显参考价。如需全定制，请走<b>独立的全定制 RFQ</b>（全定制不进项目单）。</p>
+        <div class="xt">
+          <div class="xt-head"><span>产品 / 品类</span><span>采购方案（可切换）</span><span>套餐最低量 / 产品起订量</span><span>数量</span><span>价格 / 小计</span></div>
+          <div id="pkgRows"></div>
+        </div>
+        <div class="totalbar" id="pkgTotal"></div>
+        <p class="fnote">量规：<b>现货行</b>＝套餐最低量不可减少，按整箱/整托取整；<b>半定制行</b>＝套餐最低量与产品起订量取较大者（系统拦截）；整单另有最低成交金额要求，见下。<br>半定制行已按常用配置预设，立项后可在项目中逐行调整；参考价随配置变化。<br>来源标记说明：立项后行项带两层来源标记——行级（我方预填行 / 客户自选行）＋字段级（默认未改 / 客户修改）。特殊需求请写行级备注，工程师会与您确认。</p>
+      </section>
+
+      <!-- 可定制说明（v4.9⑥：全定制不进项目单，原「交付三件套」说明条件永不成立，已删） -->
+      <section class="sect" style="padding-top:0">
+        <div class="pgrid c3" style="grid-template-columns:1fr;gap:18px;max-width:680px">
+          <div class="card">
+            <h3>可定制说明</h3>
+            <ul>
+              <li>全部行项可增、删、改，数量按项目规模调整；</li>
+              <li>尺寸、颜色、材质按品类模板档位选择；</li>
+              <li>档位之外的特殊需求写行级备注或项目补充说明（人读沟通信息，工程师确认后落入设计）；</li>
+              <li>提交前有整表摘要页，可区分默认值与已修改项。</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+    </div>
+  </section>
+
+  <!-- ================================================================
+       页 7 · 商户注册与状态页（NR-01 客户侧）
+  ================================================================= -->
+  <section class="page" id="page-merchant" data-nr="NR-01" data-ptitle="商户注册与状态页">
+    <div class="wrap" style="padding-top:34px">
+      <p class="crumb"><a data-goto="page-home">首页</a> / 商户注册</p>
+      <h1 class="t serif">商户注册与审核状态</h1>
+      <p class="lead" style="margin-bottom:10px">提交企业资质，审核通过后您将收到<b>激活邮件</b>。开通前无需账号——申请状态通过<b>确认邮件中的专属链接</b>查看（免登录，同一链接随状态变形）。您的账户状态只会是以下五档之一：审核中／请补充材料／未通过／正常使用／账户已停用，请联系客服。</p>
+
+      <div class="statusline">
+        <span class="st">① 提交申请</span><span class="arr">→</span>
+        <span class="st">② 提交成功（确认邮件已发送）</span><span class="arr">→</span>
+        <span class="st">③ 专属链接状态页（随状态变形）</span>
+        <span class="arr">｜</span>
+        <span class="st">④ 链接过期：输邮箱重发</span>
+      </div>
+
+      <div class="segbar">
+        <button class="on" id="mstab0" onclick="merchantStep(0)">① 提交申请</button>
+        <button id="mstab1" onclick="merchantStep(1)">② 提交成功页</button>
+        <button id="mstab2" onclick="merchantStep(2)">③ 状态页（专属链接）</button>
+        <button id="mstab3" onclick="merchantStep(3)">④ 链接过期页</button>
+      </div>
+      <p class="fnote" style="margin:0 0 18px">↑ 四页联动演示：提交表单 → 提交成功页 → 模拟从邮件专属链接进入状态页（免登录，页内演示开关切换五形态）→ 链接过期重发。内部七态对客坍缩为五档：submitted / provisioning / provision_failed→审核中；need_info→请补充材料；rejected→未通过；active→正常使用；suspended→账户已停用，请联系客服。</p>
+
+      <!-- 四页① 提交申请表单 -->
+      <div id="msv0">
+        <form class="form" onsubmit="event.preventDefault();merchantStep(1);toast('已提交（原型演示）——申请编号 MA-2026-0730-018，确认邮件已发送');">
+          <div class="frow">
+            <div class="fld"><label>公司名称 *</label><input placeholder="例：Westline Home Inc."></div>
+            <div class="fld"><label>业务类型 *</label>
+              <select><option>家居零售商</option><option>工程经销商</option><option>FF&amp;E 项目方</option><option>其他企业买家</option></select>
+            </div>
+          </div>
+          <div class="frow">
+            <div class="fld"><label>国家.地区 *</label><input value="美国" placeholder="美国"></div>
+            <div class="fld"><label>州 *</label><input placeholder="例：CA"></div>
+          </div>
+          <div class="frow">
+            <div class="fld"><label>税号（EIN）*</label><input placeholder="12-3456789"></div>
+            <div class="fld"><label>公司官网（选填）</label><input placeholder="https://"></div>
+          </div>
+          <div class="frow">
+            <div class="fld full"><span class="flabel">转售证书 / 企业资质上传 *</span>
+              <div class="upl" onclick="toast('文件选择占位（原型演示）')">点击上传文件（PDF / 图片）· 占位</div>
+            </div>
+          </div>
+          <div class="frow">
+            <div class="fld"><label>联系人姓名 *</label><input placeholder="姓名"></div>
+            <div class="fld"><label>职务</label><input placeholder="例：采购经理"></div>
+          </div>
+          <div class="frow">
+            <div class="fld"><label>邮箱 *</label><input type="email" placeholder="name@company.com"></div>
+            <div class="fld"><label>电话 *</label><input placeholder="+1 ..."></div>
+          </div>
+          <div class="frow">
+            <div class="fld full"><label>业务简介</label><textarea placeholder="主营品类、销售渠道、年采购规模等"></textarea></div>
+          </div>
+          <button class="btn pri lg" type="submit">提交注册申请</button>
+          <p class="fnote">提交后进入「提交成功页」：确认邮件内含免登录专属链接，随时可查进度；审核通过后您将收到激活邮件。</p>
+        </form>
+      </div>
+
+      <!-- 四页② 提交成功页 -->
+      <div id="msv1" class="hidden">
+        <div class="stbanner ok" style="max-width:680px">
+          <b>申请已提交</b>
+          申请编号：MA-2026-0730-018。确认邮件已发送，可随时通过邮件中的专属链接查看进度。
+        </div>
+        <div class="card" style="max-width:680px">
+          <h3>接下来会发生什么</h3>
+          <ul>
+            <li>状态查看不依赖账号：确认邮件内含<b>专属链接（免登录）</b>，同一链接会随您的申请状态变化展示对应内容；</li>
+            <li>审核有结果、需要补充材料或账户开通时，我们都会邮件通知您（提交回执／退回补件／拒绝通知／激活邮件）；</li>
+            <li>链接 30 天有效，过期可用邮箱重发。</li>
+          </ul>
+          <div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap">
+            <button class="btn pri" onclick="merchantStep(2)">模拟：打开邮件中的专属链接 →</button>
+            <button class="btn" onclick="merchantStep(3)">模拟：30 天后链接已过期 →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 四页③ 状态页（模拟从邮件魔法链接进入，免登录，随状态变形） -->
+      <div id="msv2" class="hidden">
+        <div class="card" style="max-width:680px;border-color:var(--accent);margin-bottom:14px">
+          <div style="font-size:12px;color:var(--faint);margin-bottom:6px">申请进度查询 · 免登录专属链接（模拟自确认邮件进入）</div>
+          <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;font-size:13.5px">
+            <span>申请编号：MA-2026-0730-018</span><span style="color:var(--faint)">提交时间：2026-07-30</span>
+          </div>
+        </div>
+        <div class="chips" style="margin:0 0 16px;max-width:680px">
+          <span style="font-size:12.5px;color:var(--faint);align-self:center">演示开关（同一链接随状态变形，五形态）：</span>
+          <button class="chip on" id="sstab0" onclick="statusForm(0)">审核中</button>
+          <button class="chip" id="sstab1" onclick="statusForm(1)">请补充材料</button>
+          <button class="chip" id="sstab2" onclick="statusForm(2)">未通过</button>
+          <button class="chip" id="sstab3" onclick="statusForm(3)">正常使用</button>
+          <button class="chip" id="sstab4" onclick="statusForm(4)">账户已停用</button>
+        </div>
+
+        <!-- 形态① 审核中 -->
+        <div id="ssv0">
+          <div class="stbanner dim" style="max-width:680px">
+            <b>当前状态：审核中</b>
+            我们正在审核您的申请与资质材料。预计时效：一般 1–3 个工作日内出结果（示意占位值，正式时效以契约定稿为准）；有结果后将第一时间邮件通知您，期间无需任何操作。
+          </div>
+        </div>
+
+        <!-- 形态② 请补充材料（差量补件） -->
+        <div id="ssv1" class="hidden">
+          <div class="stbanner warn" style="max-width:680px">
+            <b>当前状态：请补充材料</b>
+            退回原因（客服备注）：转售证书扫描件不清晰，无法核验有效期；请补充主要采购渠道说明与线上经营佐证。
+          </div>
+          <form class="form" onsubmit="event.preventDefault();statusForm(0);toast('补充材料已提交（原型演示）——当前状态：审核中');">
+            <p style="font-size:12.5px;color:var(--faint);margin:0 0 14px">差量补件：仅需补充以下被指出的 3 项，其余资料保留原提交内容、本页不再回显。</p>
+            <div class="frow">
+              <div class="fld full"><span class="flabel">1. 转售证书（重新上传）*</span>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                  <div class="upl" onclick="toast('文件选择占位（原型演示）')">选择文件（PDF / 图片）</div>
+                  <div class="upl" onclick="toast('调用相机占位（原型演示）——手机打开本链接可直接拍照上传')">📷 拍照上传（手机适用）</div>
+                </div>
+              </div>
+            </div>
+            <div class="frow">
+              <div class="fld full"><label>2. 主要采购渠道说明 *</label><textarea placeholder="请补充说明贵司主要采购/分销渠道"></textarea></div>
+            </div>
+            <div class="frow">
+              <div class="fld full"><label>3. 公司官网或线上店铺链接 *</label><input placeholder="https://（用于核验经营真实性）"></div>
+            </div>
+            <div class="frow">
+              <div class="fld full"><label>其他说明（选填附言）</label><textarea placeholder="退回项之外如有需要主动说明的情况，请写在这里"></textarea></div>
+            </div>
+            <button class="btn pri lg" type="submit">提交补充材料</button>
+            <p class="fnote">本页为手机友好页面：在手机上打开邮件中的专属链接，即可直接拍照上传。提交后状态回到「审核中」。</p>
+          </form>
+          <div class="card" style="max-width:680px;margin-top:14px">
+            <h3>也可将材料直接发送给客服，我们代为提交</h3>
+            <p style="margin-bottom:10px">任选一个通道发送材料，客服核对后会代您提交入档：</p>
+            <div style="display:flex;gap:10px;flex-wrap:wrap">
+              <a class="btn" href="tel:+15550120188"><svg class="icon"><use href="#i-phone"/></svg>电话</a>
+              <a class="btn" href="https://wa.me/15550120188?text=%E6%82%A8%E5%A5%BD%EF%BC%8C%E6%88%91%E8%A6%81%E8%A1%A5%E4%BA%A4%E5%95%86%E6%88%B7%E7%94%B3%E8%AF%B7%E6%9D%90%E6%96%99%EF%BC%8C%E7%94%B3%E8%AF%B7%E7%BC%96%E5%8F%B7%20MA-2026-0730-018"><svg class="icon"><use href="#i-chat"/></svg>WhatsApp 发材料</a>
+              <a class="btn" href="mailto:trade@madehall.com"><svg class="icon"><use href="#i-mail"/></svg>邮件发材料</a>
+              <button class="btn" data-goto="page-contact"><svg class="icon"><use href="#i-form"/></svg>联系表单</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 形态③ 未通过 -->
+        <div id="ssv2" class="hidden">
+          <div class="stbanner bad" style="max-width:680px">
+            <b>当前状态：未通过</b>
+            原因摘要（客服备注）：所提交资质与批发采购场景不符，未能核验企业转售资格。
+          </div>
+          <div class="card" style="max-width:680px">
+            <h3>可重新申请</h3>
+            <p>未通过不影响再次申请：修改或补全资料后重新提交即可，我们将重新审核。</p>
+            <button class="btn pri" onclick="merchantStep(0);toast('已返回申请表单，可修改资料后重新提交')">重新提交申请</button>
+          </div>
+        </div>
+
+        <!-- 形态④ 正常使用（已开通，引导前往登录） -->
+        <div id="ssv3" class="hidden">
+          <div class="stbanner ok" style="max-width:680px">
+            <b>当前状态：正常使用</b>
+            审核已通过，您的账户已开通——激活邮件已发送至 name@company.com。请前往登录，登录后即见贵司批发价。
+          </div>
+          <div class="card" style="max-width:680px">
+            <h3>前往登录</h3>
+            <p>点击激活邮件内链接完成激活，或直接登录开始采购：现货下单、半定制配置询价、全定制 RFQ、FF&amp;E 套餐立项。</p>
+            <div style="display:flex;gap:10px;flex-wrap:wrap">
+              <button class="btn pri" onclick="setLogin(true);showPage('page-residential')">前往登录（演示）</button>
+              <button class="btn" data-goto="page-ffe">浏览 FF&amp;E 套餐</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 形态⑤ 账户已停用 -->
+        <div id="ssv4" class="hidden">
+          <div class="stbanner bad" style="max-width:680px">
+            <b>当前状态：账户已停用，请联系客服</b>
+            您的账户目前无法下单或查看批发价。如需了解原因或恢复使用，请联系客服，我们会为您跟进处理。
+          </div>
+          <div class="card" style="max-width:680px">
+            <h3>联系客服</h3>
+            <p>电话、WhatsApp、邮件或联系表单均可，工作时间见联系客服页。</p>
+            <button class="btn pri" data-goto="page-contact">前往联系客服</button>
+          </div>
+        </div>
+
+        <p class="fnote" style="max-width:680px;margin-top:16px">安全说明：本链接仅展示申请状态五档文案与补件表单，令牌一次性绑定本申请，不回显您已提交的资料；链接 30 天有效，过期可用邮箱重发。</p>
+      </div>
+
+      <!-- 四页④ 链接过期页 -->
+      <div id="msv3" class="hidden">
+        <div class="stbanner warn" style="max-width:680px">
+          <b>链接已过期</b>
+          您的专属查询链接已超过 30 天有效期。输入申请时使用的邮箱，我们将重发新的专属链接。
+        </div>
+        <form class="form" onsubmit="event.preventDefault();toast('若该邮箱有申请记录，新的专属链接已发送（原型演示）');">
+          <div class="frow">
+            <div class="fld full"><label>申请时使用的邮箱 *</label><input type="email" placeholder="name@company.com"></div>
+          </div>
+          <button class="btn pri lg" type="submit">重发专属链接</button>
+          <p class="fnote">收不到邮件或丢失链接？也可通过<a data-goto="page-contact" style="color:var(--accent);cursor:pointer">联系客服</a>（电话 / WhatsApp / 邮件 / 表单）查询进度并重发。</p>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================================
+       页 8 · 联系客服页（NR-13）
+  ================================================================= -->
+  <section class="page" id="page-contact" data-nr="NR-13" data-ptitle="联系客服页">
+    <div class="wrap" style="padding-top:34px">
+      <p class="crumb"><a data-goto="page-home">首页</a> / 联系客服</p>
+      <h1 class="t serif">联系客服</h1>
+      <p class="lead" style="margin-bottom:14px">中美双时段客服团队覆盖美国营业时间。四种方式任选其一：电话、WhatsApp、邮件或联系表单——点击即可发起，也可复制联系方式后自行联系。</p>
+
+      <div class="hourstrip">
+        <span><b><svg class="icon"><use href="#i-clock"/></svg> 中国团队工作时间</b>周一至周六 09:00–18:00（北京时间，UTC+8）</span>
+        <span><b><svg class="icon"><use href="#i-clock"/></svg> 美国团队工作时间</b>周一至周五 09:00–17:00（美国东部时间 ET，UTC−5 / 夏令时 UTC−4）</span>
+        <span><b><svg class="icon"><use href="#i-check"/></svg> 双班衔接</b>跨时区双班次覆盖，工作时段内均有专人响应</span>
+      </div>
+
+      <div class="contact-layout">
+        <div class="contact-methods" aria-label="客服联系方式">
+          <div class="chcard compact">
+            <div class="ic g"><svg class="icon"><use href="#i-phone"/></svg></div>
+            <div><h3>电话</h3><p>工作时间内可联系值班客服。</p></div>
+            <div class="contact-value"><a class="btn pri" href="tel:+15550120188">拨打 +1 (555) 012-0188</a><button class="btn" type="button" data-copy="+1 (555) 012-0188" onclick="copyContact(this)">复制号码</button></div>
+          </div>
+
+          <div class="chcard compact">
+            <div class="ic g"><svg class="icon"><use href="#i-chat"/></svg></div>
+            <div><h3>WhatsApp</h3><p>点击直接发起会话，消息已按您的来源页与品类预填。<span id="cfWaCtx" style="color:var(--faint)"></span></p></div>
+            <div class="contact-value"><a class="btn pri" id="cfWaLink" href="https://wa.me/15550120188">发起 WhatsApp 会话</a><button class="btn" type="button" data-copy="+1 (555) 012-0188" onclick="copyContact(this)">复制号码</button></div>
+          </div>
+
+          <div class="chcard compact">
+            <div class="ic g"><svg class="icon"><use href="#i-mail"/></svg></div>
+            <div><h3>邮件</h3><p>适合附带图纸、清单与项目资料的详细咨询。</p></div>
+            <div class="contact-value"><a class="btn pri" id="cfMailLink" href="mailto:trade@madehall.com">发送邮件</a><button class="btn" type="button" data-copy="trade@madehall.com" onclick="copyContact(this)">复制邮箱</button></div>
+          </div>
+        </div>
+
+        <div class="chcard contact-form-card">
+          <div class="ic g"><svg class="icon"><use href="#i-form"/></svg></div>
+          <h3>联系表单</h3>
+          <p>留下需求和可回复邮箱，客服将通过邮箱与您联系。表单会自动携带您的来源页与品类信息。</p>
+          <form onsubmit="event.preventDefault();submitContactForm();">
+            <div class="frow" style="grid-template-columns:1fr 1fr">
+              <div class="fld"><label>姓名 *</label><input placeholder="姓名"></div>
+              <div class="fld"><label>公司 *</label><input placeholder="公司名称"></div>
+            </div>
+            <div class="frow" style="grid-template-columns:1fr">
+              <div class="fld"><label>邮箱 *</label><input type="email" placeholder="name@company.com"></div>
+            </div>
+            <div class="frow" style="grid-template-columns:1fr">
+              <div class="fld"><label>咨询品类 *</label>
+                <select id="cfCat" onchange="cfCatChange()">
+                  <option value="">请选择品类</option>
+                  <option>沙发</option><option>床架</option><option>餐桌</option><option>餐椅</option>
+                  <option>休闲椅</option><option>吧椅</option><option>茶几与边几</option><option>储物柜</option>
+                  <option>衣柜</option><option>户外家具</option><option>接待台</option><option>行政办公桌</option>
+                  <option>会议桌</option><option>工位 / 办公桌系统</option><option>升降桌</option><option>文件柜</option>
+                  <option>办公任务椅</option><option>行政办公椅</option><option>会议椅</option>
+                  <option>FF&amp;E 整案 / 套餐</option>
+                  <option value="__other__">未在列表中 / 其他</option>
+                </select>
+              </div>
+            </div>
+            <div class="frow hidden" id="cfCatOtherRow" style="grid-template-columns:1fr">
+              <div class="fld"><label>请填写您需要的品类 *</label><input id="cfCatOther" placeholder="例：吧台高脚桌、医疗护理床…"></div>
+            </div>
+            <div class="frow" style="grid-template-columns:1fr">
+              <div class="fld"><label>咨询内容 *</label><textarea placeholder="请描述您的需求，如尺寸规模、项目背景、定制想法等"></textarea></div>
+            </div>
+            <!-- 来源页：隐藏字段，随表单提交；下方摘要行可见 -->
+            <input type="hidden" id="cfSrcPage" value="首页">
+            <p class="fnote" style="margin:0 0 12px">来源页（随表单自动提交）：<b id="cfSrcPageShow">首页</b></p>
+            <button class="btn pri" type="submit">提交咨询</button>
+            <p class="fnote">品类信息用于统计需求缺口，同一品类反复出现将触发新增品类模板。</p>
+          </form>
+        </div>
+      </div>
+
+      <div class="note" style="margin-top:22px">场景化入口说明：除本页与全站页脚联系块外，RFQ 提交界面的品类选择处另有「没找到您的品类？联系客服」场景化入口——已联动：<a href="Fabbrio_quote_workspace_ZH_target.html#pg-rfq-cats" style="text-decoration:underline">打开报价工作台原型 · RFQ 提交「品类选择」步骤 ↗</a></div>
+    </div>
+  </section>
+
+  <!-- ================================================================
+       附录（文件底部两张表）
+  ================================================================= -->
+  <section class="page" id="page-appendix" data-nr="附录" data-ptitle="附录">
+    <div class="wrap" style="padding-top:34px">
+      <h1 class="t serif">附录</h1>
+      <p class="lead" style="margin-bottom:22px">①页面 × NR 对照表；②统一状态中文文案表；③疑似矩阵缺陷清单（只登记、不改口径）；④跨文件联动映射（与报价工作台原型）。内容事实源：《00-需求差异矩阵 v4.10（基线 v2.3 终审通过）》——已吸收 v2.4~v2.7 各轮、v3.1（变更管理对客露出，本文件不出报价单与订单页，故不适用）、v3.2（四条冲突裁决，其中 D-10/D-11/D-12 涉本文件）、<b>v3.3（D-11 作用域订正：量校验按档位分支，软线仅对 Tier3 行成立）、v3.4（甲-窄：预设套餐模板行仅限现货／半定制，FF&amp;E 容器与自组项目不受限）、v3.5（容器内 Tier2 行预设默认配置，配置入口在项目行内；本文件为立项前展示面，只展示不提供修改入口）、v3.6（现货行不设生产 MOQ，仅套餐最低量＋包装单位；整单最低成交金额〔回填⑬〕与独立散买数量门槛〔回填⑭〕）、v3.7（整单最低成交金额的校验时点〔两端口径〕：客户端立项软提示不阻断／内部报价发布前硬校验）、v3.8（PDP CTA 口径：不设 Tier3 全定制入口；「以本品为参考发起 RFQ」列为禁用措辞）、v3.9（十一节原型走查待裁清单建账，<b>无口径影响</b>——本文件附录③ 原 15 条已并入矩阵十一节 A 组统一挂账；本轮执行中新发现 D-16／D-17 两条，<b>尚待并入</b>）、v4.0（E2E 实测驱动的 12 条裁决，涉本文件五项：<b>①PDP CTA 口径改述</b>＝两个交易档位入口＋一个 FF&amp;E 项目收集入口共三按钮，「加入项目」为容器操作、与档位选择正交、须视觉分层，仍不设 Tier3 入口；<b>②Tier3 入口合法落位</b>＝导航栏＋页 1A band＋首页三档卡（判据：视图不呈现具体 SKU 即可设），PDP 及任何 SKU 级组件不得设；<b>③行级来源标记改称谓</b>＝我方预填行／客户自选行；<b>⑤NR-16 三词界定</b>＝散单 Quote／项目级 Quote／行级 RFQ，三词不得混用；<b>⑦A→B 立项跳转须传来源参数</b> <code>?src=pack</code>／<code>?src=custom</code>）、v4.1（客户端信息架构＋定价口径，涉本文件三项：<b>①三域划分</b>——A 店面＝售前公开域／B 工作台＝登录后交易域〔判据精确化：交易流程<b>特指自研 FF-DB 侧</b>〕／<b>S 域＝Shopify 托管域</b>〔仅覆盖独立散买 Tier1 的下单段：购物车·结账·支付，A 只承载入口按钮；容器内 Tier1 行不走 S 域〕——本条系本文件 A2-① 边界自查登记 D-18 后所补，已收进矩阵十一节 <b>A-18（已裁 v4.1）</b>；<b>⑤Tier1 订单查看回 B「订单」统一列表</b>〔沿用 NR-04 v2.4 BFF 实时反查 Shopify〕；<b>⑧交易条款改判＝DDP 到门</b>，我方负责配送，尾程并入定价不再单列，仓储费维持条款制不变）、<b>v4.2</b>（成本切分收口＋补收通道改判＋导航归属补白）＝<b>不涉本文件</b>——cost_breakdown 八项与定价公式五段属内部成本域，补收落区6 登记与 B【订单】呈现，导航归属式高亮属 B 稿左导航；<b>v4.3</b>（跨域互链入口表＋Quote 状态集分层 B-07＋面包屑 leaf 后缀式）＝<b>不涉本文件</b>——全属 B 稿工作台 IA 与报价域；<b>v4.4</b>（客户端 BOM 改填部件级取材表＋撤销 v2.7 客户端规格行＋人工代录判据成节）＝<b>不涉本文件</b>——落 B 稿 RFQ 提交页，本文件不出 BOM 与报价单；<b>v4.5</b>（业务断链批量修复＋B-29 CAD 删除仅提交前可用＋NR-06 轮次卡可点开）＝<b>不涉本文件</b>——9 处断链全在 B 稿；<b>v4.6</b>（订单域交互口径收口）＝<b>涉本文件一处</b>：Tier1 独立散买订单在 B【订单】<b>列表可见但不可下钻</b>（<code>PO-*</code> 行不落 FF-DB 状态机、详情在商城侧），故本文件页 3 的 S 域说明已随 v4.8／B12-② 收口为「<b>可在订单列表中查看状态，详情在商城侧</b>」，不承诺下钻详情；<b>v4.7</b>（产品级「可售档位集合」白名单，裁毕 A-02／B-17）＝<b>涉本文件两项</b>：①<b>PDP CTA 显隐按可售档位集合</b>——含 T1 显加购／含 T2 显配置器，<b>与有无定价规则无关</b>（NR-02 验收条件：无规则品类不显参考价但仍可提交询价），仅 T3 的产品两个交易 CTA 均不显、只留「加入项目」与全定制说明；②<b><code>allow</code> 语义升为产品可售档位集合</b>（可含 t3），<b>套餐模板行渲染时按 ∩{t1,t2} 过滤</b>——v3.4 甲-窄口径不变，现有八行取值未动故表现一致；白名单维护随 <b>G5 留开发</b>，C 稿区5 仅只读查看；<b>v4.8</b>（C 稿双报告复核收口＋单号体系订正＋v4.7 过滤规则精确化，六条拍板逐条如下）——<b>①状态文案共享基线（X-09 裁毕）</b>＝<b>涉本文件</b>：共享基线取<b>对客文案</b>，内部标签各稿自立分表并明标「非共享表」；本文件附录② <code>design_review</code>＝「<b>待您确认设计</b>」，实测即共享基线值，<b>无需改动</b>；<b>②单号体系统一 <code>SO-*</code></b>（原 <code>ORD-xxxx</code> 系行文示例、非编码决定）＝<b>不涉本文件</b>——本文件不出订单号（<code>ORD-</code>／<code>SO-</code>／<code>PO-</code>／<code>SC-</code> 实测均 0 命中）；<b>③B-07 约束内部队列</b>（「报价制作中」的 Tier3 散单与 FF&amp;E 项目单不冠 <code>Q-</code>、改承载实体标识 <code>RFQ-</code>／<code>PRJ-</code>）＝<b>不涉本文件</b>——属 C 稿区5 询价队列；<b>④区5 补「套餐最低量／MOQ 人工核减」动作</b>＝<b>不涉本文件</b>——该通道<b>对客不明示</b>（商务运营按项目核减、强制附理由＋AuditLog、不改模板），本文件对客侧维持「<b>套餐最低量不可减少</b>」硬表述不变；<b>⑤v4.7 三处过滤规则精确化为按行类型三分</b>（区9 套餐模板定义行 ∩{T1,T2}／套餐立项后的项目预填行 ∩{T1,T2}／客户自选行不过滤）＝<b>涉本文件</b>：本文件套餐模板行已按 <code>tmplTiers()</code> 取 ∩{T1,T2}，与精确化后口径一致、<b>无需改动</b>；项目篮为选品收集、不承载档位选择（甲案），不在本分类射程；<b>⑥白名单缺项＝显式故障</b>（不得静默放行，原型标红、正式实现拒绝上架）＝<b>涉本文件·待处理</b>：本文件 <code>renderPdpCta()</code> 现对未登记 SKU <b>回落默认演示品</b>而非显式标记，属该口径要堵的静默放行；本批硬边界为「不改 CTA 逻辑」，故<b>只登记不改</b>，见附录③ D-19</b>；<b>v4.9</b>（负责人走查驱动的契约级重定义：第三次契约级推翻＋授信模型撤销＋付款阶段与收款载体成文，七条裁定逐条如下）——<b>①撤销 staff 代录立项</b>（NR-13 收口为「品类未覆盖 → 四通道联系客服 → 客服登记入飞书 Base → 品类计数触发补模板」）＝<b>不涉本文件</b>：本文件只承载客户侧四通道入口，从不出现代录界面；<b>②不设批发等级</b>（删「批发等级／标准档」表述，但<b>保留 Catalog/Price List 分配</b>）＝<b>不涉本文件</b>：「批发等级」去标签全文计数 <b>0</b>，本文件从未按等级分档展示价格；<b>③「账期」语义重定义为「付款计划」</b>（矩阵/Shopify 的「账期」＝Net terms＝<b>信用期</b>，与负责人口径的<b>分阶段付款</b>方向相反；全域改称并写死「<b>不提供信用账期</b>」）＝<b>涉本文件·已改</b>：本轮删除全部 6 处「批发价与账期」类旧表述（公告条／首页角色卡／注册 band／住宅目录 lead／PDP 批发与交付／状态页形态④），并在 PDP「批发与交付」补「不提供信用账期，付款按档位分阶段」一句；<b>④付款阶段成文</b>（Tier1 一次性全额；Tier2 30% 定金＋70% 发货前付清；<b>项目单内按档分别计收</b>——现货行全额＋半定制行 30% 为首期、半定制行 70% 为尾期）＝<b>涉本文件·已改</b>：套餐页概述与整单条均已由旧口径「按整单 30% 定金」改为按档计收的付款计划占位，并标注「措辞随契约定稿」（回填⑫ 同族）；<b>⑤新增门控 <code>ready_to_ship→shipped</code> 前置＝尾款结清</b>＝<b>不涉本文件</b>：本文件不展示订单状态机（生产段六档由报价工作台原型承载）；<b>⑥★ 第三次契约级推翻——全定制不进项目单</b>（FF&amp;E 容器由跨三档<b>收窄为 T1／T2 两档</b>，全定制一律走独立散单 RFQ；NR-04 整条失效、项目单永远「立项即进 pricing」无设计环无「最慢行」门控、SLA 只剩 24h 档、NR-12 三件套说明条件永不成立、v4.7·v4.8 的「按行类型三分」<b>简化为一分</b>）＝<b>涉本文件·本批主项</b>：删交付三件套说明卡、删量规「全定制行」分支、删「立项后可新增全定制行」类表述与「最慢的全定制行」门控、项目篮与 FF&amp;E 页文案改两档口径、附录④「自选行三档可选」跟改为 ∩{T1,T2}；<b>代价如实记</b>——v2.7「一张合同解决」主线不再成立，客户须开两张单；<b>⑦收款载体统一走 Shopify 建单</b>（首期／尾款／补收同一条路，自研侧零支付集成；对账由 1:1 改 1:N；尾款订单标「尾款 · 关联 <code>SO-xxxx</code>」）＝<b>不涉本文件</b>：本文件不出订单与单号（<code>SO-</code>／<code>PO-</code>／<code>SC-</code> 实测均 0 命中）；<b>v4.10</b>（Tier2 类型承载改判 W8-01 ＋ A-07 裁毕，负责人两条拍板）——<b>①W8-01：Tier2 半定制类型＝Shopify SPU 下的「参考变体」</b>（平铺枚举＋metafield 标属性与身份，每变体带类型图与人工预录参考价；前端选择框由枚举反推＋联动收敛；<b>规则引擎退出 Tier2 参考价场景</b>，登契约推翻清单第 17 行；连带 G5 高频半场景消失、可售档位集合改<b>派生</b>——含 T1＝有备货变体／含 T2＝有参考变体／含 T3＝品类有模板）＝<b>涉本文件·口径同构平移、对客表达零改动</b>：本文件不承载配置器与规则参数面（均在 B/C 稿），受影响的只有「无规则品类不显参考价、但仍可提交询价」这一条 NR-02 验收条件的<b>依据名词</b>——v4.10 明写其与「价格未确认的类型打标→前端不显价、仅可询价」<b>同构平移</b>，故套餐半定制行的对客文案「该产品暂无在线参考价，正式价由我们核定后随整单报价出具」<b>不变</b>；本文件内 4 处「与有无定价规则无关」系 <b>A-02 裁定原文引用</b>（判断本身不变，仅其依据由「定价规则」平移为「参考变体价」），本批<b>按记述保留、未改写</b>，换源措辞随契约定稿批统一；<b>②A-07 裁毕</b>（<b>未登录＝零价格展示，含不显 MSRP</b>；目录页与 PDP 同口径；占位文案「登录后可见批发价」）＝<b>涉本文件·已改</b>：见附录③ D-07 与本批 A14-② 逐页证据；<b>③附带（本批 A14-③）</b>：v4.8⑥「白名单缺项＝显式故障」在本文件的落差 D-19 <b>已修复</b>——<code>renderPdpCta()</code> 对未登记 SKU 不再静默回落 RC-200；v2.8/v2.9/v3.0 属内部后台与界面语言口径，不涉本文件。<b>v3.7＝整单最低成交金额的校验时点（两端口径），本文件已按此实现</b>；整单最低成交金额演示占位值经 v4.0 台账裁决三稿统一为 <b>US$ 25,000</b>（终值仍待回填⑬）。</p>
+
+      <h2 class="t serif" style="font-size:20px">① 页面 × NR 对照表</h2>
+      <div style="overflow-x:auto;margin:12px 0 34px">
+        <table class="apx">
+          <tr><th>页面</th><th>对应 NR</th><th>原型表达要点</th></tr>
+          <tr><td>1 首页</td><td>NR-13（页脚联系块）；三档产品线口径承接 NR-02/03/16</td><td>三业态角色入口＋三档产品线卡（半定制文案=配置后提交询价、人工核定报价，不含旧「即时报价」口径）＋FF&amp;E 套餐入口＋注册入口；四列页脚含联系块（邮箱/电话/WhatsApp/表单入口/工作时间标注时区）。</td></tr>
+          <tr><td>1A 购买流程</td><td>现状形态维持（营销说明页）；口径承接 NR-16（半定制人工报价）、NR-05（全定制 CAD 交付）</td><td>三档采购方式说明卡（现货／半定制／全定制 OEM）＋底部深底 band 双 CTA。文案守新口径：半定制=「配置器更新效果图与参考价，提交后由人工核定正式报价」，全定制=「交付 CAD 与效果图＋人工确认的报价，CAD 归客户」；零时限承诺。CTA 跨文件联动配置器（#pg-cfg）与 RFQ 提交（#pg-rfq）。</td></tr>
+          <tr><td>2A 住宅家具目录</td><td>现状形态维持（两级过滤）；NR-07（USD 计价）</td><td>第一级=住宅/工程段位切换条，第二级=品类 chips（沙发/床架/餐桌…）＋侧栏筛选（颜色色板、供货状态）。登录前后价格可见性差异（<b>A-07 已裁 v4.10</b>）：未登录＝<b>零价格展示</b>（不显 MSRP、不显任何金额），占位文案统一「<b>登录后可见批发价</b>」；已登录=批发价＋规格数（顶部演示身份开关切换）。页脚注记「商品详情、订购与结账由 Shopify 托管」＝架构基线 Tier1 独立散买走标准 checkout。</td></tr>
+          <tr><td>2B 工程家具目录</td><td>现状形态维持（两级过滤）；NR-07（USD 计价）</td><td>同 2A 骨架，品类集与筛选器面向工程：品类含接待台/会议桌/工位/升降桌/文件柜等；侧栏筛选=Certifications（BIFMA/CAL117/CARB-P2）／Vertical（Hotel/Multifamily/Senior/Office）／Features（Heavy-duty/COM-ready/Wipeable）。价格可见性同 2A。</td></tr>
+          <tr><td>3 产品详情页</td><td>NR-02（Configure 预填入口）；NR-03（Request custom 入口）</td><td><b>三按钮</b>（v4.0 改述 NR-02：两个交易档位入口＋一个 FF&amp;E 项目收集入口；<b>仍不设 Tier3 全定制入口</b>）：①加入购物车（现货）／②进入配置器（预填本品，联动跳转报价工作台原型配置器入口A，产品类型＋SKU 预填可改）——二者编为购买动作组；③加入项目（FF&amp;E 组合）＝<b>容器操作、与档位选择正交</b>，经分隔线＋次级按钮＋小字说明<b>视觉分层</b>，避免读作第三个档位。<b>v4.7 显隐规则（A-02 裁毕）</b>：①②按该产品<b>可售档位集合</b>显隐——含 T1 显加购／含 T2 显配置器，<b>与有无定价规则无关</b>；仅 T3 的产品两者均不显、只留③与全定制说明（演示品：RC-200＝T1·T2 两显／MT-320＝T2·T3 仅显配置器／RC-900 大堂接待台·弧形＝仅 T3 两不显）。下方「三种购买方式」说明块保留全定制说明，但明示<b>不在本款基础上修改</b>、需由导航进入 RFQ 提交。<b>v4.10 补（A14-③ 修复 D-19）</b>：白名单缺项＝<b>显式故障</b>——卡片<b>有 <code>data-sku</code> 但不在 <code>TIER_CATALOG</code></b> 时<b>不再回落默认演示品</b>，两个交易 CTA 全隐＋页内标红块 <code>#pdpUnlistedNote</code>；<b>无 <code>data-sku</code> 的旧演示卡</b>仍回落 RC-200（该回落合法，仅为原型演示）。价格区按 <b>A-07</b> 未登录零价格。</td></tr>
+          <tr><td>4 FF&amp;E 套餐列表</td><td>NR-12（v2.7 项目模板）</td><td>业态入口→套餐卡片；<b>「房间套餐」标题行右端</b>置次级入口「或自行组合建项目 →」（打开项目篮，不与套餐并列争主次）；项目登记 warn 块见缺陷 D-15。</td></tr>
+          <tr><td>5 套餐详情页</td><td>NR-12 核心（v2.7 域重构；<b>v4.9⑥ 收窄为两档容器</b>）</td><td>套餐=FF&amp;E 项目模板（<b>两档打包容器</b>）。<b>v4.9⑥ 第三次契约级推翻</b>：容器由跨三档<b>收窄为 T1 现货／T2 半定制两档</b>，全定制一律走<b>独立散单 RFQ</b>。据此本页已删：交付三件套说明卡（条件永不成立）、量规「全定制行」分支、「立项后可在项目中新增全定制行」类表述、「整单报价时点取决于最慢的全定制行」门控。现行形态：行项清单每行带「采购方案」标签（<b>现货/半定制</b>，默认按套餐定义、可切换）＋「最低购买量 N（不可减少）」＋数量控件 ≥N；价格分行显示（现货=批发价〔登录可见〕／半定制=参考价＋"仅供预算参考、非成交依据"免责），整单="已含金额 $X ＋ N 项待报价"组合表述＋半定制参考合计单列（不计入已含金额）＋行数构成；CTA「以此套餐立项」注记=生成 FF&amp;E 项目容器（各行按所选档展开，<b>整单一次报价、立项即进报价环节</b>）；<b>付款计划（v4.9④，措辞随契约定稿）</b>=现货行全额＋半定制行 30% 为首期、半定制行余 70% 发货前付清，<b>不提供信用账期</b>；场景图集轻水印／概述／可定制说明保留；未登录可看详情（<b>A-07：零价格</b>）、点立项引导注册，已登录联动跳转报价工作台原型 RFQ 提交；全页零时限承诺。</td></tr>
+          <tr><td>6 商户注册与状态页</td><td>NR-01（客户侧，v2.5 准入五档＋v2.6 查看渠道与补件双轨）</td><td>四页联动：提交表单→提交成功页（申请编号＋「确认邮件已发送，可随时通过邮件中的专属链接查看进度」＋准入四触点说明）→魔法链接状态页（免登录、同链接随状态变形、五形态演示开关：审核中〔预计时效为示意占位〕／请补充材料〔差量 3 项＋其他说明附言框＋拍照上传＋客服代传四通道〕／未通过〔原因摘要＋重新提交入口〕／正常使用〔已开通，引导前往登录〕／账户已停用，请联系客服）→链接过期页（输邮箱重发＋NR-13 兜底）；安全注记：不回显已提交资料、令牌一次性绑定、30 天时效。</td></tr>
+          <tr><td>7 联系客服页</td><td>NR-13（四通道矩阵）</td><td>四通道全部为可点深链：①电话=<code>tel:</code> 链接＋号码展示；②WhatsApp=<code>wa.me</code> 深链，<b>按来源页/品类自动预填文本</b>（卡片内显示当前预填上下文）；③邮件=<code>mailto:</code> 链接（主题与正文同带来源上下文）；④联系表单=结构化上下文（品类下拉必填含「未在列表中/其他」联动自由输入、来源页隐藏字段＋摘要行可见、注记「品类信息用于统计需求缺口，同一品类反复出现将触发新增品类模板」）。三张卡保留复制按钮作辅助动作。工作时间双时段并标注时区。<br><span style="color:var(--faint)">页脚联系块的 WhatsApp 深链同样按「当前所在页」动态预填上下文。</span></td></tr>
+        </table>
+      </div>
+
+      <h2 class="t serif" style="font-size:20px">② 统一状态中文文案表</h2>
+      <p style="font-size:13px;color:var(--muted);margin:6px 0 12px">三份原型共用、逐字照用的对客文案基准。下表为全量口径；标「本原型使用」者为本文件实际出现的文案，其余为跨原型一致性基准（订单/项目状态在报价工作台原型展示）。</p>
+      <div style="overflow-x:auto;margin:0 0 18px">
+        <table class="apx">
+          <tr><th>状态键</th><th>对客文案</th><th>状态键</th><th>对客文案</th></tr>
+          <tr><td>submitted</td><td>已提交</td><td>in_design</td><td>设计中</td></tr>
+          <tr><td>design_review</td><td>待您确认设计</td><td>pricing</td><td>报价制作中</td></tr>
+          <tr><td>quoted</td><td>已报价</td><td>deposit_pending</td><td>待付定金</td></tr>
+          <tr><td>deposit_paid</td><td>定金已付</td><td>in_production</td><td>生产中</td></tr>
+          <tr><td>delivered</td><td>已交付</td><td>closed</td><td>已完成</td></tr>
+          <tr><td>on_hold</td><td>已挂起</td><td>rejected</td><td>已拒单</td></tr>
+          <tr><td>cancelled</td><td>已取消</td><td>expired</td><td>已过期</td></tr>
+        </table>
+      </div>
+      <div style="overflow-x:auto;margin:0 0 18px">
+        <table class="apx">
+          <tr><th>商户准入五档（v2.5 对客映射）<br><span style="font-weight:400;color:var(--faint)">本原型使用 · 页 7</span></th><th>覆盖的内部态</th><th>本原型表达位置</th></tr>
+          <tr><td>审核中</td><td>submitted / provisioning / provision_failed（不暴露内部环节，无「开通中/开通失败」表述）</td><td>页 7 状态页形态①；提交成功页文案</td></tr>
+          <tr><td>请补充材料</td><td>need_info</td><td>页 7 状态页形态②（差量补件页：退回原因＋仅补指出项＋附言框＋拍照上传＋客服代传）</td></tr>
+          <tr><td>未通过</td><td>rejected</td><td>页 7 状态页形态③（原因摘要＋重新提交入口，无黑名单）</td></tr>
+          <tr><td>正常使用</td><td>active</td><td>页 7 状态页形态④（开通感知＝激活邮件已发送，引导前往登录）</td></tr>
+          <tr><td>账户已停用，请联系客服</td><td>suspended</td><td>页 7 状态页形态⑤（引导至页 8 联系客服）</td></tr>
+        </table>
+      </div>
+      <div style="overflow-x:auto;margin:0 0 34px">
+        <table class="apx">
+          <tr><th>其他统一口径</th><th>逐字表述</th><th>本原型使用位置</th></tr>
+          <tr><td>币种</td><td>一律 USD（$）</td><td>公告条、目录/PDP 价格、套餐与自组项目整单金额、页 1 三档卡</td></tr>
+          <tr><td>交易条款（v4.1 改判）</td><td><b>DDP 到门，我方负责配送</b><br><span style="color:var(--faint)">原条款 <s>DDP 至美国港口/仓库，含头程海运与关税</s> 已推翻（v2.1 收窄澄清作废，登契约推翻清单第 14 行）；<b>尾程不再另计</b>——已并入定价，报价单不出「尾程配送」单列行。</span></td><td>本原型不出报价单，故未展示；由报价工作台原型报价单页承载（跨原型一致性基准）。<br><span style="color:var(--faint)">仓储费口径不受本次改判影响，维持条款制（到仓超 14 天加收、事后人工补收、不进报价时点价格）——本原型同样未展示。<b>Tier1 独立散买不适用本条</b>：走商城运费/税务设置（S 域），与 DDP 报价是两条口径。</span></td></tr>
+          <tr><td>时限承诺</td><td>「24 小时内正式报价」仅属 Tier2 配置器；套餐／Tier3／FF&amp;E 界面零时限承诺</td><td>本原型全文零时限承诺（红线，已复查 0 命中）</td></tr>
+          <tr><td>生产段对客六档（v2.4）</td><td>备产中｜生产中｜待发运｜已发货（海运中）｜已交付｜已完成</td><td>本原型不展示订单状态；见报价工作台原型「订单与报价」页</td></tr>
+          <tr><td>行级来源标记（v4.0 裁决③改称谓）</td><td><b>我方预填行 / 客户自选行</b>（仍二分；原称谓 <s>套餐预填行 / 客户新增行</s> 已作废）<br><span style="color:var(--faint)">改称缘由：自组项目没有套餐做基础，「新增」预设了「在某物之上增加」，该语境读不通；标记的业务目的是「该行是否经我方成套设计背书」，二分足够。</span></td><td>页 5 行项清单量规说明块「来源标记说明」；行内标记本身由报价工作台立项预览承载</td></tr>
+        </table>
+      </div>
+
+      <h2 class="t serif" style="font-size:20px">③ 疑似矩阵缺陷清单（只登记，不改口径）</h2>
+      <p style="font-size:13px;color:var(--muted);margin:6px 0 12px">以下为按矩阵生成本原型过程中发现的疑似矛盾/缺口，仅登记不改口径；是否成立以负责人裁决为准。原型均按矩阵现行口径执行，涉及数值处均为示意占位、不作验收基准。</p>
+      <div style="overflow-x:auto;margin-bottom:40px">
+        <table class="apx">
+          <tr><th>编号</th><th>位置</th><th>描述</th><th>建议</th></tr>
+          <tr><td>D-01</td><td>NR-16「影响范围」</td><td>影响范围列出 PRD 流程 C、配置器 CTA 与文案、订单/报价列表等，未列官网营销页——现行首页三档产品线卡含「即时参数化报价」类旧文案，与阶段一统一人工报价口径冲突。</td><td>将 (marketing) 营销页三档卡与 hero 文案清理补入 NR-16 影响范围或契约定稿文案基线。本原型已按新口径改写为「配置后提交询价、人工核定报价」。</td></tr>
+          <tr><td>D-02<br><span style="font-weight:400;color:var(--faint)">（＝矩阵十一节 <b>A-02</b>；<b>已裁决 v4.7</b>）</span></td><td>NR-02 / NR-03（PDP 层）</td><td>PDP <b>三按钮</b>（加购／配置器／加入项目）的品类级显隐规则未定义：无配置规则的品类是否显示「进入配置器」无口径（v4.0 改述 NR-02 时明列为「遗留待裁」）。（Tier3「提交全定制需求」入口已由 v3.8 裁定不设、v4.0 维持，不在本条范围。）</td><td><b>已裁决（v4.7）</b>：显隐判据＝该产品的<b>可售档位集合</b>——含 T1 显「加入购物车」／含 T2 显「进入配置器」；<b>与「有无定价规则」无关</b>（NR-02 验收条件写死「无规则品类不显参考价且仍可提交询价」，规则只管显不显价、不管入口显不显）。「加入项目」＝容器操作、与档位正交、恒显；仍不设 Tier3 入口。原提的「品类 × CTA 显隐」矩阵不再需要——判据落在<b>产品级</b>而非品类级。本原型已按此实装（白名单 <code>TIER_CATALOG</code>，维护随 G5 留开发）。</td></tr>
+          <tr><td>D-03</td><td>NR-01「退回补件」</td><td>「差量补充页（显示退回原因，仅补指出项）」中「指出项」无结构化口径——若客服退回备注为自由文本，前端无法机判开放哪些字段编辑。</td><td>建议退回动作增加字段级勾选（结构化退回原因），自由备注作补充说明。本原型按「字段级指出项」形态演示。</td></tr>
+          <tr><td>D-04</td><td>NR-12「立项需登录＋审核通过」</td><td>未登录点立项=引导注册已明确；但「已登录且状态为审核中/请补充材料/未通过」的用户点「以此套餐立项」的处理路径未定义（v2.5 准入五档下该缺口仍在）。</td><td>补齐审核中间态的立项拦截与引导文案口径（如引导查看审核状态页）。</td></tr>
+          <tr><td>D-05</td><td>NR-13「联系块」</td><td>通道矩阵为四条（含联系表单），但页脚联系块要素仅列「邮箱/电话/WhatsApp/工作时间（标注时区）」，未列表单入口，两处清单不对齐。</td><td>明确页脚联系块是否含表单入口。本原型页脚已含表单入口（按本次任务指令）。</td></tr>
+          <tr><td>D-06<br><span style="font-weight:400;color:var(--faint)">（＝矩阵十一节 <b>A-06</b>；<b>仍待裁</b>，但<b>承接对象已随 v4.9⑥ 消失</b>）</span></td><td>NR-12 × NR-05</td><td>套餐详情页需展示「交付三件套说明」，而三件套中 3D 模型为终局交付物且随尾款门控解锁；面向未登录访客的对客说明文案无基线，措辞不当易构成解锁时点误导。回填⑫的文案基线仅覆盖 Tier2 参考价免责。</td><td>将套餐页三件套对客说明纳入契约定稿文案基线。本原型原采用「3D 为终局交付物，具体交付与解锁安排以报价单条款为准」的保守措辞。<br><b>v4.10／第十四批 A14-① 状态更新</b>：<b>v4.9⑥ 定「全定制不进项目单」</b>，套餐页的三件套说明前提「若项目内含全定制行」<b>条件永不成立</b>，该说明卡已整卡删除——<b>本条在套餐页已无落点</b>。条目<b>不销账</b>：三件套对客措辞在<b>独立全定制 RFQ</b> 一侧仍需基线（本文件不承载该页面，落 B 稿与契约定稿）。</td></tr>
+          <tr><td>D-07<br><span style="font-weight:400;color:var(--faint)">（＝矩阵十一节 <b>A-07</b>；<b>已裁决 v4.10</b>）</span></td><td>目录页/PDP 价格可见性</td><td>矩阵未重申未登录目录页与 PDP 的价格展示目标态（现状=服务端会话决定价格可见性；未登录是否展示 MSRP 无明确口径）。</td><td><b>已裁决（v4.10）</b>：<b>未登录＝零价格展示，含不显 MSRP</b>；<b>目录页与 PDP 同口径</b>；占位文案＝「<b>登录后可见批发价</b>」。理由＝B2B 站显 MSRP 无意义且引价格锚定争议。<b>本原型已按此实装（第十四批 A14-②）</b>：全站 MSRP 清零（含 <code>.price .msrp</code> 划线价样式），目录卡 9 处＋PDP 价格区＋配置器回跳分支占位统一改「登录后可见批发价」，套餐页金额结构（已含金额／半定制参考合计）本就按 <code>body.in</code> 门控。<br><span style="color:var(--faint)">套餐域三处占位仍用各自对象词（页4 卡片「登录后查看项目报价」／套餐行 t2「登录后可见参考价」／整单合计「登录后可见」）——门控对象不是批发价，A-07 射程明写「目录页与 PDP」，故未强改，与 D-14 一并待裁。</span></td></tr>
+          <tr><td>D-08</td><td>NR-01 × v2.6「对客查看渠道」·状态页「审核中」形态</td><td>状态页需展示「预计时效说明」，但矩阵未给商户审核时效数值口径（v2.6 仅定义令牌 30 天时效；回填台账亦无审核时效项）——无值可依。</td><td>建议契约定稿定值或明确「不承诺审核时限」。本原型以「一般 1–3 个工作日」作示意占位并在文案中显式标注，不作验收基准。</td></tr>
+          <tr><td>D-09<br><span style="font-weight:400;color:var(--faint)">（已解决）</span></td><td>NR-01 × v2.5 准入五档（状态页载体与再访身份）</td><td>v2.5 时点：矩阵定义了对客五档与「客户侧差量补充页」，但未定义 active 之前客户查看状态/补材料的页面载体与再访身份验证——申请期客户尚无可登录账号。</td><td><b>v2.6 已拍板解决</b>：查看渠道=确认邮件内免登录魔法链接（同链接随状态变形、30 天时效＋邮箱重发）。本条留档备查；原型已按 v2.6 实现，早前拟议的「邮箱＋验证码回访」方案已撤下、不再使用。</td></tr>
+          <tr><td>D-10<br><span style="font-weight:400;color:var(--faint)">（已裁决 v3.2）</span></td><td>v2.7「RFQ 与 FF&amp;E 概念界定」·价格展示（拍板④）</td><td>整单表述定为「部分金额＋待报价项」，但未写死 <b>Tier2 半定制行的参考价归哪一侧</b>——若计入「部分金额」，与 NR-16「参考价仅展示、不作成交依据」冲突；若不计入，则「部分金额」仅含 Tier1 行，需明确。</td><td><b>已裁决（v3.2）</b>：「部分金额」仅含 Tier1 现货行批发价小计；Tier2 参考合计单列、不计入、标注非成交依据。本原型现行处置即此案，无需改动。</td></tr>
+          <tr><td>D-11<br><span style="font-weight:400;color:var(--faint)">（已裁决 v3.2）</span></td><td>v2.7 概念界定·MOQ 校验分档（B 案）× 套餐最低量</td><td>三句叠加后 Tier3 行的量约束自相矛盾：①套餐最低量「不可减至线下，可增量」；②Tier3 行 MOQ=<b>软</b>校验（低于可提交、人工裁量）；③「套餐最低量与单品 MOQ 取较大者生效」。当生效值来自套餐最低量时，Tier3 行究竟能否低于该值提交无口径。</td><td><b>已裁决（v3.2），v3.3 订正作用域</b>：双阈值，且<b>软线仅对 Tier3 行成立</b>——①Tier1 现货行／Tier2 半定制行：生效下限=max(套餐最低量, 单品起订量)，<b>全硬拦截</b>（无人工报价环节，机器把关，v2.7 B 案）；②Tier3 全定制行：套餐最低量=硬线（拦截）／单品起订量=软线（可提交＋显著标记，留人工裁量）；③散单 RFQ（无套餐最低量）：只剩单品起订量软线。本原型已按此实装：切换档位后自动重算生效下限，切到现货/半定制且低于其硬线时数量自动抬升并提示。</td></tr>
+          <tr><td>D-12<br><span style="font-weight:400;color:var(--faint)">（已裁决 v3.2）</span></td><td>NR-12 正文 × v2.7 改判块</td><td>NR-12 新口径段仍保留「刻意不展示：固定价/<b>逐行单价</b>/工艺参数/成本字段」，而 v2.7 改判块已定分行显示批发价与参考价（即逐行单价对客可见）；改判块只声明「原『不显固定价』仅对 Tier3 行维持」，未同步撤销「逐行单价」那句，正文与改判块冲突。</td><td><b>已裁决（v3.2）</b>：NR-12 正文订正为「工艺参数/成本字段不展示；Tier3 行不显价」。本原型按 v2.7 改判块执行，无需改动。</td></tr>
+          <tr><td>D-13</td><td>矩阵全篇（官网营销页范围）</td><td>矩阵定义了功能页（RFQ/配置器/套餐/注册/联系），但<b>未定义官网营销页清单</b>——本原型现含「1A 购买流程」「2A 住宅家具目录」「2B 工程家具目录」三页，属既有站点现状复现而非矩阵派生，无 NR 可挂。</td><td>建议契约定稿补「营销页范围与文案基线」一节（哪些页在 MVP 范围、各页文案受哪些 NR 约束）。本原型对该三页仅作现状形态维持，未新增矩阵之外的功能。</td></tr>
+          <tr><td>D-14<br><span style="font-weight:400;color:var(--faint)">（＝矩阵十一节 <b>A-14</b>；<b>仍待裁</b>，<b>目录/PDP 一侧已由 A-07 连带钉死</b>）</span></td><td>价格标签对客用词（跨页一致性）</td><td>同一「登录后可见的 B2B 价格」在本原型出现三种称法：目录页「贸易价」、PDP 与套餐页「批发价」、FF&amp;E 卡片「项目报价」。矩阵未给对客统一用词（NR-07 只定币种、NR-12 v2.7 只定分行显示规则）。</td><td>建议契约定稿在文案基线中钉死一个词（如「批发价」）。<br><b>v4.10 部分连带</b>：A-07 裁定把<b>目录页与 PDP 的价格占位文案钉死为「登录后可见批发价」</b>，本原型第十四批 A14-② 已据此把「贸易价」<b>全部改为「批发价」</b>（目录卡 9 处＋侧栏说明 2 处＋页 1A 说明 1 处＋配置器回跳分支 1 处，去标签全文计数「贸易价」＝0）。<b>剩余待裁</b>：套餐域的「项目报价」（页4 卡片）与「参考价」（半定制行、整单合计）——门控对象与批发价不同源，A-07 未覆盖，维持现状不强改。</td></tr>
+          <tr><td>D-15</td><td>页 4 FF&amp;E 套餐列表 · 项目登记 warn 块</td><td>项目登记与报价独家锁定机制出自客户原始官网素材（<code>storefront_EN.html:233</code>），但<b>未进入建设说明书与需求差异矩阵，无 NR 承接</b>；本原型现有文案为无矩阵依据的自造口径（已自行降级为「登记入口＋人工跟进、自动独家保护属后 MVP」）。</td><td>由负责人裁决——补一条 NR（涉及谁登记谁锁价、锁定时长、撞单判定、与 NR-16 报价有效期及 Quote 版本链的交互、裁决归属，属独立小域）或明确列入 V2；裁决前本原型维持降级文案。</td></tr>
+          <tr><td>D-16<br><span style="font-weight:400;color:var(--faint)">（v4.0 执行中新发现）</span></td><td>NR-12 套餐模板 × v3.3／v3.6 行级量规</td><td>量规定了<b>行级</b>生效下限（Tier2＝max(套餐最低量, 产品起订量)、全硬拦截），但<b>未要求套餐模板自身的预设数量必须 ≥ 各行生效下限</b>——本原型演示数据「开放挂衣柜（含行李架）」套餐最低量 48 &lt; 产品起订量 60，模板出厂即带一个必然触发拦截的默认量：客户一进页面即见红字、直接点立项必被拦。属<b>模板治理规则缺失</b>（发布侧无校验，把矛盾留给客户面）。</td><td>契约定稿补一条<b>模板准入校验</b>：套餐模板保存/发布前逐行校验「预设数量 ≥ max(套餐最低量, 产品起订量)」，未达不允许发布——与 v3.7「内部报价发布前硬校验」同构。本原型<b>维持现状演示数据不自行改数</b>，以保留该场景可复现（亦为 A-① 拦截的验收样本）。</td></tr>
+          <tr><td>D-17<br><span style="font-weight:400;color:var(--faint)">（v4.0 执行中新发现；＝矩阵十一节 <b>A-17</b>，<b>仍待裁</b>，<b>前提已随 v4.9⑥ 收窄</b>）</span></td><td>v4.0 裁决⑦（A→B 立项跳转来源传递）</td><td>裁决⑦ 定了 <code>?src=pack</code>／<code>?src=custom</code> 两值，但<b>未定义参数缺失或取值非法时落哪个变体</b>——用户直接访问或收藏无参的 <code>#pg-rfq-pack</code>、从第三方入口进入、参数被中间层剥离时均会发生。两套业务规则差异实质（我方预填行限 T1/T2 且受套餐最低量约束 vs 客户自选行三档可选、无套餐最低量），默认取错即放宽或收紧客户的可选范围。</td><td>契约定稿补缺省口径：建议缺省取<b>更保守的一侧</b>，或要求 B 侧无参时<b>不预装载</b>、先让客户显式选择来源。本原型 A 侧两个入口均已按裁决⑦ 传参（已验证），<b>缺省态由 B 侧承载、不在本文件范围</b>。<br><b>v4.10／第十四批 A14-⑤ 前提收窄注记</b>：<b>v4.9⑥ 撤销「全定制进项目单」后，两套变体的差异已从「三档可选 vs 限 T1/T2」收窄为「<b>有无套餐最低量约束</b>」一项</b>（自选行同样 ∩{T1,T2}）——<b>本条不销账</b>：取错变体仍会放宽或收紧量约束，缺省口径依旧缺失，只是<b>误判的后果变小</b>。</td></tr>
+          <tr><td>D-19<br><span style="font-weight:400;color:var(--faint)">（v4.8 沿革核对中新发现；<b>已修复 · 第十四批 A14-③</b>）</span></td><td>v4.8 拍板⑥（白名单缺项＝显式故障）× 本文件 <code>renderPdpCta()</code></td><td>v4.8 定「产品<b>未登记可售档位</b>时不得静默放行——原型须显著标记，正式实现须拒绝上架」。本文件 <code>renderPdpCta(sku)</code> 在 sku 不在 <code>TIER_CATALOG</code> 时<b>回落默认演示品 RC-200</b>，即用<b>另一个产品的可售档位集合</b>渲染 CTA：未登记产品会自动获得 RC-200 的「T1·T2 两 CTA 全显」待遇——正是该口径要堵的<b>默认开启的后门</b>。成因：<code>applyPdpFromCard()</code> 的回落本为演示需要（旧目录卡无 <code>data-sku</code>），但<b>两种情形共用同一条回落路径</b>，无法区分「无 SKU 的演示卡」与「有 SKU 但未登记的产品」。</td><td>分两条路径处置：<b>无 <code>data-sku</code></b>（演示卡）→ 维持回落默认品；<b>有 <code>data-sku</code> 但不在白名单</b> → 显式标记「该产品未登记可售档位」并隐藏两个交易 CTA（与 B 稿 B12-② 的 <code>null</code> 分支改造同口径）。<br><b>已按此修复（第十四批 A14-③）</b>：<code>renderPdpCta(sku)</code> 对未登记 sku <b>不再回落</b>——两个交易 CTA、三个档位徽章、全定制说明块<b>全隐</b>，改显标红块 <code>#pdpUnlistedNote</code>（写明「按 v4.8⑥ 显式故障，正式实现须拒绝上架」），返回值加 <code>listed:false</code>；两种情形的<b>分流上移到 <code>applyPdpFromCard()</code></b>：无 <code>data-sku</code>→回落 RC-200（合法），有 <code>data-sku</code> 但未登记→按卡片信息呈现头部＋显式故障。<code>applyPdpSku()</code>（配置器带 <code>?sku=</code> 回跳）同享该判定。</td></tr>
+          <tr><td>D-18<br><span style="font-weight:400;color:var(--faint)">（A/B 边界自查中发现；<b>已收进矩阵十一节 A-18，已裁 v4.1</b>）</span></td><td>A/B 边界判据（<b>已落 v4.1</b>）× 架构基线「Tier1 现货全链路（标准 checkout）」</td><td>A/B 边界以「<b>是否进入交易流程</b>」二分，但<b>独立散买 Tier1 走 Shopify 标准 checkout</b>（架构基线；v3.6 补：只设数量门槛、由 Shopify quantity rules 承载）——该路径<b>既不在 A 售前公开域，也不在 B</b>（B 域枚举为配置/询价/项目/报价单/设计资产/订单，不含现货购物车与托管结账）。本原型 PDP「加入购物车（现货标准款）」即该路径入口：未登录可点、不跳 B。按判据字面执行会把它判成「A 承载了交易动作」，但按架构基线它是<b>合法的第三方移交</b>——二分法未为这条路径留位。</td><td><b>已裁决（v4.1）</b>：判据精确化为「交易流程<b>特指自研 FF-DB 侧</b>」＋新增 <b>S 域＝Shopify 托管域</b>（仅覆盖独立散买 Tier1 的下单段：购物车·结账·支付；<b>A 只承载入口按钮</b>；容器内 Tier1 行<b>不走</b> S 域，按 v2.7② 并入整单 Draft Order）；<b>Tier1 订单查看回 B「订单」统一列表</b>（沿用 NR-04 v2.4 BFF 实时反查 Shopify，非新增）。本原型已按此在 PDP 加购处补 S 域语义标注（见页 3）；A 内仍不出现购物车页与结账页（已复查 0 命中）。</td></tr>
+        </table>
+      </div>
+
+      <h2 class="t serif" style="font-size:20px">④ 跨文件联动映射（与报价工作台原型，同目录文件互跳）</h2>
+      <div style="overflow-x:auto;margin:12px 0 14px">
+        <table class="apx">
+          <tr><th>本文件触发点</th><th>目标（报价工作台原型文件）</th></tr>
+          <tr><td>页 3 PDP「进入配置器（预填本品）」</td><td>?sku=&lt;当前SKU&gt;#pg-cfg-prefill——配置器入口A，按 sku 参数预填（默认 接待台 · RC-200），可改选；工作台侧回跳本文件时同样带 sku 参数还原对应产品详情</td></tr>
+          <tr><td>页 5 套餐详情「以此套餐立项」（已登录<b>且全部半定制行达起订量</b>）</td><td><code>?src=pack</code>#pg-rfq-pack——RFQ 提交·模式选择步骤＋顶部「套餐预填」说明条；<b>src=pack</b> 告知工作台按「我方预填行」规则装载（限现货／半定制、受套餐最低量约束）</td></tr>
+          <tr><td>项目篮「以此组合立项」（已登录且篮内非空）</td><td><code>?src=custom</code>#pg-rfq-pack——同一落地页的<b>自选组合变体</b>；<b>src=custom</b> 告知工作台按「客户自选行」规则装载（<b>同样 ∩{T1,T2}</b>——v4.9⑥ 撤销「容器含全定制」后自选行不再三档可选；差异只剩<b>无套餐最低量</b>）</td></tr>
+          <tr><td>页 8 联系客服·场景化入口说明</td><td>#pg-rfq-cats——RFQ 提交·品类选择步骤（品类缺口联系客服入口所在）</td></tr>
+          <tr><td>页 1 首页三档卡「体验配置器 / 体验 RFQ 提交」</td><td>#pg-cfg（配置器直入）／#pg-rfq</td></tr>
+          <tr><td>页 1A 购买流程 band「在线配置 / 提交全定制需求」<br><span style="color:var(--faint)">v4.0 已裁：<b>合法入口，非应删项</b>——Tier3 入口的合法落位＝导航栏＋页 1A band＋首页三档卡（判据：视图不呈现具体 SKU 即可设）；PDP 与任何 SKU 级组件不得设。首轮 Codex 报告曾误判此处为「已删除入口仍在」。</span></td><td>#pg-cfg／#pg-rfq</td></tr>
+          <tr><td>页 3 PDP「加入项目（FF&amp;E 组合）」<br><span style="color:var(--faint)">v4.0 新增 · 合法</span></td><td><b>无跳转</b>——写入本文件项目篮（容器操作，与档位选择正交）；后续经项目篮「以此组合立项」跳转 <code>?src=custom#pg-rfq-pack</code></td></tr>
+          <tr><td>顶部导航「报价工作台」入口＋原型导航条「⇄ 报价工作台原型」</td><td>#pg-home——工作台首页</td></tr>
+        </table>
+      </div>
+      <p class="fnote" style="margin:0 0 40px">反向联动：报价工作台原型经 hash 深链回本文件（#page-pdp 产品详情、#page-package 套餐详情、#page-contact 联系客服、#page-home 首页），本文件支持 #page-* 直达全部页面。两份文件需置于同一目录并直接在浏览器中打开，跨文件跳转方能生效。</p>
+    </div>
+  </section>
+
+  </main>
+
+  <!-- 五列页脚（含 NR-13 联系块） -->
+  <footer>
+    <div class="wrap">
+      <div class="fcols">
+        <div>
+          <div class="logo flogo"><span class="m">M</span>Madehall</div>
+          <p class="fdesc">设计导向的中高端全品类家具 · 中国制造 · 面向美国的 B2B 批发与定制。</p>
+          <div class="fpills"><span class="pill"><svg class="icon"><use href="#i-cert"/></svg> BIFMA</span><span class="pill"><svg class="icon"><use href="#i-check"/></svg> CARB-P2</span></div>
+        </div>
+        <div>
+          <h5>购买方式</h5>
+          <a data-goto="page-residential">住宅家具</a>
+          <a data-goto="page-contract">工程家具</a>
+          <a data-goto="page-ffe">FF&amp;E 项目</a>
+          <a data-goto="page-how">购买流程</a>
+        </div>
+        <div>
+          <h5>品类</h5>
+          <a data-goto="page-residential" data-category-label="沙发">沙发 / 床架</a>
+          <a data-goto="page-residential" data-category-label="餐桌">餐桌 / 餐椅</a>
+          <a data-goto="page-residential" data-category-label="储物柜">储物柜 / 衣柜</a>
+          <a data-goto="page-residential" data-category-label="户外家具">户外家具</a>
+        </div>
+        <div>
+          <h5>合作伙伴</h5>
+          <a data-goto="page-merchant">成为合作伙伴</a>
+          <a data-goto="page-ffe">FF&amp;E 项目</a>
+          <a data-goto="page-home">品牌故事</a>
+          <a href="Fabbrio_quote_workspace_ZH_target.html#pg-home">报价工作台 ↗</a>
+        </div>
+        <div>
+          <h5><button type="button" class="footer-heading-link" data-goto="page-contact">联系我们</button></h5>
+          <a href="mailto:trade@madehall.com"><svg class="icon"><use href="#i-mail"/></svg> trade@madehall.com</a>
+          <a href="tel:+15550120188"><svg class="icon"><use href="#i-phone"/></svg> +1 (555) 012-0188</a>
+          <a id="footWaLink" href="https://wa.me/15550120188"><svg class="icon"><use href="#i-chat"/></svg> WhatsApp 在线咨询</a>
+          <a data-goto="page-contact"><svg class="icon"><use href="#i-form"/></svg> 联系表单</a>
+          <p class="fhours"><svg class="icon"><use href="#i-clock"/></svg> 工作时间：中国团队 周一至周六 09:00–18:00（UTC+8）；美国团队 周一至周五 09:00–17:00（美东时间 ET）。双班衔接覆盖美国营业时段。</p>
+        </div>
+      </div>
+      <div class="fbot">
+        <span>© 2026 Madehall · 仅面向企业买家</span>
+        <span>本页面为产品目标态原型（静态演示）</span>
+      </div>
+    </div>
+  </footer>
+</div>
+
+<!-- 项目篮面板（常驻，轻量：产品名/数量/移除；档位与量规在报价工作台立项预览承载） -->
+<aside class="basket-panel" id="basketPanel" aria-label="当前项目">
+  <div class="bk-head">
+    <h3>当前项目</h3>
+    <button class="bk-close" type="button" onclick="closeBasket()" aria-label="关闭">×</button>
+  </div>
+  <div class="bk-body" id="basketRows"></div>
+  <div class="bk-foot">
+    <p class="bk-note" id="basketNote" style="display:none">整单最低成交金额 US$ 25,000（演示占位值）——立项不受影响，最终以正式报价为准。<br>半定制产品已按常用配置预设，<b>立项后可在项目中调整配置</b>；逐行选择采购方案（<b>现货／半定制</b>）与量规校验同样在立项预览中完成。<br>全定制需求<b>不进项目单</b>，请另行提交独立的全定制 RFQ。</p>
+    <button class="bk-cta" type="button" onclick="startBuildProject()">以此组合立项</button>
+    <div class="bk-reg hidden" id="basketRegGuide">
+      立项需商户账号并通过审核。注册后审核通过即自动开通账号，届时可一键以本组合发起 FF&amp;E 立项。
+      <button type="button" onclick="closeBasket();showPage('page-merchant')">前往注册申请</button>
+    </div>
+  </div>
+</aside>
+
+<!-- 页面 NR 徽标（右下角） -->
+<div class="nrbadge" id="nrBadge">首页 · 对应 <b>NR-13</b></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ---------- 页面切换 ---------- */
+/* ---------- NR-13：联系上下文（来源页 / 品类）与三通道深链预填 ---------- */
+var PREV_PAGE_ID='page-home';
+var WA_NUMBER='15550120188';
+var MAIL_ADDR='trade@madehall.com';
+var PAGE_LABEL={
+  'page-home':'首页','page-how':'购买流程','page-residential':'住宅家具目录',
+  'page-contract':'工程家具目录','page-pdp':'产品详情页','page-ffe':'FF&E 套餐列表',
+  'page-package':'FF&E 套餐详情页',
+  'page-merchant':'商户注册与状态页','page-contact':'联系客服页','page-appendix':'附录'
+};
+function ctxTxt(sel){var e=document.querySelector(sel);return e?e.textContent.replace(/\s+/g,' ').trim():'';}
+function pageCtx(id){
+  var label=PAGE_LABEL[id]||'站点页面',item='',cat='';
+  if(id==='page-pdp'){item=ctxTxt('#page-pdp h1');}
+  else if(id==='page-package'){item=ctxTxt('#page-package h1');cat='FF&E 整案 / 套餐';}
+  else if(id==='page-ffe'){cat='FF&E 整案 / 套餐';}
+  else if(id==='page-residential'||id==='page-contract'){cat=ctxTxt('#'+id+' [data-title-label]');item=cat;}
+  return {page:label,item:item,cat:cat};
+}
+function ctxPrefill(c){
+  return '您好，我来自【'+c.page+'】'+(c.item?'（'+c.item+'）':'')+'，想咨询：';
+}
+function waLink(c){return 'https://wa.me/'+WA_NUMBER+'?text='+encodeURIComponent(ctxPrefill(c));}
+function updateContactCtx(id){
+  /* 页脚 WhatsApp：始终按「当前所在页」预填上下文 */
+  var f=document.getElementById('footWaLink');
+  if(f){f.setAttribute('href',waLink(pageCtx(id)));}
+  if(id!=='page-contact')return;
+  /* 联系客服页：按「进入前的来源页」预填 */
+  var c=pageCtx(PREV_PAGE_ID);
+  var wa=document.getElementById('cfWaLink');
+  if(wa){wa.setAttribute('href',waLink(c));}
+  var note=document.getElementById('cfWaCtx');
+  if(note){note.textContent='（当前预填：'+c.page+(c.item?' · '+c.item:'')+'）';}
+  var ml=document.getElementById('cfMailLink');
+  if(ml){ml.setAttribute('href','mailto:'+MAIL_ADDR+
+    '?subject='+encodeURIComponent('咨询｜来自'+c.page+(c.item?'（'+c.item+'）':''))+
+    '&body='+encodeURIComponent(ctxPrefill(c)));}
+  var srcTxt=c.page+(c.item?' · '+c.item:'');
+  var sp=document.getElementById('cfSrcPage'),spShow=document.getElementById('cfSrcPageShow');
+  if(sp){sp.value=srcTxt;}
+  if(spShow){spShow.textContent=srcTxt;}
+  var sel=document.getElementById('cfCat');
+  if(sel){
+    var want=c.cat;
+    /* 来源页未直接给出品类时，从产品名反推（如「现代接待台 RC-200」→ 接待台） */
+    if(!want&&c.item){
+      for(var k=1;k<sel.options.length;k++){
+        var t=sel.options[k].text;
+        if(sel.options[k].value!=='__other__'&&t&&c.item.indexOf(t)>=0){want=t;break;}
+      }
+    }
+    sel.selectedIndex=0;                 /* 无法推断时回到「请选择品类」，不残留上一次 */
+    if(want){
+      for(var i=0;i<sel.options.length;i++){
+        if(sel.options[i].text===want){sel.selectedIndex=i;sel.value=sel.options[i].value||want;break;}
+      }
+    }else{sel.value='';}
+    cfCatChange();
+  }
+}
+function cfCatChange(){
+  var sel=document.getElementById('cfCat'),row=document.getElementById('cfCatOtherRow');
+  if(!sel||!row)return;
+  row.classList.toggle('hidden',sel.value!=='__other__');
+}
+function submitContactForm(){
+  var sel=document.getElementById('cfCat'),other=document.getElementById('cfCatOther');
+  if(!sel||!sel.value){toast('请选择咨询品类（必填）——品类信息用于统计需求缺口');return;}
+  var cat=(sel.value==='__other__')?((other&&other.value.trim())||''):sel.options[sel.selectedIndex].text;
+  if(sel.value==='__other__'&&!cat){toast('请填写您需要的品类');return;}
+  var sp=document.getElementById('cfSrcPage');
+  toast('咨询已提交（原型演示）｜品类：'+cat+'｜来源页：'+(sp?sp.value:'—')+'——客服将通过邮箱与您联系');
+}
+
+function showPage(id){
+  var cur=document.querySelector('.page.on');
+  if(cur&&cur.id&&cur.id!==id&&id!=='page-appendix'){PREV_PAGE_ID=cur.id;}
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('on');});
+  var page=document.getElementById(id);
+  if(!page)return;
+  page.classList.add('on');
+  /* 原型导航条高亮 */
+  document.querySelectorAll('.protobar .pnav').forEach(function(b){
+    b.classList.toggle('on',b.getAttribute('data-goto')===id);
+  });
+  /* 站点菜单高亮（PDP 归目录，套餐详情归 FF&E） */
+  var menuMap={ 'page-pdp':'page-contract', 'page-package':'page-ffe' };
+  var menuKey=menuMap[id]||id;
+  document.querySelectorAll('.menu a').forEach(function(a){
+    a.classList.toggle('on',a.getAttribute('data-menu')===menuKey);
+  });
+  /* NR 徽标 */
+  var badge=document.getElementById('nrBadge');
+  badge.innerHTML=page.getAttribute('data-ptitle')+' · 对应 <b>'+page.getAttribute('data-nr')+'</b>';
+  window.scrollTo({top:0});
+  if(history.replaceState){history.replaceState(null,'','#'+id);}
+  updateContactCtx(id);
+}
+document.querySelectorAll('[data-goto]').forEach(function(el){
+  el.addEventListener('click',function(e){
+    e.preventDefault();
+    var targetId=el.getAttribute('data-goto');
+    showPage(targetId);
+    /* v4.7：目录卡进 PDP 时按该卡 data-sku 渲染详情与 CTA 显隐（先切页、后渲染） */
+    if(targetId==='page-pdp'){applyPdpFromCard(el);}
+    if(el.classList.contains('catc')&&el.closest('#page-home')){
+      var heading=el.querySelector('h4');
+      var targetPage=document.getElementById(targetId);
+      var targetButton=null;
+      if(heading&&targetPage){
+        targetPage.querySelectorAll('[data-category-chips] .chip').forEach(function(button){
+          if(!targetButton&&button.getAttribute('data-category-label')===heading.textContent.trim()){
+            targetButton=button;
+          }
+        });
+      }
+      if(targetButton)targetButton.click();
+    }
+    var linkedCategory=el.getAttribute('data-category-label');
+    if(linkedCategory){
+      var linkedPage=document.getElementById(targetId);
+      var linkedButton=null;
+      if(linkedPage){
+        linkedPage.querySelectorAll('[data-category-chips] .chip').forEach(function(button){
+          if(!linkedButton&&button.getAttribute('data-category-label')===linkedCategory){
+            linkedButton=button;
+          }
+        });
+      }
+      if(linkedButton)linkedButton.click();
+    }
+    var scrollTargetId=el.getAttribute('data-scroll');
+    if(scrollTargetId){
+      requestAnimationFrame(function(){
+        var scrollTarget=document.getElementById(scrollTargetId);
+        if(scrollTarget)scrollTarget.scrollIntoView({behavior:'smooth',block:'start'});
+      });
+    }
+  });
+});
+
+/* ---------- 演示身份（登录前后价格可见性） ---------- */
+function setLogin(v){
+  document.body.classList.toggle('in',v);
+  document.getElementById('idIn').classList.toggle('on',v);
+  document.getElementById('idOut').classList.toggle('on',!v);
+  toast(v?'演示身份：已登录经销商——目录与详情页展示批发价与 MOQ':'演示身份：未登录——零价格展示（A-07 v4.10），占位「登录后可见批发价」');
+  if(typeof xRender==='function'){xRender('pkg');}
+}
+
+/* ---------- 独立住宅 / 工程目录页：图片复用、品类与筛选交互 ---------- */
+function findCatalogImage(key){
+  var source=null;
+  document.querySelectorAll('#page-home .catc img').forEach(function(candidate){
+    if(!source&&candidate.getAttribute('alt')===key)source=candidate;
+  });
+  return source;
+}
+
+var contractSharedCategories=['沙发','餐椅','休闲椅','吧椅','茶几与边几','储物柜','户外家具'];
+function catalogImageKey(page,label){
+  if(page.id==='page-contract'){
+    if(contractSharedCategories.indexOf(label)>=0)return '商用'+label;
+    if(label==='工位 / 办公桌系统')return '工位与办公桌系统';
+  }
+  return label;
+}
+
+function renderCatalogCategory(page,label){
+  page.querySelector('[data-title-label]').textContent=label;
+  page.querySelector('[data-crumb-label]').textContent=label;
+  var imageKey=catalogImageKey(page,label);
+  var source=findCatalogImage(imageKey);
+  var series=page.id==='page-contract'?['阿特拉斯','诺尔','利尼亚']:['玛伦','海登','索伦','林德霍尔姆'];
+  page.querySelectorAll('[data-product-grid] .pcard').forEach(function(card,index){
+    var title=series[index]+' '+label;
+    card.setAttribute('data-category',label);
+    card.querySelector('h4').textContent=title;
+    card.querySelector('.brand').textContent=label;
+    var img=card.querySelector('.catalog-copy-img');
+    img.setAttribute('data-copy-img',imageKey);
+    img.setAttribute('alt',title);
+    if(source)img.setAttribute('src',source.getAttribute('src'));
+  });
+}
+
+document.querySelectorAll('.catalog-page').forEach(function(page){
+  page.querySelectorAll('[data-category-chips] .chip').forEach(function(button){
+    button.addEventListener('click',function(){
+      page.querySelectorAll('[data-category-chips] .chip').forEach(function(item){item.classList.remove('on');});
+      button.classList.add('on');
+      var label=button.getAttribute('data-category-label');
+      renderCatalogCategory(page,label);
+      if(page.id==='page-residential')applyResidentialFilters();
+      if(page.id==='page-contract')applyContractFilters();
+      toast('已筛选并显示「'+label+'」商品');
+    });
+  });
+});
+
+function updateCatalogEmpty(layout,visible){
+  var empty=layout.querySelector('.catalog-empty');
+  empty.classList.toggle('on',visible===0);
+}
+
+var resLayout=document.querySelector('[data-catalog-layout="residential"]');
+function applyResidentialFilters(){
+  var selectedColors=[];
+  resLayout.querySelectorAll('[data-multi-filter] .swatch.on').forEach(function(item){selectedColors.push(item.getAttribute('data-filter-value'));});
+  var supply=resLayout.querySelector('[data-single-filter="supply"] .chip.on').getAttribute('data-filter-value');
+  var visible=0;
+  resLayout.querySelectorAll('[data-product-grid] .pcard').forEach(function(card){
+    var colors=card.getAttribute('data-colors').split(' ');
+    var colorOk=selectedColors.length===0||selectedColors.some(function(color){return colors.indexOf(color)>=0;});
+    var supplyOk=supply==='all'||card.getAttribute('data-supply')===supply;
+    var show=colorOk&&supplyOk;
+    card.style.display=show?'':'none';
+    if(show)visible++;
+  });
+  updateCatalogEmpty(resLayout,visible);
+}
+resLayout.querySelectorAll('[data-multi-filter] .swatch').forEach(function(button){
+  button.addEventListener('click',function(){button.classList.toggle('on');applyResidentialFilters();});
+});
+resLayout.querySelectorAll('[data-single-filter="supply"] .chip').forEach(function(button){
+  button.addEventListener('click',function(){
+    resLayout.querySelectorAll('[data-single-filter="supply"] .chip').forEach(function(item){item.classList.remove('on');});
+    button.classList.add('on');applyResidentialFilters();
+  });
+});
+
+var contractLayout=document.querySelector('[data-catalog-layout="contract"]');
+function applyContractFilters(){
+  var visible=0;
+  contractLayout.querySelectorAll('[data-product-grid] .pcard').forEach(function(card){
+    var show=true;
+    contractLayout.querySelectorAll('[data-contract-filter]').forEach(function(group){
+      var selected=[];
+      group.querySelectorAll('.chip.on').forEach(function(item){selected.push(item.getAttribute('data-filter-value'));});
+      if(selected.length){
+        var kind=group.getAttribute('data-contract-filter');
+        var values=card.getAttribute('data-'+kind).split(' ');
+        if(!selected.some(function(value){return values.indexOf(value)>=0;}))show=false;
+      }
+    });
+    card.style.display=show?'':'none';
+    if(show)visible++;
+  });
+  updateCatalogEmpty(contractLayout,visible);
+}
+contractLayout.querySelectorAll('[data-contract-filter] .chip').forEach(function(button){
+  button.addEventListener('click',function(){button.classList.toggle('on');applyContractFilters();});
+});
+
+document.querySelectorAll('.catalog-page').forEach(function(page){
+  var activeCategory=page.querySelector('[data-category-chips] .chip.on');
+  if(activeCategory)renderCatalogCategory(page,activeCategory.getAttribute('data-category-label'));
+});
+applyResidentialFilters();
+applyContractFilters();
+
+/* ---------- FF&E 业态切换：更新说明并将对应套餐置顶 ---------- */
+document.querySelectorAll('#vtiles .vtile').forEach(function(b){
+  b.addEventListener('click',function(e){
+    e.stopPropagation();
+    document.querySelectorAll('#vtiles .vtile').forEach(function(x){x.classList.remove('on');});
+    b.classList.add('on');
+    var v=b.getAttribute('data-v');
+    document.getElementById('ffeVerticalName').textContent=b.getAttribute('data-name');
+    document.getElementById('ffeVerticalNote').textContent=b.getAttribute('data-note');
+    document.getElementById('ffeVerticalBuys').textContent=b.getAttribute('data-buys');
+    var certWrap=document.getElementById('ffeVerticalCerts');
+    certWrap.textContent='';
+    b.getAttribute('data-certs').split('|').forEach(function(label){
+      var cert=document.createElement('span');
+      cert.className='cert';
+      cert.textContent=label;
+      certWrap.appendChild(cert);
+    });
+    var grid=document.getElementById('pkggrid');
+    Array.prototype.slice.call(grid.querySelectorAll('.pkg')).sort(function(a,c){
+      var aMatch=a.getAttribute('data-v')===v?0:1;
+      var cMatch=c.getAttribute('data-v')===v?0:1;
+      return aMatch-cMatch||Number(a.getAttribute('data-order'))-Number(c.getAttribute('data-order'));
+    }).forEach(function(card){grid.appendChild(card);});
+  });
+});
+
+/* ---------- 套餐立项（未登录引导注册） ---------- */
+/* 半定制行硬拦截：生效下限＝max(套餐最低量, 产品起订量)，未达即阻断立项（v3.3 D-11 作用域订正／
+   v3.6 四句① Tier2 全硬）。现货行不设生产 MOQ（v3.6 四句④）、全定制行 spm 为软线，均不在本拦截范围——
+   档位分支由 rowFloor() 承载，此处只对 t2 行判定。 */
+var PKG_BLOCK_SHOWN=false;
+function pkgBlockingRows(){
+  var bad=[];
+  PKG.forEach(function(r){
+    if(r.def!=='t2')return;
+    var f=rowFloor(r);
+    if(r.qty<f){bad.push({n:r.n,qty:r.qty,need:f,moq:r.moq||0,spm:r.spm||0});}
+  });
+  return bad;
+}
+function pkgBlockRender(bad){
+  var box=document.getElementById('pkgBlockNote');
+  if(!box)return;
+  if(!bad||!bad.length){box.classList.add('hidden');box.innerHTML='';return;}
+  var li='';
+  bad.forEach(function(b){
+    li+='<li><b>'+b.n+'</b>：当前 '+b.qty+' 件，需至少 <b>'+b.need+' 件</b>'+
+      '（套餐最低量 '+b.moq+' 与产品起订量 '+b.spm+' 取较大者）</li>';
+  });
+  box.innerHTML='<b>无法立项</b>：以下 '+bad.length+' 个<b>半定制行</b>数量未达起订量，请先在行项清单中调整——'+
+    '<ul style="margin:6px 0 0;padding-left:18px">'+li+'</ul>';
+  box.classList.remove('hidden');
+}
+function startProject(){
+  if(!document.body.classList.contains('in')){
+    document.getElementById('regGuide').classList.remove('hidden');
+    document.getElementById('regGuide').scrollIntoView({behavior:'smooth',block:'center'});
+    toast('立项需登录并通过商户审核——已展开注册引导');
+    return;
+  }
+  var bad=pkgBlockingRows();
+  if(bad.length){
+    PKG_BLOCK_SHOWN=true;
+    pkgBlockRender(bad);
+    var box=document.getElementById('pkgBlockNote');
+    if(box&&box.scrollIntoView){box.scrollIntoView({behavior:'smooth',block:'center'});}
+    toast('无法立项：「'+bad[0].n+'」当前 '+bad[0].qty+' 件，需至少 '+bad[0].need+' 件'+
+      (bad.length>1?('；另有 '+(bad.length-1)+' 行未达起订量'):''));
+    return;
+  }
+  location.href='Fabbrio_quote_workspace_ZH_target.html?src=pack#pg-rfq-pack';
+}
+function startBuildProject(){
+  if(!PROJ.length){toast('项目篮为空——请先从商品目录或产品页「加入项目」');return;}
+  if(!document.body.classList.contains('in')){
+    var g=document.getElementById('basketRegGuide');
+    if(g){g.classList.remove('hidden');}
+    toast('立项需登录并通过商户审核——已展开注册引导');
+    return;
+  }
+  location.href='Fabbrio_quote_workspace_ZH_target.html?src=custom#pg-rfq-pack';
+}
+
+/* ---------- v2.7 跨档行项引擎（套餐详情页 / 自行组合页共用） ---------- */
+var TIERNAME={t1:'现货',t2:'半定制',t3:'全定制'};
+var MIN_ORDER=25000;   /* 回填⑬ 整单最低成交金额（演示占位值，USD；三稿统一 US$ 25,000） */
+function minOrderTxt(){return 'US$ '+MIN_ORDER.toLocaleString('en-US');}
+/* ========== v4.7 产品级「可售档位集合」白名单（A-02／B-17 裁定） ==========
+   定义：每个产品一个集合 ⊆ {t1 现货, t2 半定制, t3 全定制}，表达「这个产品本身能做哪些档位」。
+   一份数据源、三处用法：
+     · A 稿套餐模板行     = 可售档位 ∩ {t1,t2}   （v3.4 甲-窄，模板永不含 T3）
+     · A 稿 PDP CTA 显隐  = 含 t1 显加购／含 t2 显配置器（与有无定价规则无关，见 NR-02 验收条件）
+     · B 稿 FF&E 自组行   = 不过滤，直接等于本集合（v2.7 容器跨档）
+   维护落位：随 G5 留开发（结构级），C 稿区5「规则与成本主数据」仅提供只读查看；内部后台不新增可维护功能。
+   演示数据三稿同一份——同名产品取值必须一致。 */
+var TIER_CATALOG={
+  'RC-200':{n:'现代接待台 RC-200',cat:'接待台',sub:'RC 系列 · 木饰面＋金属收边 · 适配前台/接待区场景',allow:['t1','t2']},
+  'TC-30' :{n:'现货任务椅 TC-30',cat:'座椅',sub:'TC 系列 · 网背＋铝合金五星脚 · 适配办公工位场景',allow:['t1','t2']},
+  'WD-120':{n:'客房衣柜 WD-120',cat:'柜类',sub:'WD 系列 · 木饰面 · 适配酒店客房场景',allow:['t2','t3']},
+  'MT-320':{n:'会议桌 MT-320',cat:'会议桌',sub:'MT 系列 · 白橡饰面＋线盒预留 · 适配中大型会议室',allow:['t2','t3']},
+  'RC-900':{n:'大堂接待台 · 弧形',cat:'接待台',sub:'非标结构 · 弧形台面＋定制灯槽 · 适配酒店大堂',allow:['t3'],note:'非标结构，不做现货与半定制'}
+};
+/* 套餐模板行过滤器：可售档位 ∩ {t1,t2}（v3.4 口径不变——模板永不含 T3） */
+function tmplTiers(allow){
+  return (allow||[]).filter(function(t){return t==='t1'||t==='t2';});
+}
+
+/* v3.4 甲-窄：预设套餐模板行仅限现货/半定制（不含全定制）——套餐行量校验全硬，
+   生效下限=max(套餐最低量 moq, 产品起订量 spm)；软线（Tier3）口径保留在 rowFloor 供其他路径使用。
+   wp=批发单价；ref=半定制参考单价。
+   v4.7 语义升级：本表 allow 即产品「可售档位集合」（可含 t3），渲染时按 tmplTiers() 过滤；
+   现有八行本就是现货/半定制品，取值维持不变，故过滤前后表现一致。 */
+var PKG=[
+  {n:'玛伦软包床架',c:'床具 · 浅灰布艺',allow:['t1','t2'],def:'t2',moq:48,spm:40,qty:48,cfg:'1.5m 双人 · 浅灰布艺 · 软包背板 · 木脚',wp:365,ref:398},
+  {n:'胡桃木单抽床头柜',c:'柜类 · 胡桃饰面',allow:['t1','t2'],def:'t1',moq:96,spm:60,pack:6,qty:96,cfg:'450mm 单抽 · 胡桃饰面 · 金属条形把手',wp:118,ref:132},
+  {n:'直线写字台',c:'桌类 · 白橡饰面',allow:['t1','t2'],def:'t2',moq:48,spm:40,qty:48,cfg:'1.2m · 白橡饰面 · 含理线孔 · 直角封边',wp:246,ref:268},
+  {n:'软包桌椅',c:'座椅 · 黑色金属脚',allow:['t1','t2'],def:'t1',moq:48,spm:48,pack:4,qty:48,cfg:'标准座高 · 浅灰面料 · 黑色金属脚',wp:96,ref:104},
+  {n:'布艺休闲单椅',c:'座椅 · 墨绿布艺',allow:['t1','t2'],def:'t1',moq:48,spm:30,pack:2,qty:48,cfg:'标准款 · 墨绿布艺 · 木质扶手',wp:215,ref:232},
+  {n:'金属底座小圆几',c:'桌几 · 木质台面',allow:['t1','t2'],def:'t1',moq:48,spm:60,pack:6,qty:60,cfg:'φ600mm · 白橡台面 · 黑色金属底座',wp:88,ref:95},
+  {n:'软包行李凳',c:'其他 · 金属框架',allow:['t1','t2'],def:'t1',moq:48,spm:24,pack:4,qty:48,cfg:'900mm · 浅灰面料 · 金属框架',wp:72,ref:79},
+  {n:'开放挂衣柜（含行李架）',c:'柜类 · 木饰面',allow:['t2'],def:'t2',moq:48,spm:60,qty:48,cfg:'1200mm · 白橡饰面 · 开放挂衣＋行李架',wp:0,ref:0}
+];
+var PROJ=[];   /* 项目篮：{n,c,qty}，不含档位与量规——立项后由工作台承载 */
+
+function money(v){return '$'+v.toLocaleString('en-US')+' USD';}
+
+function rowHTML(r,i,ns){
+  var tp='';
+  var tf=tmplTiers(r.allow);   /* v4.7：模板行按 ∩{t1,t2} 过滤后再判可选性 */
+  ['t1','t2'].forEach(function(t){
+    var ok=tf.indexOf(t)>=0;
+    tp+='<button class="'+t+(r.def===t?' on ':' ')+'" '+(ok?'':'disabled ')+
+      'onclick="xTier(\''+ns+'\','+i+',\''+t+'\')">'+TIERNAME[t]+'</button>';
+  });
+  /* v3.2 双阈值：硬线=套餐最低量（拦截，兜底提示）；软线=单品起订量（可提交，显著标记） */
+  /* v3.3 量校验分档：软线只对 Tier3 成立（口径见 rowFloor） */
+  var spm=r.spm||0;
+  var isT3=(r.def==='t3');
+  var floor=rowFloor(r);
+  var hard=(r.qty<floor);
+  var soft=(isT3&&!hard&&spm>0&&r.qty<spm);
+  var price='';
+  if(r.def==='t1'){
+    price='<span class="po gate">登录后可见批发价</span>'+
+      '<span class="pi"><span class="wpx">'+money(r.wp*r.qty)+'</span><span class="u">批发价 '+money(r.wp)+' / 件</span></span>';
+  }else if(r.def==='t2'){
+    if(!r.ref){
+      /* NR-16：无规则品类不显参考价——仍可正常提交询价 */
+      price='<span class="ref">待报价</span><span class="u">该产品暂无在线参考价，正式价由我们核定后随整单报价出具</span>';
+    }else{
+      price='<span class="po gate">登录后可见参考价</span>'+
+        '<span class="pi"><span class="ref">'+money(r.ref*r.qty)+'</span><span class="u">参考价 '+money(r.ref)+' / 件 · 仅供预算参考，正式价由我们核定后出具</span></span>';
+    }
+  }else{
+    price='<span class="ask">询价</span><span class="u">该行按全定制单独出图报价，正式价随整单报价出具</span>';
+  }
+  return '<div class="xt-row">'+
+    '<div><div class="pname">'+r.n+'</div><div class="pcat">'+r.c+'</div>'+(r.def==='t2'&&r.cfg?('<div class="cfgline">配置：'+r.cfg+'<span class="cfgtag">常用配置，可修改</span></div>'):'')+'</div>'+
+    '<div><div class="tierpick">'+tp+'</div>'+(tf.length<2?'<div class="pcat" style="margin-top:4px">该产品仅支持上述方案</div>':'')+'</div>'+
+    '<div class="moqcell">'+
+      (isT3
+        ? ('<b>'+r.moq+' 件</b>套餐最低量 · 不可减少'+
+           (spm>0?'<span class="spm">该产品起订量 '+spm+' 件 · 软线</span>':''))
+        : (r.def==='t1'
+          ? ('<b>'+floor+' 件</b>套餐最低量 · 不可减少'+
+             (r.pack>1?'<span class="spm">整箱起 · '+r.pack+' 件/箱</span>':''))
+          : ('<b>'+floor+' 件</b>起订量 · 不可减少'+
+             ((spm>r.moq)
+               ? '<span class="spm">取套餐最低量 '+r.moq+' 与产品起订量 '+spm+' 的较大者</span>':''))))+
+    '</div>'+
+    '<div><div class="qty">'+
+      '<button class="'+(r.qty<=floor?'dis':'')+'" onclick="xQty(\''+ns+'\','+i+',-1)">−</button>'+
+      '<input type="text" value="'+r.qty+'" onchange="xSet(\''+ns+'\','+i+',this.value)">'+
+      '<button onclick="xQty(\''+ns+'\','+i+',1)">+</button>'+
+    '</div>'+
+    (hard?'<div class="lowmoq">低于'+floorLabel(r)+'（'+floor+' 件）</div>':
+      (soft?'<div class="softmoq">低于该产品起订量（'+spm+' 件），能否承接以正式报价为准</div>':''))+
+    '</div>'+
+    '<div class="xprice">'+price+'</div>'+
+  '</div>';
+}
+
+function xRender(ns){
+  var data=PKG;
+  var rowsBox=document.getElementById('pkgRows');
+  var totalBox=document.getElementById('pkgTotal');
+  if(!rowsBox)return;
+  if(!data.length){
+    rowsBox.innerHTML='<div class="xt-row" style="grid-template-columns:1fr;color:var(--muted)">项目清单为空——请从上方产品库「加入项目」。</div>';
+    totalBox.innerHTML='<div><span class="lab">整单金额</span><span class="big">—</span></div>';
+    return;
+  }
+  var html='';
+  for(var i=0;i<data.length;i++){html+=rowHTML(data[i],i,ns);}
+  rowsBox.innerHTML=html;
+
+  var incl=0,refSum=0,pend=0,t1n=0,t2n=0,t3n=0,noref=0;
+  data.forEach(function(r){
+    if(r.def==='t1'){incl+=r.wp*r.qty;t1n++;}
+    else if(r.def==='t2'){refSum+=r.ref*r.qty;pend++;t2n++;if(!r.ref){noref++;}}
+    else{pend++;t3n++;}
+  });
+  var inclTxt=document.body.classList.contains('in')?money(incl):'登录后可见';
+  var refTxt=document.body.classList.contains('in')?money(refSum):'登录后可见';
+  totalBox.innerHTML=
+    '<div><span class="lab">已含金额（现货行批发价小计）</span><span class="big">'+
+      (t1n?inclTxt:'—')+'</span>'+
+      '<span class="lab" style="margin-top:6px">套餐行仅含现货与半定制；现货行按批发价并入整单</span></div>'+
+    '<div><span class="lab">半定制参考合计（不计入已含金额）</span><span class="big" style="color:var(--warn)">'+(t2n?(refSum?refTxt:'—'):'—')+'</span>'+
+      '<span class="lab" style="margin-top:6px">参考价仅供预算参考，不作成交依据'+
+      (noref?('；其中 '+noref+' 项暂无在线参考价、未计入本合计'):'')+'</span></div>'+
+    '<div><span class="lab">行数构成</span><span class="big">现货 '+t1n+' ／ 半定制 '+t2n+'</span>'+
+      '<span class="lab" style="margin-top:6px">半定制行正式价由我们核定后随整单报价出具；付款计划＝现货行全额＋半定制行 30% 为首期，半定制行余 70% 发货前付清（措辞随契约定稿）</span>'+
+      '<span class="lab" style="margin-top:8px">整单最低成交金额 '+minOrderTxt()+'（演示占位值）</span>'+
+      ((document.body.classList.contains('in')&&incl<MIN_ORDER)
+        ? '<span class="lab" style="margin-top:4px;color:var(--warn)">当前已含金额低于整单最低成交金额，最终以正式报价为准（立项不受影响）</span>':'')+
+      '</div>';
+
+  /* 已触发过立项阻断提示时，随数量变化同页更新（达标即自动消失） */
+  if(PKG_BLOCK_SHOWN){pkgBlockRender(pkgBlockingRows());}
+}
+
+/* v3.3 量校验作用域（D-11 订正）：
+   ① Tier1 现货行 / Tier2 半定制行 → 生效下限 = max(套餐最低量, 单品起订量)，全硬拦截
+      （无人工报价环节，机器把关，v2.7 B 案）
+   ② Tier3 全定制行 → 套餐最低量=硬线（拦截）／单品起订量=软线（可提交＋显著标记）
+   ③ 散单 RFQ（无套餐最低量，moq=0）→ 只剩单品起订量软线
+   ★ v4.9⑥ 后：FF&E 容器内不再出现 t3 行（全定制一律走独立散单 RFQ），故本函数的 t3 分支
+     在套餐/项目路径上已不可达；分支保留仅供③ 散单 RFQ 口径参照，量规拦截行为未改。 */
+function rowFloor(r){
+  var moq=r.moq||0,spm=r.spm||0;
+  /* v3.6 三分支：现货行不设生产 MOQ（货在库、无开机采料），只受套餐最低量与包装单位约束 */
+  if(r.def==='t1'){return packRound(r,moq);}          /* 现货：仅套餐最低量（按整箱取整） */
+  if(r.def==='t3'){return moq;}                        /* 全定制：套餐最低量为硬线，spm 为软线 */
+  return Math.max(moq,spm);                            /* 半定制：叠加生产 MOQ，全硬 */
+}
+function rowStep(r){return (r.def==='t1'&&r.pack>1)?r.pack:1;}   /* 现货行按整箱递增 */
+function packRound(r,v){
+  var p=(r.def==='t1'&&r.pack>1)?r.pack:1;
+  return (p<=1)?v:Math.ceil(v/p)*p;
+}
+function floorLabel(r){
+  if(r.def==='t1')return '套餐最低量';
+  if(r.def==='t3')return '套餐最低量';
+  return '半定制行起订量';
+}
+function xTier(ns,i,t){
+  var data=PKG;
+  var r=data[i];
+  if(r.allow.indexOf(t)<0)return;
+  r.def=t;
+  /* 切档后重算生效下限：切到 Tier1/Tier2 时若低于其硬线，自动抬到下限 */
+  var f=rowFloor(r),bumped=false;
+  if(r.qty<f){r.qty=f;bumped=true;}
+  xRender(ns);
+  toast(r.n+' → 方案已改为「'+TIERNAME[t]+'」'+
+    (t==='t3'?'：该行将单独成为一个 RFQ':'')+
+    (bumped?('；该方案须满足起订量，数量已自动调整为 '+f+' 件'):''));
+}
+function xQty(ns,i,d){
+  var data=PKG;
+  var r=data[i];
+  var st=rowStep(r),v=r.qty+d*st,f=rowFloor(r);
+  if(v<f){toast('已达'+floorLabel(r)+' '+f+' 件，不可再减少（可增加）'+(st>1?('；本品整箱起，按 '+st+' 件递增'):''));return;}
+  r.qty=v;xRender(ns);
+}
+function xSet(ns,i,val){
+  var data=PKG;
+  var r=data[i];
+  var v=parseInt(String(val).replace(/[^0-9]/g,''),10);
+  var f=rowFloor(r);
+  if(!isNaN(v)&&r.def==='t1'&&r.pack>1){
+    var rv=packRound(r,v);
+    if(rv!==v){toast('本品整箱起（'+r.pack+' 件/箱），数量已取整为 '+rv);v=rv;}
+  }
+  if(isNaN(v)||v<f){
+    if(r.def==='t3'){toast('数量不可低于套餐最低量 '+f+' 件，已回填为 '+f);}
+    else if(r.def==='t1'){toast('现货行数量不可低于套餐最低量 '+f+' 件，已回填');}
+    else{toast('半定制行数量不可低于起订量 '+f+' 件，已回填');}
+    v=f;
+  }else if(r.def==='t3'&&r.spm&&v<r.spm){
+    toast('数量 '+v+' 件低于该产品起订量 '+r.spm+' 件——可提交，能否承接以正式报价为准');
+  }
+  r.qty=v;xRender(ns);
+}
+xRender('pkg');renderBasket();
+
+/* ---------- 商户注册三态页签 ---------- */
+function merchantStep(n){
+  for(var i=0;i<4;i++){
+    document.getElementById('msv'+i).classList.toggle('hidden',i!==n);
+    document.getElementById('mstab'+i).classList.toggle('on',i===n);
+  }
+  if(n===2){statusForm(0);}
+}
+function statusForm(k){
+  for(var i=0;i<5;i++){
+    document.getElementById('ssv'+i).classList.toggle('hidden',i!==k);
+    document.getElementById('sstab'+i).classList.toggle('on',i===k);
+  }
+}
+
+/* ---------- 联系方式复制 ---------- */
+function legacyCopyContact(value){
+  var input=document.createElement('textarea');
+  input.value=value;
+  input.setAttribute('readonly','');
+  input.style.position='fixed';input.style.opacity='0';input.style.pointerEvents='none';
+  document.body.appendChild(input);input.select();
+  var ok=false;
+  try{ok=document.execCommand('copy');}catch(err){ok=false;}
+  document.body.removeChild(input);
+  if(ok){toast('已复制：'+value);}else{toast('复制失败，请手动选择并复制');}
+}
+function copyContact(button){
+  var value=button.getAttribute('data-copy')||'';
+  if(navigator.clipboard&&window.isSecureContext){
+    navigator.clipboard.writeText(value).then(function(){toast('已复制：'+value);}).catch(function(){legacyCopyContact(value);});
+  }else{
+    legacyCopyContact(value);
+  }
+}
+
+/* ---------- 提示浮层 ---------- */
+var toastTimer=null;
+function toast(msg){
+  var t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(function(){t.classList.remove('show');},2600);
+}
+
+/* ---------- v4.7 PDP CTA 显隐：按产品「可售档位集合」（A-02 裁定） ----------
+   含 t1 → 显「加入购物车」；含 t2 → 显「进入配置器」；两者皆无则都不显、只留「加入项目」与全定制说明。
+   「加入项目」＝容器操作、与档位选择正交、恒显（v4.0 裁决①）；仍不设 Tier3 入口（v3.8/v4.0）。
+   ★ 与「有无定价规则」无关——NR-02 验收条件写死「无规则品类不显参考价且仍可提交询价」：
+     规则只管显不显价，不管入口显不显。 */
+var PDP_SKU='RC-200';
+function tglEl(id,show){
+  var el=document.getElementById(id);
+  if(el){el.classList.toggle('hidden',!show);}
+}
+var PDP_UNLISTED_IDS=['pdpCartBtn','pdpCartQtyNote','pdpCartNote','pdpBuyT1',
+                      'pdpConfigureBtn','pdpCfgNote','pdpBuyT2',
+                      'pdpBadgeT1','pdpBadgeT2','pdpBadgeT3','pdpNoTradeNote'];
+function renderPdpCta(sku){
+  var p=TIER_CATALOG[sku];
+  /* v4.8⑥ 白名单缺项＝显式故障（A14-③ 修复 D-19）：
+     产品未登记可售档位时不得静默放行——两个交易 CTA 全隐＋页面显著标红，
+     绝不套用另一个产品（RC-200）的集合。回落只对「无 data-sku 的演示卡」合法，
+     该分流在 applyPdpFromCard() 里做，本函数收到的 sku 一律按字面判定。 */
+  if(!p){
+    PDP_SKU=sku;
+    PDP_UNLISTED_IDS.forEach(function(id){tglEl(id,false);});
+    var box=document.getElementById('pdpUnlistedSku');
+    if(box){box.textContent=sku;}
+    tglEl('pdpUnlistedNote',true);
+    return {sku:sku,name:null,allow:null,listed:false,cart:false,configure:false};
+  }
+  tglEl('pdpUnlistedNote',false);
+  PDP_SKU=sku;
+  var a=p.allow||[];
+  var hasT1=a.indexOf('t1')>=0, hasT2=a.indexOf('t2')>=0;
+  tglEl('pdpCartBtn',hasT1);       /* 加购按钮 */
+  tglEl('pdpCartQtyNote',hasT1);   /* 独立散买数量门槛小字 */
+  tglEl('pdpCartNote',hasT1);      /* S 域语义说明 */
+  tglEl('pdpBuyT1',hasT1);         /* 「三种购买方式」现货条 */
+  tglEl('pdpConfigureBtn',hasT2);  /* 配置器按钮 */
+  tglEl('pdpCfgNote',hasT2);       /* 配置器联动说明 */
+  tglEl('pdpBuyT2',hasT2);         /* 「三种购买方式」半定制条 */
+  tglEl('pdpBadgeT1',hasT1);       /* 徽章「现货标准款」 */
+  tglEl('pdpBadgeT2',hasT2);       /* 徽章「支持在线配置」 */
+  tglEl('pdpBadgeT3',!hasT1&&!hasT2);
+  tglEl('pdpNoTradeNote',!hasT1&&!hasT2);
+  return {sku:sku,name:p.n,allow:a,listed:true,cart:hasT1,configure:hasT2};
+}
+/* 目录卡进入 PDP（A14-③：两种情形分流，不再共用一条回落路径）：
+   ① 卡上无 data-sku            → 旧演示卡，回落默认品 RC-200（合法，仅为原型演示）
+   ② 有 data-sku 但不在白名单    → 显式故障，不回落：头部按卡片信息呈现＋交易 CTA 全隐＋标红提示 */
+function applyPdpFromCard(el){
+  var card=(el&&el.classList&&el.classList.contains('pcard'))?el:((el&&el.closest)?el.closest('.pcard'):null);
+  var sku=card?card.getAttribute('data-sku'):null;
+  if(!sku){sku='RC-200';}                       /* ① 无 SKU 的演示卡：回落合法 */
+  if(!TIER_CATALOG[sku]){                       /* ② 有 SKU 但未登记：显式故障 */
+    var ch=card?card.querySelector('h4'):null, cb=card?card.querySelector('.brand'):null;
+    document.getElementById('pdpCategory').textContent=cb?cb.textContent.trim():'—';
+    document.getElementById('pdpTitle').textContent=ch?ch.textContent.trim():sku;
+    document.getElementById('pdpSubtitle').textContent='SKU '+sku+'｜该产品未登记可售档位——交易入口已按 v4.8⑥ 全部关闭';
+    renderPdpCta(sku);
+    return;
+  }
+  var p=TIER_CATALOG[sku];
+  document.getElementById('pdpCategory').textContent=p.cat;
+  document.getElementById('pdpTitle').textContent=p.n;
+  document.getElementById('pdpSubtitle').textContent=p.sub+'｜可售档位：'+p.allow.map(function(t){return TIERNAME[t];}).join(' / ');
+  renderPdpCta(sku);
+}
+
+/* ---------- 产品详情进入配置器：携带当前 SKU ---------- */
+function openConfiguratorForPdp(){
+  var sku=new URLSearchParams(location.search).get('sku')||PDP_SKU||'RC-200';
+  location.href='Fabbrio_quote_workspace_ZH_target.html?sku='+encodeURIComponent(sku)+'#pg-cfg-prefill';
+}
+
+/* ---------- 配置器返回：按 sku 参数呈现对应产品详情 ---------- */
+function applyPdpSku(){
+  var sku=new URLSearchParams(location.search).get('sku');
+  if(!sku)return;
+  var cta=renderPdpCta(sku);   /* v4.7：带 sku 回跳时 CTA 同样按该产品可售档位集合显隐；A14-③：未登记 SKU 走显式故障 */
+  var prefix=sku.split('-')[0];
+  var meta={
+    RC:{category:'接待台',name:'接待台',series:'RC 系列',icon:'#i-recep'},
+    ST:{category:'储物柜',name:'办公储物柜',series:'ST 系列',icon:'#i-cab'},
+    MT:{category:'会议桌',name:'会议桌',series:'MT 系列',icon:'#i-table'}
+  }[prefix];
+  if(!meta)return;
+  document.getElementById('pdpCategory').textContent=meta.category;
+  document.getElementById('pdpTitle').textContent=meta.name+' '+sku;
+  document.getElementById('pdpSubtitle').textContent=meta.series+' · 当前 SKU 由半定制配置器选中 · 详细规格以正式规格书为准'+
+    (cta&&cta.listed===false?('｜SKU '+sku+' 未登记可售档位，交易入口已按 v4.8⑥ 全部关闭'):'');
+  document.getElementById('pdpMainIconUse').setAttribute('href',meta.icon);
+  if(sku!=='RC-200'){
+    /* A-07 已裁 v4.10：未登录零价格，占位文案统一「登录后可见批发价」（保留 gate 图标结构） */
+    document.getElementById('pdpMsrp').innerHTML='<span class="gate"><svg class="icon"><use href="#i-lock"/></svg>登录后可见批发价</span>';
+    document.getElementById('pdpSignedPrice').textContent='该 SKU 批发价以配置器与正式报价为准';
+    document.getElementById('pdpSignedTerms').textContent='MOQ 与配置交期以配置器及正式报价为准 · USD 计价';
+    document.getElementById('pdpCerts').innerHTML='<span class="cert">认证信息以该 SKU 正式规格书为准</span>';
+    document.getElementById('pdpSpecSize').textContent='按配置器所选尺寸档位';
+    document.getElementById('pdpSpecMaterial').textContent='以该 SKU 正式规格书为准';
+    document.getElementById('pdpSpecStructure').textContent='以该 SKU 正式规格书为准';
+    document.getElementById('pdpSpecColor').textContent='支持配置器颜色档位';
+    document.getElementById('pdpSpecPackage').textContent='以正式报价与包装清单为准';
+  }
+  document.getElementById('pdpCfgNote').innerHTML='您正在查看从配置器返回的所选产品：<b>'+meta.category+' · '+sku+'</b>。可返回配置器继续调整尺寸、颜色、造型与附加配置。';
+}
+
+/* ---------- 跨文件联动：hash 深链路由（报价工作台原型 ⇄ 本文件） ---------- */
+function applyHash(){
+  var h=location.hash.replace('#','');
+  if(!h)return;
+  var el=document.getElementById(h);
+  if(el&&el.classList.contains('page')){showPage(h);}
+}
+
+/* ---------- 项目篮（甲案）：选品在店面，行编辑与量规在报价工作台 ---------- */
+function openBasket(){
+  var b=document.getElementById('basketPanel');
+  if(b){b.classList.add('on');renderBasket();}
+}
+function closeBasket(){
+  var b=document.getElementById('basketPanel');
+  if(b){b.classList.remove('on');}
+}
+function projAdd(name,cat,cfg){
+  if(!name)return;
+  for(var i=0;i<PROJ.length;i++){
+    if(PROJ[i].n===name){PROJ[i].qty++;renderBasket();toast(name+' 数量 +1（当前项目 '+projCount()+' 项）');return;}
+  }
+  PROJ.push({n:name,c:cat||'',cfg:cfg||'',qty:1});
+  renderBasket();
+  toast(name+' 已加入项目（当前项目 '+projCount()+' 项）');
+}
+function projAddFromCard(btn){
+  var card=btn.closest('.pcard');
+  if(!card)return;
+  var h=card.querySelector('h4'),b=card.querySelector('.brand');
+  projAdd(h?h.textContent.trim():'',b?b.textContent.trim():'',card.getAttribute('data-cfg')||'');
+}
+function projAddFromPdp(btn){
+  var h=document.querySelector('#page-pdp h1');
+  projAdd(h?h.textContent.trim():'本产品','产品详情页',(btn&&btn.getAttribute('data-cfg'))||'');
+}
+function projQty(i,d){
+  var r=PROJ[i];if(!r)return;
+  var v=r.qty+d;
+  if(v<1){projRemove(i);return;}
+  r.qty=v;renderBasket();
+}
+function projRemove(i){
+  var r=PROJ[i];if(!r)return;
+  PROJ.splice(i,1);renderBasket();
+  toast(r.n+' 已从项目中移除');
+}
+function projCount(){return PROJ.length;}
+function renderBasket(){
+  var badge=document.getElementById('basketCount');
+  if(badge){badge.textContent=projCount();}
+  var chip=document.getElementById('basketChip');
+  if(chip){chip.classList.toggle('has',projCount()>0);}
+  var box=document.getElementById('basketRows');
+  if(!box)return;
+  if(!PROJ.length){
+    box.innerHTML='<p class="basket-empty">项目篮为空。在商品目录或产品页点击「加入项目」，把需要的产品收进来——项目容器承载现货与半定制两档；全定制请另行提交独立的全定制 RFQ。</p>';
+  }else{
+    var h='';
+    for(var i=0;i<PROJ.length;i++){
+      var r=PROJ[i];
+      h+='<div class="basket-row">'+
+        '<div><div class="bk-n">'+r.n+'</div>'+(r.c?'<div class="bk-c">'+r.c+'</div>':'')+
+          (r.cfg?('<div class="bk-cfg">配置：'+r.cfg+'<span class="bk-cfgtag">常用配置，可修改</span></div>'):'')+'</div>'+
+        '<div class="qty">'+
+          '<button onclick="projQty('+i+',-1)">−</button>'+
+          '<input type="text" value="'+r.qty+'" readonly>'+
+          '<button onclick="projQty('+i+',1)">+</button>'+
+        '</div>'+
+        '<button class="bk-del" onclick="projRemove('+i+')" title="移除">×</button>'+
+      '</div>';
+    }
+    box.innerHTML=h;
+  }
+  var note=document.getElementById('basketNote');
+  if(note){note.style.display=PROJ.length?'block':'none';}
+}
+
+renderPdpCta(PDP_SKU);   /* v4.7：首屏按默认品的可售档位集合对齐 CTA 显隐（防 DOM 初值与数据脱钩） */
+applyPdpSku();
+applyHash();
+window.addEventListener('hashchange',applyHash);
+/* 首屏也要让页脚 WhatsApp 深链带上当前页上下文 */
+(function(){var p=document.querySelector('.page.on');if(p){updateContactCtx(p.id);}})();
+</script>
+</body>
+</html>
