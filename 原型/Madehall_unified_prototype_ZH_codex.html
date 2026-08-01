@@ -13,10 +13,10 @@ window.SHARED=(function(){
   'use strict';
   var PRODUCTS={"CHR-0030-01":{"name":"现货任务椅 CHR-0030-01","tiers":["t1","t2"]},"CAB-0110-01":{"name":"储物柜 CAB-0110-01","tiers":["t1","t2"]},"NST-0040-01":{"name":"客房床头柜 NST-0040-01","tiers":["t1","t2"]},"WST-0060-01":{"name":"办公工位 WST-0060-01","tiers":["t1","t2"]},"DSK-0090-01":{"name":"客房书桌 DSK-0090-01","tiers":["t1","t2"]},"WRD-0120-01":{"name":"客房衣柜 WRD-0120-01","tiers":["t2","t3"]},"MTG-0320-01":{"name":"会议桌 MTG-0320-01","tiers":["t2","t3"]},"RCP-0900-01":{"name":"大堂接待台 · 弧形 RCP-0900-01","tiers":["t3"]}};
   var GLOBALS={"MIN_ORDER":25000,"DEPOSIT_RATE":0.3,"BALANCE_RATE":0.7,"STORAGE_DAYS":14,"INCOTERM":"DDP 到门","CURRENCY":"USD"};
-  var STATUS_PUBLIC={"submitted":"已提交","in_design":"设计中","design_review":"待您确认设计","pricing":"报价制作中","quoted":"已报价","deposit_pending":"待付定金","deposit_paid":"定金已付","in_production":"生产中","delivered":"已交付","closed":"已完成","rejected":"已拒单","cancelled":"已取消","on_hold":"已挂起","rework":"设计中"};
+  var STATUS_PUBLIC={"submitted":"已提交","in_design":"设计中","design_review":"待您确认设计","pricing":"报价制作中","quoted":"已报价","deposit_pending":"待付定金","deposit_paid":"定金已付","in_production":"生产中","delivered":"已交付","closed":"已完成","rejected":"已拒单","cancelled":"已取消","on_hold":"已挂起","expired":"已过期"};
   var REF_VARIANTS=[{"sku":"RCP-0200-01","size":"2.0m","color":"暖白","shape":"直角","addon":"线缆孔＋抽屉锁","img":"TYPE-RCP0200-01","price":486.0,"ver":"v3"},{"sku":"RCP-0200-02","size":"2.0m","color":"暖白","shape":"L 型","addon":"线缆孔＋抽屉锁","img":"TYPE-RCP0200-02","price":562.0,"ver":"v3"},{"sku":"RCP-0200-03","size":"2.0m","color":"浅胡桃木","shape":"直角","addon":"全配（线缆孔＋抽屉锁＋灯箱位）","img":"TYPE-RCP0200-03","price":598.0,"ver":"v2"},{"sku":"RCP-0200-04","size":"1.8m","color":"哑黑","shape":"直角","addon":"基础版","img":"TYPE-RCP0200-04","price":442.0,"ver":"v4"},{"sku":"RCP-0260-01","size":"2.0m","color":"暖白","shape":"弧形","addon":"线缆孔＋抽屉锁","img":"TYPE-RCP0260-01","price":648.0,"ver":"v2"},{"sku":"RCP-0320-01","size":"2.4m","color":"深胡桃木","shape":"弧形","addon":"全配（线缆孔＋抽屉锁＋灯箱位）","img":"TYPE-RCP0320-01","price":796.0,"ver":"v1"},{"sku":"CAB-0110-01","size":"1.2m 三层","color":"暖白","shape":"平开门","addon":"含锁","img":"TYPE-CAB0110-01","price":138.0,"ver":"v5"},{"sku":"CAB-0110-02","size":"1.2m 三层","color":"哑黑","shape":"推拉门","addon":"含锁＋分隔板","img":"TYPE-CAB0110-02","price":164.0,"ver":"v5"},{"sku":"CAB-0140-01","size":"1.5m 四层","color":"暖白","shape":"平开门","addon":"基础版","img":"TYPE-CAB0140-01","price":152.0,"ver":"v3"},{"sku":"CAB-0180-01","size":"1.8m 五层","color":"浅胡桃木","shape":"平开门","addon":"含锁","img":"TYPE-CAB0180-01","price":196.0,"ver":"v2"},{"sku":"MTG-0320-01","size":"2.4m","color":"暖白","shape":"直角","addon":"基础版","img":"TYPE-MTG0320-01","price":null,"ver":"v1"},{"sku":"MTG-0400-01","size":"3.2m","color":"深胡桃木","shape":"船型","addon":"线缆孔","img":"TYPE-MTG0400-01","price":null,"ver":"v1"}];
   var PREFIX={"SO":"SO-","SC":"SC-","PO":"PO-","Q_T2":"Q-T2-","RFQ":"RFQ-","PRJ":"PRJ-","QT":"QT-"};
-  var DOCS={"SO-2024":{"kind":"SO","title":"酒店客房套包 ×46 间 · 北美连锁酒店集采","amount":158190.0,"status":"生产中"},"SC-3024":{"kind":"SC","title":"首期 · 关联 SO-2024","amount":79902.0,"status":"未标记"},"SC-3025":{"kind":"SC","title":"尾款 · 关联 SO-2024","amount":78288.0,"status":"未标记 · 发运门控中"},"SO-2031":{"kind":"SO","title":"接待台 ×20 · 西岸办公家具批发","amount":21500.0,"status":"待付定金"},"SC-3031":{"kind":"SC","title":"首期 · 关联 SO-2031","amount":6450.0,"status":"未标记"},"SC-3032":{"kind":"SC","title":"尾款 · 关联 SO-2031","amount":15050.0,"status":"未标记"},"SO-2029":{"kind":"SO","title":"文件柜定制 ×24","amount":5120.0,"status":"生产中"},"SC-3029":{"kind":"SC","title":"首期 · 关联 SO-2029","amount":1536.0,"status":"未标记"},"Q-T2-0611":{"kind":"Q-T2","title":"接待台 RC-200 ×12","amount":6144.0,"status":"已报价"},"PRJ-1007":{"kind":"PRJ","title":"海景酒店 48 间客房","amount":31900.0,"status":"报价制作中"},"QT-1007-01":{"kind":"QT","title":"PRJ-1007 · 海景酒店整单报价","amount":31900.0,"status":"已报价"},"RFQ-3021":{"kind":"RFQ","title":"前台接待台 ×15","amount":null,"status":"待您确认设计"},"QT-3021-02":{"kind":"QT","title":"RFQ-3021 · 前台接待台报价","amount":5912.0,"status":"已报价"}};
+  var DOCS={"SO-2024":{"kind":"SO","title":"酒店客房套包 ×46 间 · 北美连锁酒店集采","amount":158190.0,"status":"生产中"},"SC-3024":{"kind":"SC","title":"首期 · 关联 SO-2024","amount":79902.0,"status":"未标记"},"SC-3025":{"kind":"SC","title":"尾款 · 关联 SO-2024","amount":78288.0,"status":"未标记 · 发运门控中"},"SO-2031":{"kind":"SO","title":"接待台 ×20 · 西岸办公家具批发","amount":21500.0,"status":"待付定金"},"SC-3031":{"kind":"SC","title":"首期 · 关联 SO-2031","amount":6450.0,"status":"未标记"},"SC-3032":{"kind":"SC","title":"尾款 · 关联 SO-2031","amount":15050.0,"status":"未标记"},"SO-2029":{"kind":"SO","title":"文件柜定制 ×24","amount":5120.0,"status":"生产中"},"SC-3029":{"kind":"SC","title":"首期 · 关联 SO-2029","amount":1536.0,"status":"未标记"},"Q-T2-0611":{"kind":"Q-T2","title":"接待台 RCP-0200-01 ×12","amount":6144.0,"status":"已报价"},"PRJ-1007":{"kind":"PRJ","title":"海景酒店 48 间客房","amount":31900.0,"status":"已报价"},"QT-1007-01":{"kind":"QT","title":"PRJ-1007 · 海景酒店整单报价","amount":31900.0,"status":"已报价"},"RFQ-3021":{"kind":"RFQ","title":"前台接待台 RCP-0900-01 ×15","amount":null,"status":"已报价"},"RFQ-3026":{"kind":"RFQ","title":"大堂接待台 RCP-0900-02 ×1","amount":null,"status":"报价制作中"},"QT-3021-02":{"kind":"QT","title":"RFQ-3021 · 前台接待台报价","amount":5912.0,"status":"已报价"}};
   function clone(v){return JSON.parse(JSON.stringify(v));}
   function productTiersByName(){var out={};Object.keys(PRODUCTS).forEach(function(k){out[PRODUCTS[k].name]=PRODUCTS[k].tiers;});return out;}
   function aCatalog(){
@@ -47,7 +47,7 @@ window.SHARED=(function(){
     <tr><td>B 客户工作台</td><td>299114</td><td>iframe#b-frame（独立 Document）</td></tr>
     <tr><td>C 内部后台</td><td>331957</td><td>iframe#c-frame（独立 Document）</td></tr>
   </tbody></table>
-  <h3>全部改值清单</h3><ol><li>新增 MADEHALL_DATA 实体引用模型：28 个独立产品、12 个半定制变体、6 个套餐、2 个全定制 RFQ、1 个工程项目、7 个询价/报价记录。</li><li>全部产品 SKU 统一为 ABC-nnnn-nn；各产品与半定制变体均使用唯一 SKU，不再复用产品记录。</li><li>A 套餐、B 半定制/我的设计/工程项目/询价、C 套包/RFQ 设计单/报价工作台全部按实体 ID 与 SKU 引用同一事实源。</li><li>PRJ-1007 继承 PKG-0001 产品行；QT-1007-01 与项目金额统一为 USD 31,900.00；QT-3021-02 引用 RFQ-3021。</li><li>保留原视角切换、会话状态与 data-onclick 委托机制；数据修复集中在 data-reference-repair-v2，可单点回滚。</li></ol>
+  <h3>全部改值清单</h3><ol><li>新增 MADEHALL_DATA 实体引用模型：148 个独立产品（其中目录产品 120 个）、132 个半定制参考变体、7 个业态套餐、2 个全定制 RFQ、1 个工程项目、7 个工作清单项、2 张正式报价单。</li><li>全部产品 SKU 统一为 ABC-nnnn-nn；各产品与半定制变体均使用唯一 SKU，不再复用产品记录。</li><li>A 套餐、B 半定制/我的设计/工程项目/询价、C 套包/RFQ 设计单/报价工作台全部按实体 ID 与 SKU 引用同一事实源。</li><li>PRJ-1007 继承 PKG-0001 产品行；产品行小计 USD 29,746.00＋DDP 到门交付与履约 USD 2,154.00＝QT-1007-01 整单 USD 31,900.00；QT-3021-02 引用 RFQ-3021。</li><li>保留原视角切换、会话状态与 data-onclick 委托机制；数据修复集中在 data-reference-repair-v2，可单点回滚。</li></ol>
   <h3>允许残留清单</h3>
   <p>A/B/C 各稿附录的历史引文、待裁原文、沿革说明与其允许残留均原文保留在下方三节；判禁词时采用“去标签正文＋排除附录历史引文/待裁登记/沿革代码示例”的口径。F14-02 维持 B 稿现状回避；A-03、W3-02、B-22/B-24/B-26 余项与 B-04 零裁决。</p>
 </section>
@@ -62,10 +62,10 @@ window.MADEHALL_DATA=(function(){
   var products={
     'CHR-0030-01':{name:'现货任务椅',category:'座椅',tiers:['t1','t2']},
     'CHR-0020-01':{name:'现货会议椅',category:'座椅',tiers:['t1']},
-    'SOF-1001-01':{name:'玛伦 模块组合沙发',category:'沙发',tiers:['t2']},
-    'SOF-1002-01':{name:'海登 三人位亚麻沙发',category:'沙发',tiers:['t1']},
-    'CHR-1003-01':{name:'索伦 全粒面皮革扶手椅',category:'座椅',tiers:['t1']},
-    'SOF-1004-01':{name:'林德霍尔姆 可转换沙发床',category:'沙发',tiers:['t1']},
+    'SOF-1001-01':{name:'玛伦 模块组合沙发',category:'沙发',catalog:'residential',tiers:['t2'],cfg:'3 座 · 浅灰绒布 · 金属直脚 · 标准配置',price:1180,moq:6},
+    'SOF-1002-01':{name:'海登 三人位亚麻沙发',category:'沙发',catalog:'residential',tiers:['t1']},
+    'CHR-1003-01':{name:'索伦 全粒面皮革扶手椅',category:'座椅',catalog:'residential',tiers:['t1']},
+    'SOF-1004-01':{name:'林德霍尔姆 可转换沙发床',category:'沙发',catalog:'residential',tiers:['t1']},
     'CAB-0110-01':{name:'储物柜',category:'柜类',tiers:['t1','t2']},
     'CAB-0110-02':{name:'储物柜 · 哑黑推拉门',category:'柜类',tiers:['t2']},
     'CAB-0140-01':{name:'四层储物柜',category:'柜类',tiers:['t2']},
@@ -75,7 +75,7 @@ window.MADEHALL_DATA=(function(){
     'DSK-0090-01':{name:'客房书桌',category:'桌类',tiers:['t1','t2']},
     'DSK-0597-01':{name:'升降办公桌',category:'桌类',tiers:['t2']},
     'WRD-0120-01':{name:'客房衣柜',category:'柜类',tiers:['t2','t3']},
-    'MTG-0320-01':{name:'会议桌',category:'会议桌',tiers:['t2','t3']},
+    'MTG-0320-01':{name:'会议桌',category:'会议桌',catalog:'contract',tiers:['t2','t3']},
     'MTG-0400-01':{name:'船型会议桌',category:'会议桌',tiers:['t2']},
     'RCP-0200-01':{name:'现代接待台 · 暖白直角',category:'接待台',tiers:['t1','t2']},
     'RCP-0200-02':{name:'现代接待台 · 暖白 L 型',category:'接待台',tiers:['t2']},
@@ -83,12 +83,47 @@ window.MADEHALL_DATA=(function(){
     'RCP-0200-04':{name:'现代接待台 · 哑黑直角',category:'接待台',tiers:['t2']},
     'RCP-0260-01':{name:'弧形接待台',category:'接待台',tiers:['t2']},
     'RCP-0320-01':{name:'大型弧形接待台',category:'接待台',tiers:['t2']},
-    'RCP-1005-01':{name:'接待台',category:'接待台',tiers:['t2']},
-    'RCP-1006-01':{name:'阿特拉斯 槽板接待台',category:'接待台',tiers:['t2']},
-    'RCP-1007-01':{name:'利尼亚 LED 接待台',category:'接待台',tiers:['t2']},
-    'RCP-0900-01':{name:'前台接待台 · 全定制',category:'接待台',tiers:['t3']},
+    'RCP-1005-01':{name:'接待台',category:'接待台',catalog:'contract',tiers:['t2']},
+    'RCP-1006-01':{name:'阿特拉斯 槽板接待台',category:'接待台',catalog:'contract',tiers:['t2']},
+    'RCP-1007-01':{name:'利尼亚 LED 接待台',category:'接待台',catalog:'contract',tiers:['t2']},
+    'RCP-0900-01':{name:'前台接待台 · 全定制',category:'接待台',catalog:'contract',tiers:['t3']},
     'RCP-0900-02':{name:'大堂接待台 · 弧形全定制',category:'接待台',tiers:['t3']}
   };
+  var catalogSets={residential:{},contract:{}};
+  var residentialDefs=[
+    ['沙发','SOF'],['床架','BED'],['餐桌','DTB'],['餐椅','DCH'],['休闲椅','LCH'],
+    ['吧椅','BST'],['茶几与边几','CFT'],['储物柜','CAB'],['衣柜','WRD'],['户外家具','OUT']
+  ];
+  var contractDefs=[
+    ['沙发','SOF'],['餐椅','DCH'],['休闲椅','LCH'],['吧椅','BST'],['茶几与边几','CFT'],
+    ['储物柜','CAB'],['户外家具','OUT'],['接待台','RCP'],['行政办公桌','EDK'],['会议桌','MTG'],
+    ['工位 / 办公桌系统','WST'],['升降桌','STD'],['文件柜','FCB'],['办公任务椅','CHR'],['行政办公椅','ECH'],['会议椅','MCH']
+  ];
+  var residentialSeries=['玛伦','海登','索伦','林德霍尔姆'];
+  var contractSeries=['阿特拉斯','诺尔','利尼亚','维克多','赛恩'];
+  var residentialCfg=['紧凑款 · 暖白 · 标准结构','标准款 · 浅胡桃 · 加强结构','舒适款 · 雾灰 · 软包结构','扩展款 · 深胡桃 · 模块结构'];
+  var contractCfg=['工程款 A · 暖白 · 重载结构','工程款 B · 浅胡桃 · 防撞收边','工程款 C · 雾灰 · 线缆管理','工程款 D · 深胡桃 · 模块拼接','工程款 E · 哑黑 · 耐磨表面'];
+  function addCatalogSet(catalog,definition,index){
+    var category=definition[0],code=definition[1],isResidential=catalog==='residential';
+    var series=isResidential?residentialSeries:contractSeries;
+    var configs=isResidential?residentialCfg:contractCfg;
+    var base=(isResidential?2000:5000)+index;
+    catalogSets[catalog][category]=series.map(function(seriesName,variantIndex){
+      var sku=code+'-'+String(base).padStart(4,'0')+'-'+String(variantIndex+1).padStart(2,'0');
+      var tiers=isResidential?(variantIndex===1?['t1']:(variantIndex===2?['t2']:['t1','t2'])):['t2'];
+      var item={
+        sku:sku,name:seriesName+' '+category+' · '+(isResidential?'住宅款':'工程款'),category:category,catalog:catalog,
+        tiers:tiers,cfg:configs[variantIndex],price:(isResidential?360:680)+index*37+variantIndex*(isResidential?95:140),
+        moq:(isResidential?4:10)+variantIndex*2,supply:tiers.indexOf('t1')>=0?'instock':'made',
+        colors:variantIndex%2?'warm navy':'light grey',certs:isResidential?['CARB-P2']:['BIFMA','CARB-P2'],
+        vertical:isResidential?'home':(index%2?'hotel office':'office multifamily'),feature:isResidential?'residential':'heavy-duty com-ready'
+      };
+      products[sku]=item;
+      return sku;
+    });
+  }
+  residentialDefs.forEach(function(def,index){addCatalogSet('residential',def,index);});
+  contractDefs.forEach(function(def,index){addCatalogSet('contract',def,index);});
   var semiCustom=[
     {sku:'RCP-0200-01',type:'rc',size:'2.0m',color:'暖白',shape:'直角',addon:'线缆孔＋抽屉锁',img:'TYPE-RCP0200-01',price:486,ver:'v3',moq:'10 件',lead:'35 天'},
     {sku:'RCP-0200-02',type:'rc',size:'2.0m',color:'暖白',shape:'L 型',addon:'线缆孔＋抽屉锁',img:'TYPE-RCP0200-02',price:562,ver:'v3',moq:'10 件',lead:'35 天'},
@@ -103,6 +138,21 @@ window.MADEHALL_DATA=(function(){
     {sku:'MTG-0320-01',type:'mt',size:'2.4m',color:'暖白',shape:'直角',addon:'基础版',img:'TYPE-MTG0320-01',price:null,ver:'v1',moq:'5 件',lead:'40 天'},
     {sku:'MTG-0400-01',type:'mt',size:'3.2m',color:'深胡桃木',shape:'船型',addon:'线缆孔',img:'TYPE-MTG0400-01',price:null,ver:'v1',moq:'3 件',lead:'45 天'}
   ];
+  /* B 半定制配置器事实源：补齐所有产品主数据中声明支持 t2 的 SKU。 */
+  function semiCustomType(product){
+    var fixed={'接待台':'rc','柜类':'st','会议桌':'mt'};
+    return fixed[product.category]||('cat:'+product.category);
+  }
+  var semiCustomSkuIndex={};
+  semiCustom.forEach(function(item){semiCustomSkuIndex[item.sku]=true;});
+  Object.keys(products).forEach(function(sku){
+    var product=products[sku];
+    if(product.tiers.indexOf('t2')<0||semiCustomSkuIndex[sku])return;
+    var parts=(product.cfg||'标准款 · 以产品页所选为准 · 标准结构 · 标准配置').split('·').map(function(x){return x.trim();});
+    while(parts.length<4)parts.push('标准配置');
+    semiCustom.push({sku:sku,type:semiCustomType(product),size:parts[0],color:parts[1],shape:parts[2],addon:parts.slice(3).join(' · '),img:'TYPE-'+sku.replace(/-/g,''),price:product.price==null?null:Number(product.price),ver:'PDP-ENTITY',moq:String(product.moq||1)+' 件',lead:'按报价确认'});
+    semiCustomSkuIndex[sku]=true;
+  });
   var packageLines=[
     {sku:'CHR-0030-01',tier:'t1',qty:50,moq:50,pack:10,wp:67,ref:74,cfg:'网背 · 黑色 · 固定扶手'},
     {sku:'CAB-0110-01',tier:'t2',qty:30,moq:30,spm:20,wp:138,ref:149,cfg:'1.2m 三层 · 暖白 · 平开门 · 含锁'},
@@ -110,20 +160,42 @@ window.MADEHALL_DATA=(function(){
     {sku:'WRD-0120-01',tier:'t2',qty:48,moq:48,spm:40,wp:198,ref:212,cfg:'1.2m 两门 · 暖白 · 平开门 · 含挂衣杆'},
     {sku:'DSK-0090-01',tier:'t2',qty:40,moq:24,spm:40,wp:122,ref:134,cfg:'0.9m · 暖白 · 直角 · 含线孔'}
   ];
+  function makePackageLine(sku,qty){
+    var p=products[sku],tier=p.tiers.indexOf('t2')>=0?'t2':'t1';
+    var line={sku:sku,tier:tier,qty:qty,moq:qty,wp:120+qty,ref:132+qty,cfg:p.category+' · 标准配置'};
+    if(tier==='t2')line.spm=Math.min(qty,10);else line.pack=2;
+    return line;
+  }
+  var packageLineSets={
+    hotel:packageLines,
+    multifamily:[makePackageLine('SOF-2000-01',12),makePackageLine('BED-2001-01',12),makePackageLine('DTB-2002-01',6)],
+    student:[makePackageLine('BED-2001-02',20),makePackageLine('WST-5010-01',20),makePackageLine('CAB-2007-01',20)],
+    senior:[makePackageLine('LCH-2004-01',12),makePackageLine('BED-2001-03',12),makePackageLine('DTB-2002-02',6)],
+    office:[makePackageLine('WST-5010-02',24),makePackageLine('CHR-5013-01',24),makePackageLine('MTG-5009-01',2)],
+    restaurant:[makePackageLine('DTB-2002-03',12),makePackageLine('DCH-5001-01',48),makePackageLine('BST-5003-01',16)],
+    model:[makePackageLine('SOF-2000-04',2),makePackageLine('BED-2001-04',2),makePackageLine('DTB-2002-04',1),makePackageLine('OUT-2009-01',4)]
+  };
   var packages=[
-    {id:'PKG-0001',name:'酒店大床房套餐',vertical:'酒店与短租',status:'已上架',lines:packageLines},
-    {id:'PKG-0002',name:'单间公寓套餐',vertical:'多户住宅',status:'已上架',lines:[]},
-    {id:'PKG-0003',name:'学生宿舍套餐',vertical:'学生公寓',status:'已上架',lines:[]},
-    {id:'PKG-0004',name:'适老起居室套餐',vertical:'养老社区',status:'已上架',lines:[]},
-    {id:'PKG-0005',name:'餐厅卡座套餐',vertical:'餐饮空间',status:'已上架',lines:[]},
-    {id:'PKG-0006',name:'开放办公区套餐',vertical:'办公空间',status:'已上架',lines:[]}
+    {id:'PKG-0001',name:'酒店大床房套餐',vertical:'酒店与短租',verticalKey:'hotel',certs:['CAL117','NFPA260·261'],status:'已上架',lines:packageLineSets.hotel},
+    {id:'PKG-0002',name:'单间公寓套餐',vertical:'多户住宅',verticalKey:'multifamily',certs:['CARB-P2','BIFMA'],status:'已上架',lines:packageLineSets.multifamily},
+    {id:'PKG-0003',name:'学生宿舍套餐',vertical:'学生公寓',verticalKey:'student',certs:['CAL117','CARB-P2'],status:'已上架',lines:packageLineSets.student},
+    {id:'PKG-0004',name:'适老起居室套餐',vertical:'养老社区',verticalKey:'senior',certs:['CAL117','抗菌','可擦洗'],status:'已上架',lines:packageLineSets.senior},
+    {id:'PKG-0005',name:'餐厅卡座套餐',vertical:'餐饮空间',verticalKey:'restaurant',certs:['CAL133','BIFMA'],status:'已上架',lines:packageLineSets.restaurant},
+    {id:'PKG-0006',name:'开放办公区套餐',vertical:'办公空间',verticalKey:'office',certs:['BIFMA','CARB-P2'],status:'已上架',lines:packageLineSets.office},
+    {id:'PKG-0007',name:'样板房整屋套餐',vertical:'样板房与软装陈列',verticalKey:'model',certs:['CARB-P2'],status:'已上架',lines:packageLineSets.model}
   ];
   var rfqs=[
     {id:'RFQ-3021',productSku:'RCP-0900-01',qty:15,status:'已报价',quoteId:'QT-3021-02'},
     {id:'RFQ-3026',productSku:'RCP-0900-02',qty:1,status:'报价制作中',quoteId:null}
   ];
-  var project={id:'PRJ-1007',packageId:'PKG-0001',name:'海景酒店 48 间客房',status:'已报价',quoteId:'QT-1007-01',amount:31900,lines:packageLines};
-  var inquiries=[
+  var projectLineAmount=packageLines.reduce(function(total,line){return total+line.qty*line.wp;},0);
+  var projectCharges=[{code:'DDP-DELIVERY',label:'DDP 到门交付与履约',amount:2154}];
+  var project={id:'PRJ-1007',packageId:'PKG-0001',name:'海景酒店 48 间客房',status:'已报价',quoteId:'QT-1007-01',lineAmount:projectLineAmount,charges:projectCharges,amount:projectLineAmount+projectCharges.reduce(function(total,charge){return total+charge.amount;},0),lines:packageLines};
+  var quotes=[
+    {id:'QT-1007-01',sourceType:'project',sourceId:'PRJ-1007',status:'已报价',lineAmount:projectLineAmount,charges:projectCharges,amount:31900},
+    {id:'QT-3021-02',sourceType:'rfq',sourceId:'RFQ-3021',status:'已报价',lineAmount:5912,charges:[],amount:5912}
+  ];
+  var workItems=[
     {id:'Q-T2-0620',sourceType:'semi',productSku:'MTG-0320-01',qty:6,status:'报价制作中',amount:null},
     {id:'Q-T2-0611',sourceType:'semi',productSku:'RCP-0200-01',qty:12,status:'已报价',amount:6144},
     {id:'QT-1007-01',sourceType:'project',sourceId:'PRJ-1007',status:'已报价',amount:31900},
@@ -132,8 +204,23 @@ window.MADEHALL_DATA=(function(){
     {id:'RFQ-3026',sourceType:'rfq',productSku:'RCP-0900-02',qty:1,status:'报价制作中',amount:null},
     {id:'Q-T2-0597',sourceType:'semi',productSku:'DSK-0597-01',qty:20,status:'已过期',amount:8900}
   ];
-  return Object.freeze({products:Object.freeze(products),semiCustom:Object.freeze(semiCustom),packages:Object.freeze(packages),rfqs:Object.freeze(rfqs),project:Object.freeze(project),inquiries:Object.freeze(inquiries)});
+  var inquiries=workItems; /* 兼容旧渲染入口；语义以 workItems（统一工作清单）为准。 */
+  function configuratorPrefill(rawSku){
+    var sku=String(rawSku||'').toUpperCase(),product=products[sku];
+    if(!product)return null;
+    var seeded=semiCustom.filter(function(item){return item.sku===sku;})[0];
+    if(!seeded)return null;
+    return {sku:sku,type:seeded.type,typeName:product.category||'当前产品',name:product.name,size:seeded.size,color:seeded.color,shape:seeded.shape,addon:seeded.addon,moq:seeded.moq,lead:seeded.lead,price:seeded.price,img:seeded.img,ver:seeded.ver};
+  }
+  return Object.freeze({products:Object.freeze(products),catalogSets:Object.freeze(catalogSets),semiCustom:Object.freeze(semiCustom),packages:Object.freeze(packages),rfqs:Object.freeze(rfqs),project:Object.freeze(project),quotes:Object.freeze(quotes),workItems:Object.freeze(workItems),inquiries:Object.freeze(inquiries),configuratorPrefill:configuratorPrefill});
 })();
+/* SHARED 只保留跨稿公共契约；产品档位与参考变体从 MADEHALL_DATA 派生，避免第二份事实源漂移。 */
+window.SHARED=(function(base,D){
+  var products={};
+  Object.keys(base.PRODUCTS).forEach(function(sku){var p=D.products[sku];products[sku]={name:p.name+' '+sku,tiers:p.tiers.slice()};});
+  var variants=D.semiCustom.map(function(v){return {sku:v.sku,size:v.size,color:v.color,shape:v.shape,addon:v.addon,img:v.img,price:v.price,ver:v.ver};});
+  return Object.freeze({PRODUCTS:Object.freeze(products),GLOBALS:base.GLOBALS,STATUS_PUBLIC:base.STATUS_PUBLIC,REF_VARIANTS:Object.freeze(variants),PREFIX:base.PREFIX,DOCS:base.DOCS,productTiersByName:base.productTiersByName,aCatalog:base.aCatalog,clone:base.clone});
+})(window.SHARED,window.MADEHALL_DATA);
 </script>
 <script id="business-chain-repair-v1">
 (function(){
@@ -214,7 +301,7 @@ window.MADEHALL_DATA=(function(){
     source=replaceAll(source,'$27,340.00','$31,900.00');
     source=replaceAll(source,'统一数据层读回','实体引用读回');
     source=replaceAll(source,'统一数据层派生 · 只读','产品实体引用 · 只读');
-    source=replaceAll(source,'参考变体表（SHARED.REF_VARIANTS · 12 行 · 非本视角副本）','参考变体表（12 个唯一 SKU · 产品主数据引用）');
+    source=replaceAll(source,'参考变体表（SHARED.REF_VARIANTS · 12 行 · 非本视角副本）','参考变体表（'+window.MADEHALL_DATA.semiCustom.length+' 个唯一 SKU · 产品主数据引用）');
     window.MH_SOURCES[view]=source;
   });
 
@@ -231,6 +318,11 @@ window.MADEHALL_DATA=(function(){
     var marker='data-goto="page-pdp" data-cfg="'+cfg+'"';
     window.MH_SOURCES.A=replaceAll(window.MH_SOURCES.A,marker,'data-sku="'+aCardSkuByCfg[cfg]+'" '+marker);
   });
+  window.MH_SOURCES.A=replaceAll(
+    window.MH_SOURCES.A,
+    "var menuMap={ 'page-pdp':'page-contract',",
+    "var menuMap={ 'page-pdp':(window.PDP_CATALOG_PAGE||'page-contract'),"
+  );
 
   window.MH_SOURCES.A=inject(window.MH_SOURCES.A,'A',String.raw`
 (function(){
@@ -238,9 +330,50 @@ window.MADEHALL_DATA=(function(){
   Object.keys(P).forEach(function(sku){
     var p=P[sku];
     if(window.TIER_CATALOG&&!window.TIER_CATALOG[sku]){
-      window.TIER_CATALOG[sku]={n:p.name,cat:p.category,sub:'SKU '+sku+' · 独立产品详情',allow:p.tiers.slice()};
+      window.TIER_CATALOG[sku]={n:p.name,cat:p.category,sub:'SKU '+sku+' · 独立产品详情',catalog:p.catalog||null,allow:p.tiers.slice()};
     }
   });
+
+  window.syncPdpCatalog=function(sku,card){
+    var p=P[sku]||{},catalog=p.catalog||((card&&card.closest('#page-residential'))?'residential':'contract');
+    var pageId=catalog==='residential'?'page-residential':'page-contract';
+    var pageLabel=catalog==='residential'?'住宅家具':'工程家具';
+    window.PDP_CATALOG_PAGE=pageId;
+    document.querySelectorAll('.menu a[data-goto]').forEach(function(a){a.classList.toggle('on',a.getAttribute('data-goto')===pageId);});
+    var crumb=document.querySelector('#page-pdp .crumb');
+    if(crumb)crumb.innerHTML='<a data-goto="page-home">首页</a> / <a data-goto="'+pageId+'">'+pageLabel+'</a> / <span id="pdpCategory">'+(p.category||'产品')+'</span>';
+    return {catalog:catalog,pageId:pageId,label:pageLabel};
+  };
+
+  /* B 配置器返回 A：直接消费统一路由传入的 SKU，并按产品主数据重建对应 PDP。 */
+  window.applyPdpSku=function(rawSku){
+    var sku=rawSku||new URLSearchParams(location.search).get('sku'),p=P[sku];
+    if(!sku||!p)return false;
+    var cta=renderPdpCta(sku),catalog=window.syncPdpCatalog(sku,null),tiers=(p.tiers||[]).map(function(t){return window.TIERNAME&&TIERNAME[t]?TIERNAME[t]:t.toUpperCase();});
+    document.getElementById('pdpCategory').textContent=p.category;
+    document.getElementById('pdpTitle').textContent=p.name;
+    document.getElementById('pdpSubtitle').textContent='SKU '+sku+' · '+p.category+'｜可售档位：'+tiers.join(' / ');
+    var signedPrice=document.getElementById('pdpSignedPrice');
+    if(signedPrice)signedPrice.innerHTML=p.price==null?'<span class="wp">价格以正式报价为准</span>':'<span class="wp">'+String.fromCharCode(36)+Number(p.price).toLocaleString('en-US')+' 起</span>';
+    var terms=document.getElementById('pdpSignedTerms');if(terms)terms.textContent='SKU '+sku+' · MOQ '+(p.moq||1)+' · USD 计价';
+    var parts=(p.cfg||'以正式规格书为准 · 以选定配置为准 · 标准结构').split('·').map(function(x){return x.trim();});
+    var spec={pdpSpecSize:parts[0]||'以正式规格书为准',pdpSpecMaterial:parts[1]||'以选定配置为准',pdpSpecStructure:parts.slice(2).join(' · ')||'标准结构',pdpSpecColor:parts[1]||'以选定配置为准'};
+    Object.keys(spec).forEach(function(id){var node=document.getElementById(id);if(node)node.textContent=spec[id];});
+    var certs=document.getElementById('pdpCerts');if(certs)certs.innerHTML=(p.certs||[]).map(function(cert){return '<span class="cert">'+cert+'</span>';}).join('')||'<span class="cert">独立产品 SKU '+sku+'</span>';
+    var projectBtn=document.querySelector('#page-pdp [data-onclick="projAddFromPdp(this)"]');if(projectBtn)projectBtn.setAttribute('data-cfg',p.cfg||'标准配置');
+    var cfgNote=document.getElementById('pdpCfgNote');if(cfgNote)cfgNote.innerHTML='「进入配置器」将预填本品：<b>'+p.category+' · '+sku+'</b>；配置可继续修改。';
+    var page=document.getElementById(catalog.pageId),source=page&&typeof catalogImageKey==='function'&&typeof findCatalogImage==='function'?findCatalogImage(catalogImageKey(page,p.category)):null;
+    var gallery=document.querySelector('#page-pdp .gallery-main');
+    if(gallery){
+      var mainImg=gallery.querySelector('img[data-pdp-main]');
+      if(!mainImg){mainImg=document.createElement('img');mainImg.className='ph-img';mainImg.setAttribute('data-pdp-main','1');gallery.insertBefore(mainImg,gallery.firstChild);}
+      if(source&&source.getAttribute('src'))mainImg.setAttribute('src',source.getAttribute('src'));else mainImg.removeAttribute('src');
+      mainImg.alt=p.name;
+      var icon=gallery.querySelector('svg');if(icon)icon.style.display=source?'none':'';
+      var cap=gallery.querySelector('.cap');if(cap)cap.textContent=p.name+' · '+sku;
+    }
+    return !!cta;
+  };
 
   var baseApplyPdpFromCard=window.applyPdpFromCard;
   window.applyPdpFromCard=function(el){
@@ -248,6 +381,7 @@ window.MADEHALL_DATA=(function(){
     baseApplyPdpFromCard(el);
     if(!card)return;
     var sku=card.getAttribute('data-sku'),cfg=card.getAttribute('data-cfg')||'',parts=cfg.split('·').map(function(x){return x.trim();});
+    window.syncPdpCatalog(sku,card);
     var gallery=document.querySelector('#page-pdp .gallery-main'),cardImg=card.querySelector('img.ph-img');
     if(gallery&&cardImg&&cardImg.src){
       var mainImg=gallery.querySelector('img[data-pdp-main]');
@@ -268,34 +402,176 @@ window.MADEHALL_DATA=(function(){
     var cfgNote=document.getElementById('pdpCfgNote');if(cfgNote)cfgNote.innerHTML='「进入配置器」将预填本品：<b>'+P[sku].category+' · '+sku+'</b>；配置可继续修改，已加入报价篮的其他行不受影响。';
   };
 
-  window.PKG=pack.lines.map(function(line){
-    var p=P[line.sku];
-    return {sku:line.sku,n:p.name+' · '+line.sku,c:p.category,allow:p.tiers.slice(),def:line.tier,moq:line.moq,spm:line.spm||0,pack:line.pack||1,qty:line.qty,cfg:line.cfg,wp:line.wp,ref:line.ref};
+  window.renderCatalogCategory=function(page,label){
+    var catalog=page.id==='page-residential'?'residential':'contract';
+    var itemSkus=(D.catalogSets[catalog]&&D.catalogSets[catalog][label])||[];
+    var items=itemSkus.map(function(sku){return P[sku];});
+    page.querySelector('[data-title-label]').textContent=label;
+    page.querySelector('[data-crumb-label]').textContent=label;
+    var imageKey=catalogImageKey(page,label),source=findCatalogImage(imageKey);
+    page.querySelectorAll('[data-product-grid] .pcard').forEach(function(card,index){
+      var item=items[index];if(!item){card.style.display='none';return;}
+      card.style.display='';card.setAttribute('data-sku',item.sku);card.setAttribute('data-category',label);
+      card.setAttribute('data-cfg',item.cfg);card.setAttribute('data-supply',item.supply);card.setAttribute('data-colors',item.colors);
+      card.setAttribute('data-cert',item.certs.map(function(x){return x.toLowerCase();}).join(' '));
+      card.setAttribute('data-vertical',item.vertical);card.setAttribute('data-feature',item.feature);
+      card.querySelector('h4').textContent=item.name;card.querySelector('.brand').textContent=label;
+      var badge=card.querySelector('.ph .badge');if(badge)badge.textContent=item.supply==='instock'?'现货':'按单生产';
+      var img=card.querySelector('.catalog-copy-img');img.setAttribute('data-copy-img',imageKey);img.setAttribute('alt',item.name);
+      if(source)img.setAttribute('src',source.getAttribute('src'));else img.removeAttribute('src');
+      var price=card.querySelector('.price.pi');if(price)price.innerHTML='<span class="wp">'+String.fromCharCode(36)+item.price+' 起</span><span class="moq">· MOQ '+item.moq+'</span>';
+      var certrow=card.querySelector('.certrow');if(certrow)certrow.innerHTML=item.certs.map(function(cert){return '<span class="cert">'+cert+'</span>';}).join('');
+    });
+  };
+  document.querySelectorAll('.catalog-page').forEach(function(page){
+    var active=page.querySelector('[data-category-chips] .chip.on');if(active)window.renderCatalogCategory(page,active.getAttribute('data-category-label'));
   });
-  var cards=document.querySelectorAll('#pkggrid .pkg');
-  D.packages.forEach(function(item,i){
-    if(!cards[i])return;
-    cards[i].setAttribute('data-package-id',item.id);
-    var h=cards[i].querySelector('h4');if(h)h.textContent=item.name;
-  });
-  var title=document.querySelector('#page-package h1');if(title)title.textContent=pack.name+' · 现代简约';
-  var crumb=document.querySelector('#page-package .crumb');if(crumb)crumb.innerHTML='<a data-goto="page-home">首页</a> / <a data-goto="page-ffe">FF&amp;E 套餐</a> / '+pack.id+' / '+pack.name;
-  if(typeof xRender==='function')xRender('pkg');
+
+  function packageRows(item){
+    return item.lines.map(function(line){
+      var p=P[line.sku];return {sku:line.sku,n:p.name+' · '+line.sku,c:p.category,allow:p.tiers.slice(),def:line.tier,moq:line.moq,spm:line.spm||0,pack:line.pack||1,qty:line.qty,cfg:line.cfg,wp:line.wp,ref:line.ref};
+    });
+  }
+  function setActivePackage(packageId){
+    pack=D.packages.filter(function(item){return item.id===packageId;})[0]||D.packages[0];
+    window.PKG=packageRows(pack);
+    var title=document.querySelector('#page-package h1');if(title)title.textContent=pack.name+' · '+pack.vertical;
+    var crumb=document.querySelector('#page-package .crumb');if(crumb)crumb.innerHTML='<a data-goto="page-home">首页</a> / <a data-goto="page-ffe">FF&amp;E 套餐</a> / '+pack.id+' / '+pack.name;
+    if(typeof xRender==='function')xRender('pkg');
+  }
+  var pkgGrid=document.getElementById('pkggrid'),seedCard=pkgGrid&&pkgGrid.querySelector('.pkg');
+  if(pkgGrid&&seedCard){
+    var template=seedCard.cloneNode(true);pkgGrid.innerHTML='';
+    D.packages.forEach(function(item,index){
+      var card=template.cloneNode(true);card.setAttribute('data-package-id',item.id);card.setAttribute('data-v',item.verticalKey);card.setAttribute('data-order',String(index+1));
+      var h=card.querySelector('h4');if(h)h.textContent=item.name;
+      var info=card.querySelector('.it');if(info)info.textContent=item.lines.length+' 项产品 · '+item.vertical;
+      var certrow=card.querySelector('.certrow');if(certrow)certrow.innerHTML=item.certs.map(function(cert){return '<span class="cert">'+cert+'</span>';}).join('');
+      var tileUse=document.querySelector('#vtiles .vtile[data-v="'+item.verticalKey+'"] use'),cardUse=card.querySelector('.ph use');
+      if(tileUse&&cardUse)cardUse.setAttribute('href',tileUse.getAttribute('href'));
+      card.addEventListener('click',function(){setActivePackage(item.id);});pkgGrid.appendChild(card);
+    });
+  }
+  window.renderVerticalPackage=function(verticalKey){
+    document.querySelectorAll('#pkggrid .pkg').forEach(function(card){card.style.display=card.getAttribute('data-v')===verticalKey?'':'none';});
+  };
+  document.querySelectorAll('#vtiles .vtile').forEach(function(tile){tile.addEventListener('click',function(){window.renderVerticalPackage(tile.getAttribute('data-v'));});});
+  setActivePackage(D.packages[0].id);window.renderVerticalPackage(D.packages[0].verticalKey);
 })();`);
 
   window.MH_SOURCES.B=inject(window.MH_SOURCES.B,'B',String.raw`
 (function(){
   var D=parent.MADEHALL_DATA,P=D.products;
   window.REF_VARIANTS=D.semiCustom.map(function(v){return {sku:v.sku,size:v.size,color:v.color,shape:v.shape,addon:v.addon,img:v.img,price:v.price,ver:v.ver};});
-  window.SKUS={rc:[],st:[],mt:[]};
-  D.semiCustom.forEach(function(v){window.SKUS[v.type].push([v.sku,v.moq,v.lead]);});
-  if(typeof setCfgVariant==='function')setCfgVariant('a');
+  window.SKUS={};
+  var TYPE_LABELS={},TYPE_ORDER=[];
+  D.semiCustom.forEach(function(v){
+    if(!window.SKUS[v.type]){window.SKUS[v.type]=[];TYPE_ORDER.push(v.type);TYPE_LABELS[v.type]=(P[v.sku]&&P[v.sku].category)||v.type;}
+    window.SKUS[v.type].push([v.sku,v.moq,v.lead]);
+  });
+  window.TYPENAME=Object.assign({},window.TYPENAME||{},TYPE_LABELS);
+
+  var cfgSelectStyle=document.createElement('style');
+  cfgSelectStyle.textContent='.cfg-select{width:100%;max-width:420px;border:1px solid var(--line2);border-radius:8px;padding:9px 12px;background:var(--surface);color:var(--ink);font:inherit}.cfg-select:focus{outline:2px solid var(--accent);outline-offset:2px}';
+  document.head.appendChild(cfgSelectStyle);
+
+  function cfgOption(value,label){var option=document.createElement('option');option.value=value;option.textContent=label;return option;}
+  function cfgTypeForSku(sku){
+    for(var i=0;i<TYPE_ORDER.length;i++){
+      var type=TYPE_ORDER[i],rows=SKUS[type]||[];
+      for(var j=0;j<rows.length;j++){if(rows[j][0]===sku)return type;}
+    }
+    return null;
+  }
+  function cfgRow(type,sku){
+    var rows=SKUS[type]||[];
+    for(var i=0;i<rows.length;i++){if(rows[i][0]===sku)return rows[i];}
+    return rows[0]||null;
+  }
+  window.updateCfgProductLink=function(){
+    var link=document.getElementById('cfgProductLink');if(!link||!cfgSel.sku)return;
+    var target='Fabbrio_storefront_ZH_target.html?sku='+encodeURIComponent(cfgSel.sku)+'&from=cfg#page-pdp';
+    document.getElementById('cfgProductSku').textContent=cfgSel.sku;
+    link.setAttribute('href',target);
+    link.setAttribute('data-original-href',target);
+    link.setAttribute('aria-label','查看 '+cfgSel.sku+' 产品详情');
+  };
+  function renderSkuSelect(type){
+    var select=document.getElementById('cfgSkuSelect');if(!select)return;
+    select.innerHTML='';
+    (SKUS[type]||[]).forEach(function(row){var p=P[row[0]]||{};select.appendChild(cfgOption(row[0],(p.name||'产品')+' · '+row[0]));});
+  }
+  function setupConfigSelects(){
+    var typeBox=document.getElementById('cfgType'),skuBox=document.getElementById('cfgSku');
+    typeBox.className='';skuBox.className='';
+    typeBox.innerHTML='<select class="cfg-select" id="cfgTypeSelect" aria-label="产品类型"></select>';
+    skuBox.innerHTML='<select class="cfg-select" id="cfgSkuSelect" aria-label="产品 SKU"></select>';
+    var typeSelect=document.getElementById('cfgTypeSelect'),skuSelect=document.getElementById('cfgSkuSelect');
+    TYPE_ORDER.forEach(function(type){typeSelect.appendChild(cfgOption(type,TYPE_LABELS[type]));});
+    typeSelect.addEventListener('change',function(){pickType(typeSelect,typeSelect.value,false);});
+    skuSelect.addEventListener('change',function(){var row=cfgRow(cfgType,skuSelect.value);if(row)pickSku(skuSelect,row[0],row[1],row[2]);});
+  }
+
+  window.pickType=function(control,type,fill){
+    if(!SKUS[type]||!SKUS[type].length)return;
+    cfgType=type;
+    var typeSelect=document.getElementById('cfgTypeSelect');if(typeSelect)typeSelect.value=type;
+    renderSkuSelect(type);
+    var first=SKUS[type][0],skuSelect=document.getElementById('cfgSkuSelect');if(skuSelect)skuSelect.value=first[0];
+    cfgSel.sku=first[0];
+    document.getElementById('cfgMoq').textContent=first[1];
+    document.getElementById('cfgLead').textContent=first[2];
+    curMoq=parseInt(first[1],10)||1;
+    if(fill){cfgFillFirst();}else{cfgClearDims();}
+    checkMoq();cfgSync();
+  };
+  window.pickSku=function(control,sku,moq,lead){
+    var select=document.getElementById('cfgSkuSelect');if(select)select.value=sku;
+    cfgSel.sku=sku;
+    document.getElementById('cfgMoq').textContent=moq;
+    document.getElementById('cfgLead').textContent=lead;
+    curMoq=parseInt(moq,10)||1;
+    cfgClearDims();checkMoq();cfgSync();
+  };
+  window.setCfgVariant=function(mode){
+    ['a','b','n','p'].forEach(function(id){var chip=document.getElementById('cfgv-'+id);if(chip)chip.classList.toggle('on',id===mode);});
+    cfgMode=mode;
+    var target=TYPE_ORDER[0],fill=mode!=='b',note=document.getElementById('cfgEntryText');
+    if(mode==='p'&&SKUS.st)target='st';
+    if(mode==='n'){
+      var noPrice=REF_VARIANTS.filter(function(v){return v.price===null;})[0];
+      if(noPrice)target=cfgTypeForSku(noPrice.sku)||target;
+    }
+    pickType(document.getElementById('cfgTypeSelect'),target,fill);
+    if(mode==='a')note.textContent='从产品页进入时将预填本产品；也可通过下拉框改选产品类型与 SKU。';
+    else if(mode==='b')note.textContent='从工作台直接进入：请先通过下拉框选择产品类型与 SKU，再逐项选择配置维度。';
+    else if(mode==='p')note.textContent='来自 FF&E 项目行：保存后将所选参考变体与参考价回写项目行。';
+    else note.textContent='无确认价类型演示：可正常选配和提交询价，但不显示参考价。';
+  };
+  window.prefillConfigFromSku=function(rawSku){
+    var prefill=D.configuratorPrefill(rawSku);
+    if(!prefill)return false;
+    setCfgVariant('a');
+    pickType(document.getElementById('cfgTypeSelect'),prefill.type,true);
+    var row=cfgRow(prefill.type,prefill.sku),skuSelect=document.getElementById('cfgSkuSelect');
+    if(!row)return false;
+    if(skuSelect)skuSelect.value=prefill.sku;
+    cfgSel.sku=prefill.sku;
+    document.getElementById('cfgMoq').textContent=row[1];
+    document.getElementById('cfgLead').textContent=row[2];
+    curMoq=parseInt(row[1],10)||1;
+    cfgFillFirst();checkMoq();cfgSync();
+    document.getElementById('cfgEntryText').innerHTML='从产品页「进入配置」而来：已预填本产品（<b>'+prefill.name+' · '+prefill.sku+'</b>）及其参考变体；可继续通过下拉框改选。';
+    return true;
+  };
+  setupConfigSelects();
+  setCfgVariant('a');
 
   var rfqBody=document.querySelector('[data-rfqv="list"] table.tbl tbody');
   if(rfqBody)rfqBody.innerHTML=D.rfqs.map(function(r,i){var p=P[r.productSku];return '<tr style="cursor:pointer" data-onclick="openRfqFromList(\''+(i?'lobby':'std')+'\')"><td>'+r.id+' · '+p.name+' · '+r.productSku+'</td><td><span class="badge b-dim">散单</span></td><td>'+r.qty+'</td><td><span class="badge '+(r.status==='已报价'?'b-info':'b-dim')+'">'+r.status+'</span></td><td>'+(i?'2026-07-26':'2026-07-29')+'</td></tr>';}).join('');
 
   var inquiryBody=document.querySelector('#pg-inquiries table.tbl tbody');
-  if(inquiryBody)inquiryBody.innerHTML=D.inquiries.map(function(row){
+  if(inquiryBody)inquiryBody.innerHTML=D.workItems.map(function(row){
     var p=row.productSku?P[row.productSku]:null;
     var desc=row.id+(p?(' · '+p.name+' '+row.productSku+' ×'+row.qty):(row.sourceId?(' · 关联 '+row.sourceId):''));
     var type=row.sourceType==='semi'?'Tier2 半定制':(row.sourceType==='project'?'FF&amp;E 整单':'Tier3 全定制');
@@ -311,7 +587,8 @@ window.MADEHALL_DATA=(function(){
   if(typeof setDsState==='function')setDsState(1);
 
   var ffeTitle=document.getElementById('ffeTitle');if(ffeTitle)ffeTitle.textContent='FF&E 项目 '+D.project.id+' · '+D.project.name;
-  var ffeSub=document.getElementById('ffeSub');if(ffeSub)ffeSub.textContent='来源套餐 '+D.project.packageId+'「'+D.packages[0].name+'」 · 行项全部引用产品主数据 SKU';
+  var projectPack=D.packages.filter(function(item){return item.id===D.project.packageId;})[0];
+  var ffeSub=document.getElementById('ffeSub');if(ffeSub&&projectPack)ffeSub.textContent='来源套餐 '+projectPack.id+'「'+projectPack.name+'」 · 行项全部引用产品主数据 SKU';
   var ffeBadge=document.getElementById('ffeBadge');if(ffeBadge){ffeBadge.textContent=D.project.status;ffeBadge.className='badge b-info';}
   if(typeof setFfeView==='function')setFfeView('done');
 })();`);
@@ -324,7 +601,7 @@ window.MADEHALL_DATA=(function(){
   if(designBody)designBody.innerHTML=D.rfqs.map(function(r){var p=P[r.productSku];return '<tr><td><b>'+r.id+'</b></td><td><span class="badge b-info">Tier3 散单</span></td><td>'+p.name+' · '+r.productSku+' ×'+r.qty+'</td><td><span class="badge '+(r.status==='已报价'?'b-ok':'b-info')+'">'+r.status+'</span></td><td><span class="badge b-ok">与客户工作台一致</span></td><td><span style="font-size:12px;color:var(--muted)">引用 '+r.productSku+'</span></td></tr>';}).join('');
 
   var queueBody=document.querySelector('#z5-queue table.tbl tbody');
-  if(queueBody)queueBody.innerHTML=D.inquiries.map(function(row){
+  if(queueBody)queueBody.innerHTML=D.workItems.map(function(row){
     var p=row.productSku?P[row.productSku]:null;
     var type=row.sourceType==='semi'?'Tier2 散单':(row.sourceType==='project'?'FF&amp;E 项目单':'Tier3 散单');
     var item=p?(p.name+' · '+row.productSku+' ×'+row.qty):('关联 '+row.sourceId);
@@ -333,17 +610,218 @@ window.MADEHALL_DATA=(function(){
   }).join('');
   var current=document.querySelector('#z5-make .card > .kv .row:first-child b');if(current)current.textContent='QT-1007-01 · PRJ-1007 · 海景酒店 48 间客房 · 已报价';
   var corr=document.getElementById('corrPrice');if(corr)corr.value='31900';
-  var calc=document.querySelector('#z5-make .grid.g2 .kv');if(calc)calc.innerHTML='<div class="row"><span>项目行项正式核价</span><b>USD 31,900.00</b></div><div class="row"><span>成本合计</span><b>USD 24,500.00</b></div><div class="row"><span>来源</span><b>PRJ-1007 → QT-1007-01</b></div>';
+  var calc=document.querySelector('#z5-make .grid.g2 .kv');if(calc)calc.innerHTML='<div class="row"><span>产品行小计</span><b>USD '+D.project.lineAmount.toLocaleString('en-US',{minimumFractionDigits:2})+'</b></div>'+D.project.charges.map(function(charge){return '<div class="row"><span>'+charge.label+'</span><b>USD '+charge.amount.toLocaleString('en-US',{minimumFractionDigits:2})+'</b></div>';}).join('')+'<div class="row"><span>整单正式报价</span><b>USD '+D.project.amount.toLocaleString('en-US',{minimumFractionDigits:2})+'</b></div><div class="row"><span>成本合计</span><b>USD 24,500.00</b></div><div class="row"><span>来源</span><b>'+D.project.id+' → '+D.project.quoteId+'</b></div>';
   if(typeof refreshQuote==='function')refreshQuote();
 
   var packTable=document.querySelector('#z9 table.tbl tbody');
-  if(packTable)packTable.innerHTML=D.packages.map(function(pack,i){return '<tr><td><b>'+pack.name+'</b><br><span style="font-size:11px;color:var(--muted)">'+pack.id+'</span></td><td>'+pack.vertical+'</td><td>'+(i?'—':'标准大床房')+'</td><td>'+(i?'按套餐定义':'现代简约')+'</td><td><span class="badge b-ok">'+pack.status+'</span></td><td><span class="act"><button class="btn sm" data-roles="商务运营" data-modal="mPkgPreview">预览</button></span></td></tr>';}).join('');
+  if(packTable)packTable.innerHTML=D.packages.map(function(pack){return '<tr><td><b>'+pack.name+'</b><br><span style="font-size:11px;color:var(--muted)">'+pack.id+'</span></td><td>'+pack.vertical+'</td><td>'+pack.lines.length+' 项产品</td><td>按套餐定义</td><td><span class="badge b-ok">'+pack.status+'</span></td><td><span class="act"><button class="btn sm" data-roles="商务运营" data-modal="mPkgPreview" data-package-preview="'+pack.id+'">预览</button></span></td></tr>';}).join('');
+  function renderPackagePreview(packageId){
+    var pack=D.packages.filter(function(item){return item.id===packageId;})[0];if(!pack)return;
+    var modal=document.getElementById('mPkgPreview');if(!modal)return;
+    var heading=modal.querySelector('h3');if(heading)heading.textContent='套包预览 · '+pack.name+' · '+pack.id;
+    var body=modal.querySelector('table tbody');
+    if(body)body.innerHTML=pack.lines.map(function(line){var p=P[line.sku];return '<tr><td>'+p.name+' · '+line.sku+'</td><td>'+line.qty+'</td><td>'+line.cfg+'</td></tr>';}).join('');
+  }
+  document.addEventListener('click',function(event){var button=event.target.closest('[data-package-preview]');if(button)renderPackagePreview(button.getAttribute('data-package-preview'));});
+  renderPackagePreview(D.packages[0].id);
   var nameInput=document.querySelector('#z9 input');if(nameInput)nameInput.value=D.packages[0].name;
   var detailTables=document.querySelectorAll('#z9 table.tbl');
   if(detailTables.length>1){
     var detailBody=detailTables[detailTables.length-1].querySelector('tbody');
     if(detailBody)detailBody.innerHTML=D.packages[0].lines.map(function(line){var p=P[line.sku];return '<tr><td>'+p.name+' · '+line.sku+'</td><td><span class="badge '+(line.tier==='t1'?'b-dim':'b-info')+'">'+(line.tier==='t1'?'Tier1 现货':'Tier2 半定制')+'</span></td><td>'+line.qty+'</td><td>'+line.cfg+'</td><td>'+(line.tier==='t2'?'<span class="badge b-ok">已设</span>':'—')+'</td><td>套餐最低量 '+line.moq+(line.spm?' / 生产 MOQ '+line.spm:' / 包装单位 '+(line.pack||1))+'</td><td><span style="font-size:12px;color:var(--muted)">引用产品主数据</span></td></tr>';}).join('');
   }
+})();`);
+})();
+</script>
+<script id="consistency-model-v3">
+/*
+ * v3 统一实体模型：本段故意在旧的页面修补层之后运行。
+ * 页面仍可保留演示布局，但所有跨稿读取都只消费下面的不可变实体快照。
+ */
+(function(){
+  'use strict';
+  function clone(value){return JSON.parse(JSON.stringify(value));}
+  function freeze(value, seen){
+    if(!value || typeof value!=='object')return value;
+    seen=seen||[];if(seen.indexOf(value)>=0)return value;seen.push(value);
+    Object.keys(value).forEach(function(key){freeze(value[key],seen);});
+    return Object.freeze(value);
+  }
+  function moneyLines(lines){return lines.reduce(function(sum,line){return sum+Number(line.qty||0)*Number(line.wp||0);},0);}
+  var old=window.MADEHALL_DATA,baseShared=window.SHARED,d=clone(old);
+  var statusLabels={submitted:'已提交',in_design:'设计中',design_review:'待您确认设计',pricing:'报价制作中',quoted:'已报价',deposit_pending:'待付定金',deposit_paid:'定金已付',in_production:'生产中',delivered:'已交付',closed:'已完成',rejected:'已拒单',cancelled:'已取消',on_hold:'已挂起',expired:'已过期'};
+
+  /* 产品是唯一事实源；参考变体只是产品的可选配置快照。 */
+  Object.keys(d.products).forEach(function(sku){d.products[sku].sku=sku;});
+  d.semiCustom.forEach(function(variant){
+    var product=d.products[variant.sku];if(!product)return;
+    product.cfg=[variant.size,variant.color,variant.shape,variant.addon].join(' · ');
+    product.price=variant.price;
+    product.moq=parseInt(variant.moq,10);
+    product.lead=variant.lead;
+    product.configuratorType=variant.type;
+    product.referenceVariant=clone(variant);
+    product.tierFacts=product.tierFacts||{};
+    product.tierFacts.t2={unitPrice:variant.price,moq:parseInt(variant.moq,10),lead:variant.lead,channel:'formal_quote'};
+  });
+  d.products['RCP-0200-01'].tierFacts.t1={unitPrice:1180,moq:5,lead:'2–7 天',channel:'shopify'};
+  d.semiCustom.forEach(function(variant){
+    var product=d.products[variant.sku];
+    variant.productSku=variant.sku;
+    variant.productName=product.name;
+    variant.productCategory=product.category;
+  });
+  d.productFact=function(sku){return d.products[String(sku||'').toUpperCase()]||null;};
+  d.configuratorPrefill=function(rawSku){
+    var product=d.productFact(rawSku);if(!product||!product.referenceVariant)return null;
+    var variant=product.referenceVariant;
+    return {sku:product.sku,type:variant.type,typeName:product.category,name:product.name,size:variant.size,color:variant.color,shape:variant.shape,addon:variant.addon,moq:String(product.moq)+' 件',lead:product.lead,price:product.price,img:variant.img,ver:variant.ver};
+  };
+
+  /* 套餐、项目和报价都是值快照，禁止引用同一行数组。 */
+  d.packages=d.packages.map(function(pack){var next=clone(pack);next.lines=clone(pack.lines);return next;});
+  var sourcePackage=d.packages.filter(function(pack){return pack.id===d.project.packageId;})[0];
+  d.project=clone(d.project);
+  d.project.lines=clone(sourcePackage.lines);
+  d.project.charges=clone(d.project.charges);
+  d.project.lineAmount=moneyLines(d.project.lines);
+  d.project.amount=d.project.lineAmount+d.project.charges.reduce(function(sum,charge){return sum+Number(charge.amount);},0);
+  d.project.snapshotOf={entityType:'package',entityId:sourcePackage.id,version:'PKG-0001@2026-08-01'};
+  d.quotes=d.quotes.map(function(quote){var next=clone(quote);next.charges=clone(quote.charges||[]);if(next.sourceType==='project'){next.lines=clone(d.project.lines);next.lineAmount=d.project.lineAmount;next.charges=clone(d.project.charges);next.amount=d.project.amount;}return next;});
+
+  /* 让已报价的 Tier2 询价拥有正式 Quote，而不是把工作清单当 Quote。 */
+  var t2=d.workItems.filter(function(item){return item.id==='Q-T2-0611';})[0];
+  t2.quoteId='QT-0611-01';t2.status='已接受';
+  d.quotes.push({id:'QT-0611-01',sourceType:'semi',sourceId:'Q-T2-0611',status:'已接受',lineAmount:6144,charges:[],amount:6144,lines:[{sku:t2.productSku,qty:t2.qty,wp:512,referenceVariantVersion:d.products[t2.productSku].referenceVariant.ver}]});
+  d.workItems.push({id:'QT-0611-01',sourceType:'semi',sourceId:'Q-T2-0611',status:'已接受',amount:6144});
+  d.rfqs.forEach(function(rfq){if(rfq.id==='RFQ-3021')rfq.status='已接受';});
+  d.project.status='已接受';
+  d.quotes.forEach(function(quote){
+    if(quote.id==='QT-1007-01'||quote.id==='QT-3021-02')quote.status='已接受';
+    quote.amount=Number(quote.lineAmount)+quote.charges.reduce(function(sum,charge){return sum+Number(charge.amount);},0);
+  });
+  d.workItems.forEach(function(item){
+    var quote=d.quotes.filter(function(candidate){return candidate.id===item.id||candidate.sourceId===item.id;})[0];
+    if(quote){item.quoteId=quote.id;item.status=quote.status;item.amount=quote.amount;}
+  });
+
+  /* 订单及期款与 Quote 同源；PO 仍明确为 Shopify 只读镜像。 */
+  d.orders=[
+    {id:'SO-1007',sourceQuoteId:'QT-1007-01',projectId:'PRJ-1007',status:'生产中',amount:31900,productSku:null},
+    {id:'SO-3021',sourceQuoteId:'QT-3021-02',rfqId:'RFQ-3021',status:'生产中',amount:5912,productSku:'RCP-0900-01'},
+    {id:'SO-0611',sourceQuoteId:'QT-0611-01',inquiryId:'Q-T2-0611',status:'待付定金',amount:6144,productSku:'RCP-0200-01'}
+  ];
+  d.collections=[
+    {id:'SC-1007-01',orderId:'SO-1007',stage:'首期',amount:9570,status:'待收款'}, {id:'SC-1007-02',orderId:'SO-1007',stage:'尾款',amount:22330,status:'待收款'},
+    {id:'SC-3021-01',orderId:'SO-3021',stage:'首期',amount:1773.6,status:'待收款'}, {id:'SC-3021-02',orderId:'SO-3021',stage:'尾款',amount:4138.4,status:'待收款'},
+    {id:'SC-0611-01',orderId:'SO-0611',stage:'首期',amount:1843.2,status:'待收款'}, {id:'SC-0611-02',orderId:'SO-0611',stage:'尾款',amount:4300.8,status:'待收款'}
+  ];
+  d.shopifyOrders=[{id:'PO-1098',productSku:'CHR-0030-01',tier:'t1',qty:50,unitPrice:65,amount:3250,status:'Shopify 已发货'},{id:'PO-1132',productSku:'CHR-0020-01',tier:'t1',qty:24,unitPrice:70,amount:1680,status:'Shopify 待发货'}];
+  d.shopifyOrders.forEach(function(order){var product=d.products[order.productSku];if(!product)return;product.tierFacts=product.tierFacts||{};product.tierFacts[order.tier]={unitPrice:order.unitPrice,moq:1,channel:'shopify'};});
+  d.quotes.forEach(function(quote){var order=d.orders.filter(function(candidate){return candidate.sourceQuoteId===quote.id;})[0];if(order)quote.orderId=order.id;});
+
+  d.designRounds=[{id:'DR-3021-01',rfqId:'RFQ-3021',round:1,cadVersion:'CAD-1.0',status:'客户已确认',assetIds:['AST-3021-PDF','AST-3021-CAD']},{id:'DR-3026-01',rfqId:'RFQ-3026',round:1,cadVersion:'CAD-0.1',status:'设计中',assetIds:['AST-3026-PREVIEW']}];
+  d.assets=[{id:'AST-3021-PDF',rfqId:'RFQ-3021',roundId:'DR-3021-01',kind:'确认包 PDF',deliveryOrderId:'SO-3021'},{id:'AST-3021-CAD',rfqId:'RFQ-3021',roundId:'DR-3021-01',kind:'交付 CAD',deliveryOrderId:'SO-3021'},{id:'AST-3026-PREVIEW',rfqId:'RFQ-3026',roundId:'DR-3026-01',kind:'设计预览'}];
+  d.rfqs.forEach(function(rfq){rfq.designRoundIds=d.designRounds.filter(function(round){return round.rfqId===rfq.id;}).map(function(round){return round.id;});});
+
+  d.merchantApplications=[
+    {applicationNo:'MA-2026-0730-018',companyGid:'gid://shopify/Company/8202410018',companyName:'西岸办公家具批发（美）',status:'active',publicStage:'正常使用',tier:'标准'},
+    {applicationNo:'MA-2026-0730-019',companyGid:null,companyName:'蓝湾联合采购（美）',status:'need_info',publicStage:'请补充材料',tier:'标准'},
+    {applicationNo:'MA-2026-0724-006',companyGid:null,companyName:'港湾酒店用品（美）',status:'rejected',publicStage:'未通过（可重新申请）',tier:'标准'},
+    {applicationNo:'MA-2026-0801-001',companyGid:null,companyName:'北欧合约集团（美）',status:'submitted',publicStage:'审核中',tier:'标准'},
+    {applicationNo:'MA-2026-0731-011',companyGid:null,companyName:'湾区商用家具（美）',status:'provisioning',publicStage:'审核中',tier:'标准'},
+    {applicationNo:'MA-2026-0731-012',companyGid:null,companyName:'东岸工程配套（美）',status:'provision_failed',publicStage:'审核中',tier:'标准'},
+    {applicationNo:'MA-2026-0715-002',companyGid:null,companyName:'北美连锁酒店集采（美）',status:'suspended',publicStage:'账户已停用，请联系客服',tier:'标准'}
+  ];
+  d.merchantStateMachine={
+    internalStates:['submitted','provisioning','provision_failed','need_info','rejected','active','suspended'],
+    publicStageByInternal:{submitted:'审核中',provisioning:'审核中',provision_failed:'审核中',need_info:'请补充材料',rejected:'未通过（可重新申请）',active:'正常使用',suspended:'账户已停用，请联系客服'},
+    transitions:{supplement_resubmitted:['need_info','submitted'],returned_for_supplement:['submitted','need_info'],rejected:['submitted','rejected'],approved:['submitted','provisioning'],provision_failed:['provisioning','provision_failed'],provisioned:['provisioning','active'],suspended:['active','suspended'],restored:['suspended','active']}
+  };
+  d.companies=[{companyGid:'gid://shopify/Company/8202410018',applicationNo:'MA-2026-0730-018',status:'active',catalogId:'CAT-US-B2B',priceListId:'PL-US-2026'}];
+  d.accounts=[{id:'ACC-1001',name:'刘倩',roleCode:'customer_service',enabled:true},{id:'ACC-ROOT',name:'root',roleCode:'root',enabled:true}];
+  d.masterData={costVersions:[{id:'COST-2026-08',status:'published',checkerId:'ACC-1001'}],exchangeRates:[{id:'FX-USD-2026-08',currency:'USD',rate:1,status:'published',checkerId:'ACC-1001'}],factories:[{id:'FAC-001',name:'Madehall North Plant',enabled:true}],exceptionPolicy:{required:['objectId','reason','actorId']}};
+  d.rolePolicy={
+    zones:{'客服专员':['z1','z2','z6'],'商务运营':['z2','z4','z5','z6','z9'],'产品设计工程师':['z3'],'项目经理':['z5','z7'],'报价与供应链协调员':['z5','z6'],'财务只读':['z8'],'root（系统管理员）':['z1','z2','z3','z4','z5','z6','z7','z8','z9','zsys']},
+    rootRole:'root（系统管理员）',financeReadOnlyRole:'财务只读',makerChecker:{rootMustDifferFromMaker:true,attribute:'data-eyes'}
+  };
+  d.supportExceptions=[{id:'EXC-0001',type:'补件代传',sourceId:'MA-2026-0730-019',reason:'客户授权代传税号证明',actorId:'ACC-1001'},{id:'EXC-0002',type:'代改 BOM',sourceId:'RFQ-3021',reason:'客户确认尺寸调整',actorId:'ACC-1001'},{id:'EXC-0003',type:'物流手录',sourceId:'SO-3021',reason:'承运商回单补录',actorId:'ACC-1001'},{id:'EXC-0004',type:'意见代录',sourceId:'RFQ-3021',reason:'客户电话确认设计意见，客服按录音代录',actorId:'ACC-1001'},{id:'EXC-0005',type:'补收',sourceId:'SO-1007',reason:'客户确认 DDP 偏远地区附加费',actorId:'ACC-1001'},{id:'EXC-0006',type:'变更报价',sourceId:'QT-3021-02',reason:'客户确认材料替换后重新报价',actorId:'ACC-1001'}];
+  d.auditLog=[
+    {eventId:'AUD-0001',occurredAt:'2026-07-30T09:05:00Z',actorId:'system',actorRole:'system',objectType:'merchant',objectId:'MA-2026-0730-019',action:'supplement_resubmitted',before:'need_info',after:'submitted',reason:'差量补件齐全'},
+    {eventId:'AUD-0002',occurredAt:'2026-07-30T10:26:00Z',actorId:'ACC-1001',actorRole:'customer_service',objectType:'merchant',objectId:'MA-2026-0724-006',action:'rejected',before:'submitted',after:'rejected',reason:'营业执照与经营范围不符'},
+    {eventId:'AUD-0003',occurredAt:'2026-08-01T08:00:00Z',actorId:'ACC-1001',actorRole:'customer_service',objectType:'merchant',objectId:'MA-2026-0730-018',action:'provisioned',before:'provisioning',after:'active',reason:'Company GID 已确认',proofNo:'gid://shopify/Company/8202410018'},
+    {eventId:'AUD-0004',occurredAt:'2026-08-01T08:30:00Z',actorId:'ACC-1001',actorRole:'product_design',objectType:'rfq',objectId:'RFQ-3021',action:'design_confirmed',before:'design_review',after:'quoted',reason:'DR-3021-01 已确认'},
+    {eventId:'AUD-0005',occurredAt:'2026-08-01T09:00:00Z',actorId:'ACC-1001',actorRole:'pricing',objectType:'quote',objectId:'QT-1007-01',action:'accepted',before:'quoted',after:'accepted',reason:'客户接受整单报价'},
+    {eventId:'AUD-0006',occurredAt:'2026-08-01T09:05:00Z',actorId:'ACC-1001',actorRole:'finance',objectType:'order',objectId:'SO-1007',action:'collection_created',before:null,after:'deposit_pending',reason:'首期账单创建',proofNo:'SC-1007-01'},
+    {eventId:'AUD-0007',occurredAt:'2026-08-01T09:10:00Z',actorId:'ACC-ROOT',actorRole:'root',objectType:'account',objectId:'ACC-1001',action:'role_reviewed',before:'customer_service',after:'customer_service',reason:'权限复核'},
+    {eventId:'AUD-0008',occurredAt:'2026-08-01T09:15:00Z',actorId:'ACC-1001',actorRole:'finance',objectType:'collection',objectId:'SC-1007-01',action:'collection_recorded',before:null,after:'9570',reason:'首期账单金额核对',proofNo:'SO-1007'},
+    {eventId:'AUD-0009',occurredAt:'2026-08-01T09:20:00Z',actorId:'ACC-1001',actorRole:'business_operations',objectType:'merchant',objectId:'MA-2026-0730-018',action:'suspended',before:'active',after:'suspended',reason:'在途项目需人工复核，暂停售卖权限'},
+    {eventId:'AUD-0010',occurredAt:'2026-08-01T09:25:00Z',actorId:'ACC-1001',actorRole:'business_operations',objectType:'merchant',objectId:'MA-2026-0730-018',action:'restored',before:'suspended',after:'active',reason:'复核完成，恢复 Shopify 购买权限'},
+    {eventId:'AUD-0011',occurredAt:'2026-08-01T09:30:00Z',actorId:'ACC-1001',actorRole:'business_operations',objectType:'merchant',objectId:'MA-2026-0715-002',action:'suspended',before:'active',after:'suspended',reason:'在途项目需人工复核，暂停售卖权限'},
+    {eventId:'AUD-0012',occurredAt:'2026-08-01T09:35:00Z',actorId:'ACC-1001',actorRole:'customer_service',objectType:'merchant',objectId:'MA-2026-0730-019',action:'returned_for_supplement',before:'submitted',after:'need_info',reason:'税号证明缺少签章，退回差量补件'},
+    {eventId:'AUD-0013',occurredAt:'2026-08-01T09:40:00Z',actorId:'ACC-1001',actorRole:'customer_service',objectType:'merchant',objectId:'MA-2026-0731-011',action:'approved',before:'submitted',after:'provisioning',reason:'准入审核通过，开始 Shopify 开通'},
+    {eventId:'AUD-0014',occurredAt:'2026-08-01T09:45:00Z',actorId:'system',actorRole:'system',objectType:'merchant',objectId:'MA-2026-0731-012',action:'provision_failed',before:'provisioning',after:'provision_failed',reason:'Catalog/Price List 分配失败，进入异常队列'}
+  ];
+  d.basketSnapshots=[];
+  d.statusLabels=statusLabels;
+  d.inquiries=d.workItems;
+
+  /* DOCS 也是只读镜像，不保留旧展示字典中的孤儿单据。 */
+  var docs={};
+  function putDoc(id,kind,title,amount,status){docs[id]={kind:kind,title:title,amount:amount,status:status};}
+  d.merchantApplications.forEach(function(item){putDoc(item.applicationNo,'MA',item.companyName,null,item.status);});
+  d.workItems.filter(function(item){return item.id.indexOf('Q-T2-')===0;}).forEach(function(item){putDoc(item.id,'Q-T2',item.productSku||item.sourceId,item.amount,item.status);});
+  d.rfqs.forEach(function(item){putDoc(item.id,'RFQ',item.productSku+' ×'+item.qty,null,item.status);});
+  d.quotes.forEach(function(item){putDoc(item.id,'QT',item.sourceId,item.amount,item.status);});
+  putDoc(d.project.id,'PRJ',d.project.name,d.project.amount,d.project.status);
+  d.orders.forEach(function(item){putDoc(item.id,'SO',item.sourceQuoteId,item.amount,item.status);});
+  d.collections.forEach(function(item){putDoc(item.id,'SC',item.stage+' · '+item.orderId,item.amount,item.status);});
+  d.shopifyOrders.forEach(function(item){putDoc(item.id,'PO',item.productSku+' ×'+item.qty,item.amount,item.status);});
+  var sharedProducts={};Object.keys(baseShared.PRODUCTS).forEach(function(sku){var product=d.products[sku];if(product)sharedProducts[sku]={name:product.name+' '+sku,tiers:clone(product.tiers)};});
+  window.MADEHALL_DATA=freeze(d);
+  function sharedClone(value){return clone(value);}
+  function sharedProductTiersByName(){var out={};Object.keys(d.products).forEach(function(sku){var product=d.products[sku];out[product.name]=clone(product.tiers);});return out;}
+  function sharedACatalog(){var out={};Object.keys(d.products).forEach(function(sku){var product=d.products[sku];out[sku]={n:product.name+' '+sku,cat:product.category||'未分类',sub:product.cfg||'统一产品主数据',allow:clone(product.tiers),note:product.tiers.indexOf('t3')>=0?'全定制仅走 RFQ':undefined};});return out;}
+  window.SHARED=freeze({PRODUCTS:sharedProducts,GLOBALS:clone(baseShared.GLOBALS),STATUS_PUBLIC:statusLabels,REF_VARIANTS:d.semiCustom.map(function(item){return {sku:item.sku,size:item.size,color:item.color,shape:item.shape,addon:item.addon,img:item.img,price:item.price,ver:item.ver};}),PREFIX:clone(baseShared.PREFIX),DOCS:docs,productTiersByName:sharedProductTiersByName,aCatalog:sharedACatalog,clone:sharedClone});
+
+  function inject(source,view,code){return source.replace('</body>','<script data-consistency-model="'+view+'">'+code+'<'+'/script>\n</body>');}
+  ['A','B','C'].forEach(function(view){window.MH_SOURCES[view]=window.MH_SOURCES[view].split("['SO-2024','Q-T2-0611','PRJ-1007']").join("['SO-1007','Q-T2-0611','PRJ-1007']");});
+  window.MH_SOURCES.C=window.MH_SOURCES.C.split('USD 108,112.00').join('USD 79,902.00');
+  window.MH_SOURCES.A=inject(window.MH_SOURCES.A,'A',String.raw`
+(function(){
+  var D=parent.MADEHALL_DATA,P=D.products;
+  var priorApply=window.applyPdpFromCard;
+  window.applyPdpFromCard=function(el){priorApply(el);var card=el&&el.closest?el.closest('.pcard'):null;var sku=card&&card.getAttribute('data-sku');if(sku&&P[sku])window.applyPdpSku(sku);};
+  window.projAdd=function(name,category,cfg,sku){var p=P[sku];if(!p){toast('无法加入项目：未登记 SKU');return;}if((p.tiers||[]).filter(function(t){return t==='t1'||t==='t2';}).length===0){toast('全定制产品请走独立 RFQ，不进入项目单');return;}for(var i=0;i<PROJ.length;i++){if(PROJ[i].sku===sku){PROJ[i].qty++;renderBasket();return;}}var tier=p.tiers.indexOf('t2')>=0?'t2':'t1';PROJ.push({lineId:'BL-'+(PROJ.length+1),sku:sku,n:p.name,c:p.category,cfg:p.cfg,qty:1,tier:tier});renderBasket();};
+  window.projAddFromCard=function(button){var card=button.closest('.pcard');if(card)projAdd('', '', '', card.getAttribute('data-sku'));};
+  window.projAddFromPdp=function(){var sku=window.PDP_SKU,p=P[sku];if(p)projAdd('', '', '', sku);};
+  window.renderBasket=function(){var badge=document.getElementById('basketCount'),chip=document.getElementById('basketChip'),box=document.getElementById('basketRows');if(badge)badge.textContent=PROJ.length;if(chip)chip.classList.toggle('has',PROJ.length>0);if(!box)return;box.innerHTML=PROJ.map(function(row,index){return '<div class="basket-row"><div><div class="bk-n">'+row.n+' · '+row.sku+'</div><div class="bk-c">'+row.c+'</div><div class="bk-cfg">配置：'+row.cfg+'</div></div><div class="qty"><button onclick="projQty('+index+',-1)">−</button><input type="text" value="'+row.qty+'" readonly><button onclick="projQty('+index+',1)">+</button></div><button class="bk-del" onclick="projRemove('+index+')">×</button></div>';}).join('')||'<p class="basket-empty">项目篮为空。</p>';var note=document.getElementById('basketNote');if(note)note.style.display=PROJ.length?'block':'none';};
+  window.startBuildProject=function(){if(!PROJ.length){toast('项目篮为空');return;}if(!document.body.classList.contains('in')){toast('立项需登录并通过商户审核');return;}var snapshot=parent.MADEHALL.registerBasket(PROJ.map(function(row){return {lineId:row.lineId,productSku:row.sku,qty:row.qty,cfg:row.cfg,tier:row.tier};}));parent.MADEHALL.route('b','Fabbrio_quote_workspace_ZH_target.html?src=custom&basket='+encodeURIComponent(snapshot.id)+'#pg-rfq-pack');};
+  var merchantPage=document.getElementById('page-merchant'),application=D.merchantApplications.filter(function(item){return item.applicationNo==='MA-2026-0730-018';})[0];if(merchantPage&&application&&!document.getElementById('merchantEntityProof')){var proof=document.createElement('div');proof.id='merchantEntityProof';proof.className='note';proof.innerHTML='<b>统一申请单：</b>'+application.applicationNo+' · '+application.companyName+' · 对客状态「'+application.publicStage+'」'+(application.companyGid?' · Company GID 已开通':' · Company GID 待开通');var target=merchantPage.querySelector('.segbar, .form, .stepbar');merchantPage.insertBefore(proof,target&&target.parentNode===merchantPage?target:merchantPage.firstChild);}
+  var stateMachine=D.merchantStateMachine;if(merchantPage&&stateMachine&&!document.getElementById('merchantStateMapA')){var stages=[];stateMachine.internalStates.forEach(function(status){var stage=stateMachine.publicStageByInternal[status];if(stages.indexOf(stage)<0)stages.push(stage);});document.querySelectorAll('[id^="sstab"]').forEach(function(tab,index){if(stages[index])tab.textContent=stages[index];});var mapping=document.createElement('div');mapping.id='merchantStateMapA';mapping.className='note';mapping.innerHTML='<b>申请状态事实源：</b>'+stateMachine.internalStates.map(function(status){return status+' → '+stateMachine.publicStageByInternal[status];}).join(' ｜ ');merchantPage.insertBefore(mapping,document.getElementById('merchantEntityProof')||merchantPage.firstChild);}
+})();`);
+  window.MH_SOURCES.B=inject(window.MH_SOURCES.B,'B',String.raw`
+(function(){
+  var D=parent.MADEHALL_DATA,P=D.products;
+  window.applyCustomBasket=function(snapshot){if(!snapshot||!snapshot.lines)return false;setFfeSrc('custom');var body=document.getElementById('ffeCustomBody');if(!body)return false;var fixed=0,reference=0;body.innerHTML=snapshot.lines.map(function(line){var p=P[line.productSku],tier=line.tier||(p.tiers.indexOf('t2')>=0?'t2':'t1'),fact=p.tierFacts&&p.tierFacts[tier],unit=fact&&fact.unitPrice,amount=unit==null?null:Number(unit)*Number(line.qty);if(amount!=null){if(tier==='t1')fixed+=amount;else reference+=amount;}return '<tr data-basket-line="'+line.lineId+'"><td>'+p.name+' · '+p.sku+'<br><span class="badge b-warn">客户自选行 · '+snapshot.id+'</span><div class="cfgsum">'+line.cfg+'</div></td><td><span class="badge b-info">'+(tier==='t2'?'Tier2 半定制':'Tier1 现货')+'</span></td><td>'+line.qty+'</td><td class="ffePrice">'+(amount==null?'正式报价':'USD '+amount.toLocaleString('en-US'))+'</td><td></td></tr>';}).join('');var money=function(value){return String.fromCharCode(36)+Number(value).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})+' USD';},title=document.getElementById('ffeTitle'),crumb=document.getElementById('crumbFfe'),sub=document.getElementById('ffeSub'),tab=document.getElementById('ffev-draft'),note=document.getElementById('ffeDraftNote'),count=document.getElementById('ffeDraftCount'),fixedEl=document.getElementById('ffeDraftFixed'),refEl=document.getElementById('ffeDraftRef');if(title)title.textContent='新建 FF&E 自选项目 · '+snapshot.id;if(crumb)crumb.textContent='工程项目 › 自选组合 · '+snapshot.id;if(sub)sub.textContent='立项预览 · 由产品库自选快照生成，确认前可改档、改量、增删行';if(tab)tab.textContent='自选立项预览';if(note)note.innerHTML='自选组合快照 <b>'+snapshot.id+'</b> · '+snapshot.lines.length+' 行；每行保留产品 SKU、档位、数量与配置快照，不套用套餐模板。';if(count)count.textContent=snapshot.lines.length+' 行（客户自选）';if(fixedEl)fixedEl.textContent=money(fixed);if(refEl)refEl.textContent=money(reference);return true;};
+  var list=document.querySelector('#pg-orders .card');if(list&&!document.getElementById('unifiedOrders')){var card=document.createElement('div');card.id='unifiedOrders';card.className='card';card.innerHTML='<div class="sectlabel">统一订单实体（Quote → SO → SC / PO）</div><table class="tbl"><thead><tr><th>单号</th><th>来源</th><th>金额</th><th>状态</th></tr></thead><tbody>'+D.orders.map(function(order){return '<tr><td>'+order.id+'</td><td>'+order.sourceQuoteId+'</td><td>USD '+order.amount.toLocaleString('en-US',{minimumFractionDigits:2})+'</td><td>'+order.status+'</td></tr>';}).join('')+D.collections.map(function(item){return '<tr><td>'+item.id+'</td><td>'+item.stage+' · '+item.orderId+'</td><td>USD '+item.amount.toLocaleString('en-US',{minimumFractionDigits:2})+'</td><td>'+item.status+'</td></tr>';}).join('')+D.shopifyOrders.map(function(item){return '<tr><td>'+item.id+'</td><td>Shopify · '+item.productSku+'</td><td>USD '+item.amount.toLocaleString('en-US',{minimumFractionDigits:2})+'</td><td>'+item.status+'（详情在商城侧）</td></tr>';}).join('')+'</tbody></table>';list.parentNode.insertBefore(card,list);}
+  var orderPage=document.getElementById('pg-orders'),authoritative=document.getElementById('unifiedOrders');if(orderPage&&authoritative){var hideLegacyOrders=function(){orderPage.querySelectorAll('[data-od]').forEach(function(view){view.style.display='none';});authoritative.style.display='block';};hideLegacyOrders();var oldBar=orderPage.querySelector('.variantbar');if(oldBar)oldBar.style.display='none';var firstStale=orderPage.querySelector('[data-od]');orderPage.insertBefore(authoritative,firstStale||null);var priorSetOdView=window.setOdView;window.setOdView=function(){if(priorSetOdView)priorSetOdView.apply(this,arguments);hideLegacyOrders();};}
+})();`);
+  window.MH_SOURCES.C=inject(window.MH_SOURCES.C,'C',String.raw`
+(function(){
+  var D=parent.MADEHALL_DATA;
+  var rolePolicy=D.rolePolicy;ROLE_ZONES=JSON.parse(JSON.stringify(rolePolicy.zones));ROOT=rolePolicy.rootRole;
+  var priorApplyRole=window.applyRole;
+  window.applyRole=function(){var out=priorApplyRole.apply(this,arguments),allowed=ROLE_ZONES[roleSel.value]||[],active=document.querySelector('.zone.on');if(allowed.length&&(!active||allowed.indexOf(active.id)<0))goZone(allowed[0]);return out;};
+  var queue=document.querySelector('#z5-queue table.tbl');if(queue){var head=queue.querySelector('thead tr');if(head)head.innerHTML='<th>单号</th><th>类型</th><th>对象</th><th>金额（USD）</th><th>状态</th><th>SLA</th><th>动作</th>';var body=queue.querySelector('tbody');if(body)body.innerHTML=D.workItems.map(function(item){return '<tr><td><b>'+item.id+'</b></td><td>'+item.sourceType+'</td><td>'+((item.productSku||item.sourceId||'—'))+'</td><td>'+(item.amount==null?'—':Number(item.amount).toLocaleString('en-US',{minimumFractionDigits:2}))+'</td><td>'+item.status+'</td><td>统一 24h</td><td>引用实体</td></tr>';}).join('');}
+  function merchantBadge(status){var cls=status==='active'?'b-ok':(status==='need_info'?'b-dim':(status==='rejected'?'b-danger':'b-warn'));return '<span class="badge '+cls+'">'+status+'</span>';}
+  var merchantQueue=document.querySelector('#z1QueueTbl');if(merchantQueue){var qhead=merchantQueue.querySelector('thead tr'),qbody=merchantQueue.querySelector('tbody');if(qhead)qhead.innerHTML='<th>申请单</th><th>商户 / Company GID</th><th>对客档位</th><th>内部状态</th><th>审计</th>';if(qbody)qbody.innerHTML=D.merchantApplications.map(function(item){var events=D.auditLog.filter(function(event){return event.objectType==='merchant'&&event.objectId===item.applicationNo;});return '<tr data-astate="'+item.status+'" data-merchant="'+item.companyName+'" data-application-no="'+item.applicationNo+'"><td><b>'+item.applicationNo+'</b></td><td>'+item.companyName+'<br><span style="font-size:11px;color:var(--muted)">'+(item.companyGid||'Company GID 待开通')+'</span></td><td>'+item.publicStage+'</td><td>'+merchantBadge(item.status)+'</td><td>'+events.map(function(event){return event.eventId;}).join(' / ')+'</td></tr>';}).join('');}
+  var merchantTable=document.querySelector('#z2MerchTbl');if(merchantTable){var mhead=merchantTable.querySelector('thead tr'),mbody=merchantTable.querySelector('tbody');if(mhead)mhead.innerHTML='<th>申请单</th><th>Company GID</th><th>准入状态</th><th>操作留痕</th>';if(mbody)mbody.innerHTML=D.merchantApplications.map(function(item){var company=D.companies.filter(function(entry){return entry.applicationNo===item.applicationNo;})[0],events=D.auditLog.filter(function(event){return event.objectType==='merchant'&&event.objectId===item.applicationNo;});return '<tr data-mstate="'+item.status+'" data-application-no="'+item.applicationNo+'"><td><b>'+item.companyName+'</b><br><span style="font-size:11px;color:var(--muted)">'+item.applicationNo+'</span></td><td>'+(company?company.companyGid:'待开通')+'</td><td>'+merchantBadge(item.status)+'</td><td>'+events.map(function(event){return event.action+' · '+event.eventId;}).join('<br>')+'</td></tr>';}).join('');}
+  var stateMachine=D.merchantStateMachine;if(merchantTable&&stateMachine&&!document.getElementById('merchantStateMap')){var mapping=document.createElement('div');mapping.id='merchantStateMap';mapping.className='note';mapping.innerHTML='<b>准入七态 → 对客五档（统一实体映射）</b><br>'+stateMachine.internalStates.map(function(status){return status+' → '+stateMachine.publicStageByInternal[status];}).join(' ｜ ');merchantTable.parentNode.insertBefore(mapping,merchantTable);}
+  var z6=document.getElementById('z6');if(z6&&!document.getElementById('entityOrderProof')){var orders=document.createElement('div');orders.id='entityOrderProof';orders.className='card';orders.innerHTML='<div class="sectlabel">订单 / 收款实体勾稽</div><table class="tbl"><thead><tr><th>单号</th><th>来源</th><th>金额（USD）</th><th>状态</th></tr></thead><tbody>'+D.orders.map(function(item){return '<tr><td>'+item.id+'</td><td>'+item.sourceQuoteId+'</td><td>'+item.amount.toLocaleString('en-US',{minimumFractionDigits:2})+'</td><td>'+item.status+'</td></tr>';}).join('')+D.collections.map(function(item){return '<tr><td>'+item.id+'</td><td>'+item.stage+' · '+item.orderId+'</td><td>'+item.amount.toLocaleString('en-US',{minimumFractionDigits:2})+'</td><td>'+item.status+'</td></tr>';}).join('')+'</tbody></table><div class="sectlabel">Factory / 人工例外实体</div><p>Factory：'+D.masterData.factories.map(function(item){return item.id+' · '+item.name+(item.enabled?'（启用）':'（停用）');}).join('；')+'</p><ul>'+D.supportExceptions.map(function(item){return '<li>'+item.id+' · '+item.type+' · '+item.sourceId+' · '+item.reason+' · '+item.actorId+'</li>';}).join('')+'</ul>';z6.appendChild(orders);var protectedNodes=[z6.querySelector('h2'),z6.querySelector('p.sub'),orders];Array.prototype.forEach.call(z6.children,function(child){if(protectedNodes.indexOf(child)<0)child.style.display='none';});}
+  var z8=document.getElementById('z8');if(z8&&!document.getElementById('financeEntityProof')){var finance=document.createElement('div');finance.id='financeEntityProof';finance.className='card';finance.innerHTML='<div class="sectlabel">收款实体只读勾稽（SC → SO → Quote）</div><table class="tbl"><thead><tr><th>收款单</th><th>关联订单</th><th>正式报价</th><th>金额（USD）</th><th>状态</th></tr></thead><tbody>'+D.collections.map(function(item){var order=D.orders.filter(function(entry){return entry.id===item.orderId;})[0],quote=order&&D.quotes.filter(function(entry){return entry.id===order.sourceQuoteId;})[0];return '<tr><td>'+item.id+' · '+item.stage+'</td><td>'+item.orderId+'</td><td>'+(quote?quote.id:'—')+'</td><td>'+item.amount.toLocaleString('en-US',{minimumFractionDigits:2})+'</td><td>'+item.status+'</td></tr>';}).join('')+'</tbody></table><p class="note">财务角色只读：每笔 SC 金额与同一 SO 的首期/尾款合计、以及来源 Quote 总额均由统一实体模型勾稽。</p>';z8.appendChild(finance);var financeProtected=[z8.querySelector('h2'),z8.querySelector('p.sub'),finance];Array.prototype.forEach.call(z8.children,function(child){if(financeProtected.indexOf(child)<0)child.style.display='none';});}
+  var z1=document.getElementById('z1');if(z1&&!document.getElementById('entityAuditProof')){var audit=document.createElement('div');audit.id='entityAuditProof';audit.className='card';audit.innerHTML='<div class="sectlabel">AuditLog 实体切片</div><table class="tbl"><thead><tr><th>事件</th><th>对象</th><th>操作者</th><th>原因</th></tr></thead><tbody>'+D.auditLog.map(function(item){return '<tr><td>'+item.eventId+'</td><td>'+item.objectType+' · '+item.objectId+'</td><td>'+item.actorId+'</td><td>'+item.reason+'</td></tr>';}).join('')+'</tbody></table>';z1.appendChild(audit);}
+  renderNav();window.applyRole();
 })();`);
 })();
 </script>
@@ -375,7 +853,13 @@ window.DEALER_SESSION=(function(){
 })();
 
 window.MADEHALL=(function(){
-  var loaded={};
+  var loaded={},customBaskets={},basketSeq=0;
+  function registerBasket(lines){
+    var id='BSK-'+String(++basketSeq).padStart(4,'0');
+    customBaskets[id]=Object.freeze({id:id,createdAt:'2026-08-01T00:00:00Z',lines:Object.freeze((lines||[]).map(function(line){return Object.freeze({lineId:line.lineId,productSku:line.productSku,qty:Number(line.qty),cfg:line.cfg,tier:line.tier});}))});
+    return customBaskets[id];
+  }
+  function getBasket(id){return customBaskets[id]||null;}
   function load(id,key,appendix){if(loaded[id])return;var src=window.MH_SOURCES[key];if(appendix)src=src.replace('</head>','<style>body>*{display:none!important} body>#page-appendix,body>#pg-apx,body>.app{display:block!important} .app>*{display:none!important} .app>.appendix{display:block!important}</style></head>');document.getElementById(id).srcdoc=src;loaded[id]=true;}
   function switchView(name){document.querySelectorAll('.uview').forEach(function(e){e.classList.remove('on')});document.querySelectorAll('#unified-nav button').forEach(function(e){e.classList.toggle('on',e.getAttribute('data-view')===name)});if(name==='appendix'){document.getElementById('appendix-view').classList.add('on');load('apx-a','A',true);load('apx-b','B',true);load('apx-c','C',true);}else{load(name+'-frame',name.toUpperCase(),false);document.getElementById(name+'-frame').classList.add('on');}}
   function route(name,href){
@@ -388,13 +872,20 @@ window.MADEHALL=(function(){
       if(name==='a'&&w.showPage){var ap=hash.indexOf('page-')===0?hash:'page-home';w.showPage(ap);var sku=u.searchParams&&u.searchParams.get('sku');if(sku&&w.applyPdpSku)w.applyPdpSku(sku);}
       if(name==='b'&&w.showPage){
         if(hash==='pg-rfq-cats'){w.showPage('pg-rfq');if(w.setRfqStep)w.setRfqStep(2);}
-        else if(hash==='pg-rfq-pack'){w.showPage('pg-ffe');if(w.setFfeSrc)w.setFfeSrc((u.searchParams&&u.searchParams.get('src'))||'pack');if(w.setFfeView)w.setFfeView('draft');}
-        else if(hash.indexOf('pg-cfg')===0){w.showPage('pg-cfg');if(w.setCfgVariant)w.setCfgVariant('a');}
+        else if(hash==='pg-rfq-pack'){w.showPage('pg-ffe');var src=(u.searchParams&&u.searchParams.get('src'))||'pack';if(w.setFfeSrc)w.setFfeSrc(src);if(w.setFfeView)w.setFfeView('draft');if(src==='custom'&&w.applyCustomBasket)w.applyCustomBasket(getBasket(u.searchParams.get('basket')));}
+        else if(hash.indexOf('pg-cfg')===0){
+          w.showPage('pg-cfg');
+          var cfgSku=u.searchParams&&u.searchParams.get('sku');
+          if(hash==='pg-cfg-prefill'){
+            if(w.setCfgVariant)w.setCfgVariant('a');
+            if(cfgSku&&w.prefillConfigFromSku)w.prefillConfigFromSku(cfgSku);
+          }else if(w.setCfgVariant)w.setCfgVariant('b');
+        }
         else w.showPage(hash&&w.document.getElementById(hash)?hash:'pg-home');
       }
     }
     if(wasLoaded&&fr.contentWindow&&typeof fr.contentWindow.showPage==='function')setTimeout(run,0);else fr.addEventListener('load',run,{once:true});
   }
-  document.querySelectorAll('#unified-nav button[data-view]').forEach(function(b){b.addEventListener('click',function(){switchView(b.getAttribute('data-view'))})});load('a-frame','A',false);return {switchView:switchView,route:route,loaded:loaded,getDealerState:window.DEALER_SESSION.getDealerState,setDealerState:window.DEALER_SESSION.setDealerState,subscribeDealer:window.DEALER_SESSION.subscribeDealer};
+  document.querySelectorAll('#unified-nav button[data-view]').forEach(function(b){b.addEventListener('click',function(){switchView(b.getAttribute('data-view'))})});load('a-frame','A',false);return {switchView:switchView,route:route,loaded:loaded,registerBasket:registerBasket,getBasket:getBasket,getDealerState:window.DEALER_SESSION.getDealerState,setDealerState:window.DEALER_SESSION.setDealerState,subscribeDealer:window.DEALER_SESSION.subscribeDealer};
 })();
 </script></body></html>
