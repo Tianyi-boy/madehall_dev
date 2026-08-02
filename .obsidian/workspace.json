@@ -1,0 +1,225 @@
+{
+  "main": {
+    "id": "a62b554b28af5759",
+    "type": "split",
+    "children": [
+      {
+        "id": "22b95bb36918032e",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "888c2cf519a4eb75",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "docs/0.0方案文档/4.多设备协同并行多功能开发SOP.md",
+                "mode": "preview",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "4.多设备协同并行多功能开发SOP"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "c8c0a53869c95001",
+    "type": "split",
+    "children": [
+      {
+        "id": "35a8992dbf8110d5",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "2b155885198ff528",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "文件列表"
+            }
+          },
+          {
+            "id": "aae49992841739dc",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "搜索"
+            }
+          },
+          {
+            "id": "fe17334e876f2942",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "书签"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "417580f2b70597ee",
+    "type": "split",
+    "children": [
+      {
+        "id": "63be4d52a7c134ab",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "bd07e68bb07416a9",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "docs/0.0方案文档/4.多设备协同并行多功能开发SOP.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "4.多设备协同并行多功能开发SOP 的反向链接列表"
+            }
+          },
+          {
+            "id": "40cd5990d6338624",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "docs/0.0方案文档/4.多设备协同并行多功能开发SOP.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "4.多设备协同并行多功能开发SOP 的出链列表"
+            }
+          },
+          {
+            "id": "cc0c024091d43957",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "标签"
+            }
+          },
+          {
+            "id": "b1b0c71d341039ff",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "添加笔记属性"
+            }
+          },
+          {
+            "id": "ca7088e72f1b8a85",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "docs/0.0方案文档/4.多设备协同并行多功能开发SOP.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "4.多设备协同并行多功能开发SOP 的大纲"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:打开快速切换": false,
+      "graph:查看关系图谱": false,
+      "canvas:新建白板": false,
+      "daily-notes:打开/创建今天的日记": false,
+      "templates:插入模板": false,
+      "command-palette:打开命令面板": false,
+      "bases:新建数据库": false
+    }
+  },
+  "active": "888c2cf519a4eb75",
+  "lastOpenFiles": [
+    "原型/validate-madehall-data.mjs",
+    "原型/Madehall_unified_prototype_ZH_codex.html",
+    "原型/Fabbrio_storefront_ZH_target.html",
+    "原型/Fabbrio_quote_workspace_ZH_target.html",
+    "原型/Fabbrio_internal_backoffice_ZH_target.html",
+    "原型/22-语义化原型打磨执行说明-v1.0.md",
+    "原型/21-HTML原型驱动开发落地方案-v1.0.md",
+    "原型/20-原型数据引用图-v1.0.md",
+    "原型/19-负责人走查问题登记表-v2.0.md",
+    "原型/18-负责人走查问题登记表-v1.0.md",
+    "原型/17-业务路径核查手册-v1.3.md",
+    "原型/00-需求差异矩阵-v2.3-终审通过.md",
+    "原型",
+    "3.AI Native 技术负责人--fabbrio执行手册.md",
+    "2.元认知文档.md",
+    "1.传统软件开发流程.md",
+    "docs/0.1种子文件(传统+AI)/传统种子文件/2.2-负责人走查问题登记表-v2.0.md",
+    "docs/0.1种子文件(传统+AI)/传统种子文件/2.1-负责人走查问题登记表-v1.0.md",
+    "docs/0.1种子文件(传统+AI)/传统种子文件/1-业务路径核查手册-v1.3.md",
+    "docs/0.1种子文件(传统+AI)/传统种子文件/Madehall_unified_prototype_ZH.html",
+    "docs/0.1种子文件(传统+AI)/传统种子文件/Madehall_unified_prototype_ZH_semantic.html",
+    "docs/0.1种子文件(传统+AI)/传统种子文件/Madehall_unified_prototype_ZH_codex.html",
+    "docs/0.1种子文件(传统+AI)/传统种子文件/Fabbrio_storefront_ZH_target.html",
+    "docs/0.1种子文件(传统+AI)/传统种子文件/Fabbrio_quote_workspace_ZH_target.html",
+    "docs/0.1种子文件(传统+AI)/传统种子文件/20-原型数据引用图-v1.0.md",
+    "docs/0.1种子文件(传统+AI)/传统种子文件/19-负责人走查问题登记表-v2.0.md",
+    "docs/0.1种子文件(传统+AI)/传统种子文件/18-负责人走查问题登记表-v1.0.md",
+    "docs/0.1种子文件(传统+AI)/传统种子文件/17-业务路径核查手册-v1.3.md",
+    "docs/0.1种子文件(传统+AI)/传统种子文件/Madehall_PRD.md",
+    "docs/0.0方案文档/5.六件套生成与审核SOP.md",
+    "docs/0.0方案文档/4.多设备协同并行多功能开发SOP.md",
+    "docs/0.0方案文档/1.Agent-first·1·开发前规格构建方案.md",
+    "docs/0.0方案文档/3.Agent-first·3·上线后运维与迭代手册.md",
+    "docs/0.0方案文档/2.Agent-first·2·开发时执行与返工手册.md",
+    "docs/0.0方案文档/Agent-first·1·开发前规格构建方案.md",
+    "Agent-first·1·开发前规格构建方案.md"
+  ]
+}
